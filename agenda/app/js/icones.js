@@ -8,6 +8,7 @@ window.ICONES = {
   lixo: '<path d="M3 6h18M8 6V4h8v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>',
   baixar: '<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>',
   enviar: '<path d="M12 21V9M7 14l5-5 5 5M5 3h14"/>',
+  recarregar: '<path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/>',
   sino: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
   info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
   check: '<path d="M20 6 9 17l-5-5"/>',

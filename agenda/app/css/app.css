@@ -267,3 +267,6 @@ input::-webkit-date-and-time-value { text-align: left; min-height: 1.4em; }
   .grupo--acoes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
   .grupo--acoes #novoAg { grid-column: 1 / -1; }
 }
+.papel-faixa__demo { margin-left: auto; flex: none; }
+.papel-faixa--demo { border-color: rgba(90,169,255,.5); }
+@media (max-width: 800px) { .papel-faixa--demo { flex-wrap: wrap; } .papel-faixa__demo { margin-left: 32px; } }

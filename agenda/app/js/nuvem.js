@@ -119,7 +119,9 @@ window.Nuvem = (function () {
     var testeAte = FB.Timestamp.fromMillis(Date.now() + 30 * 864e5);
     var b = FB.writeBatch(db);
     b.set(FB.doc(db, "testes", email), { criadoEm: agora() });
+    var demo = await ehDemo();
     b.set(refSalao(), limpar({
+      demo: demo || undefined,
       nome: d.nome, whatsapp: d.whatsapp, donoUid: uid, donoNome: d.nomePessoa || "",
       horarios: d.horarios, antecedenciaHoras: 2, diasAFrente: 30, publico: true, msgLembrete: d.msgLembrete,
       compartilharNumeros: true, origem: d.origem || "", criadoEm: agora(),
@@ -137,6 +139,21 @@ window.Nuvem = (function () {
     return st.eu;
   }
 
+  // Conta de demonstração (o dono do sistema mostra o app para clientes; botão para recomeçar do zero)
+  var demoP = null;
+  function ehDemo() {
+    if (demoP) return demoP;
+    var mail = ((auth.currentUser && auth.currentUser.email) || "").toLowerCase();
+    demoP = !mail ? Promise.resolve(false) : FB.getDoc(FB.doc(db, "demos", mail)).then(function (d) { return d.exists(); }, function () { return false; });
+    return demoP;
+  }
+  async function recomecarDemo() {
+    var tk = await auth.currentUser.getIdToken();
+    var r = await fetch(APP.robo + "/demo/resetar", { method: "POST", headers: { Authorization: "Bearer " + tk } });
+    var j = await r.json().catch(function () { return {}; }); if (!r.ok) throw new Error(j.erro || ("erro " + r.status));
+    try { localStorage.clear(); } catch (e) {}
+    return true;
+  }
   // Profissional entrou pela tela normal (sem o link): procura um convite feito para o e-mail dele
   async function conviteParaMim() {
     var mail = ((auth.currentUser && auth.currentUser.email) || "").toLowerCase(); if (!mail) return null;
@@ -847,7 +864,7 @@ window.Nuvem = (function () {
   return {
     Conta: Conta, estado: st, PLANOS: PLANOS, CORES: CORES, OCUPA: OCUPA,
     carregarSessao: carregarSessao, criarSalao: criarSalao, aceitarConvite: aceitarConvite,
-    ehDono: ehDono, meuProfId: meuProfId, assinatura: assinatura, conviteParaMim: conviteParaMim,
+    ehDono: ehDono, meuProfId: meuProfId, assinatura: assinatura, conviteParaMim: conviteParaMim, ehDemo: ehDemo, recomecarDemo: recomecarDemo,
     comunicados: comunicados, iniciar: iniciar, agsEntre: agsEntre, agsDoCliente: agsDoCliente,
     salvar: salvar, apagar: apagar, salvarBloqueio: salvarBloqueio, apagarBloqueio: apagarBloqueio,
     enviarSugestao: enviarSugestao, salvarPerfil: salvarPerfil, definirEndereco: definirEndereco, publicarAgora: publicarAgora, reconstruirOcupados: reconstruirOcupados,

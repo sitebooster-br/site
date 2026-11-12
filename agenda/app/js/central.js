@@ -54,13 +54,24 @@
   }
 
   /* ---------- entrar ---------- */
-  function telaEntrar(msg) {
+  function telaEntrar(msg, ok) {
     $("#cenNav").hidden = true;
     C.innerHTML = '<form class="painel" id="fEntrar" style="max-width:420px;margin:30px auto"><h2>Entrar na Central</h2>' +
-      (msg ? '<p class="nota nota--alerta">' + esc(msg) + "</p>" : "") +
+      (msg ? '<p class="nota ' + (ok ? "nota--ok" : "nota--alerta") + '">' + esc(msg) + "</p>" : "") +
       '<label>E-mail<input name="email" type="email" required autocomplete="username"></label>' +
       '<label>Senha<input name="senha" type="password" required autocomplete="current-password"></label>' +
-      '<div class="atalhos"><button class="btn btn--pri" type="submit">Entrar</button></div></form>';
+      '<div class="atalhos"><button class="btn btn--pri" type="submit">Entrar</button></div>' +
+      '<button type="button" class="link-btn" id="cenEsqueci">Esqueci minha senha</button></form>';
+    $("#cenEsqueci").onclick = function () {
+      var f = $("#fEntrar"), mail = f.email.value.trim();
+      if (!mail || !f.email.checkValidity()) { f.email.focus(); return telaEntrar("Digite o seu e-mail no campo acima e toque de novo em \"Esqueci minha senha\"."); }
+      auth.languageCode = "pt-BR";
+      FB.sendPasswordResetEmail(auth, mail).then(function () {
+        telaEntrar("Pronto! Se este e-mail tiver conta, chega nele um link para criar uma senha nova (veja também a caixa de spam). Depois é só entrar aqui com a senha nova.", true);
+      }, function (e) {
+        telaEntrar(e && e.code === "auth/too-many-requests" ? "Muitas tentativas seguidas. Espere alguns minutos e tente de novo." : "Não foi possível enviar agora. Confira o e-mail e a internet e tente de novo.");
+      });
+    };
     $("#fEntrar").onsubmit = function (e) {
       e.preventDefault(); var f = e.target;
       FB.signInWithEmailAndPassword(auth, f.email.value.trim(), f.senha.value).catch(function () { telaEntrar("E-mail ou senha incorretos."); });
@@ -87,7 +98,7 @@
       pega(lista(col("central", "dados", "diario"))), FB.getDoc(FB.doc(db, "central", "dados", "rotina", "ultima")).then(function (d) { return d.exists() ? d.data() : null; }, function () { return null; }),
       pega(lista(FB.query(col("central", "dados", "auditoria"), FB.where("quando", ">=", desde))))
     ]);
-    DADOS = { saloes: r[0], usuarios: r[1], sugestoes: r[2], comunicados: r[3], pendentes: r[4], eventos: r[5], trocas: r[6], diario: r[7].sort(function (a, b) { return a.id < b.id ? -1 : 1; }), rotina: r[8], auditoria: r[9] };
+    DADOS = { saloes: r[0].filter(function (x) { return !x.demo; }), demos: r[0].filter(function (x) { return x.demo; }), usuarios: r[1], sugestoes: r[2], comunicados: r[3], pendentes: r[4], eventos: r[5], trocas: r[6], diario: r[7].sort(function (a, b) { return a.id < b.id ? -1 : 1; }), rotina: r[8], auditoria: r[9] };
   }
   function donoDe(sid) { return DADOS.usuarios.filter(function (u) { return u.papel === "dono" && u.salaoId === sid; })[0] || {}; }
   async function buscarUso() {
@@ -138,7 +149,7 @@
         mostrarFeed();
       }, function () {}));
       desligar.push(FB.onSnapshot(col("saloes"), function (q) {
-        q.docChanges().forEach(function (c) { var x = c.doc.data(); if (c.type === "added" && ms(x.criadoEm) > Date.now() - 7 * D) novo("🎉 Novo salão: " + (x.nome || "sem nome"), x.criadoEm, true); });
+        q.docChanges().forEach(function (c) { var x = c.doc.data(); if (c.type === "added" && !x.demo && ms(x.criadoEm) > Date.now() - 7 * D) novo("🎉 Novo salão: " + (x.nome || "sem nome"), x.criadoEm, true); });
         mostrarFeed();
       }, function () {}));
     } catch (e) {}
@@ -156,6 +167,7 @@
     var T = { geral: telaGeral, notificacoes: telaNotificacoes, financeiro: telaFinanceiro, saloes: telaSaloes, salao: telaSalao, uso: telaUso, comunicados: telaComunicados, ajuda: telaAjuda }[r.tela] || telaGeral;
     T(r.id);
     if (T === telaGeral) avisosCel().catch(function () {});
+    if (T === telaSaloes) montarDemos().catch(function () {});
     atualizarBadge();
   }
 
@@ -342,7 +354,7 @@
 
   function urlCliente(slug) { var base = location.href.replace(/[#?].*$/, "").replace(/central\.html$/, ""); return base + "marcar.html?s=" + encodeURIComponent(slug); }
   async function telaSalao(sid) {
-    var s = DADOS.saloes.filter(function (x) { return x.id === sid; })[0];
+    var s = DADOS.saloes.concat(DADOS.demos || []).filter(function (x) { return x.id === sid; })[0];
     if (!s) { C.innerHTML = '<section class="painel"><p>Salão não encontrado. <a href="#saloes">Voltar</a></p></section>'; return; }
     C.innerHTML = '<p class="sub">Carregando a ficha de ' + esc(s.nome || "") + "...</p>";
     var mes = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()).slice(0, 7), pega = function (p) { return p.catch(function () { return []; }); };
@@ -819,4 +831,23 @@
     ligarCalc();
   }
 
+
+  /* ===================== CONTAS DE DEMONSTRAÇÃO ===================== */
+  async function montarDemos() {
+    var q = await FB.getDocs(col("demos")), mails = q.docs.map(function (d) { return d.id; });
+    var box = document.createElement("section"); box.className = "painel"; box.id = "painelDemos";
+    box.innerHTML = "<h2>" + Icone("estrela") + 'Contas de demonstração</h2><p class="sub">Para mostrar o app a clientes. Ficam <b>fora</b> dos números, do financeiro e das notificações. Dentro do app aparece o botão <b>Recomeçar demonstração</b>, que apaga tudo e volta ao começo do tutorial.</p>' +
+      ((DADOS.demos || []).length ? '<ul class="lanc">' + DADOS.demos.map(function (s) { return '<li><div><b>' + esc(s.nome || "sem nome") + '</b><span class="sub">' + esc(donoDe(s.id).email || "") + " · criado " + data(s.criadoEm) + '</span></div><a class="btn btn--sec btn--peq" href="#salao/' + encodeURIComponent(s.id) + '">Ver ficha</a></li>'; }).join("") + "</ul>" : '<p class="sub">Nenhum salão de demonstração criado ainda.</p>') +
+      '<h3 class="cen-h3">E-mails de demonstração</h3>' +
+      (mails.length ? '<ul class="lanc">' + mails.map(function (m) { return '<li><div><b>' + esc(m) + '</b></div><button class="btn btn--sec btn--peq" data-tira-demo="' + esc(m) + '">Tirar</button></li>'; }).join("") + "</ul>" : '<p class="sub">Nenhum e-mail marcado.</p>') +
+      '<form id="fDemo" class="filtros"><label>Marcar e-mail como demonstração<input name="email" type="email" required placeholder="ex.: demo@sitebooster.com.br"></label><button class="btn btn--sec" type="submit">Marcar</button></form>' +
+      '<p class="sub">Marque o e-mail <b>antes</b> de criar a conta no app. Depois é só entrar no app com esse e-mail e criar a senha.</p>';
+    C.appendChild(box);
+    $("#fDemo").onsubmit = async function (e) {
+      e.preventDefault(); var m = e.target.email.value.trim().toLowerCase(); if (!m) return;
+      await FB.setDoc(FB.doc(col("demos"), m), { criadoEm: FB.serverTimestamp(), por: auth.currentUser.email });
+      await registrar("conta demo marcada", "", m); aviso("E-mail marcado como demonstração."); box.remove(); montarDemos();
+    };
+    $$("[data-tira-demo]", box).forEach(function (b) { b.onclick = async function () { if (!confirm("Tirar " + b.dataset.tiraDemo + " das contas de demonstração?")) return; await FB.deleteDoc(FB.doc(col("demos"), b.dataset.tiraDemo)); await registrar("conta demo removida", "", b.dataset.tiraDemo); box.remove(); montarDemos(); }; });
+  }
 })();

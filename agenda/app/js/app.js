@@ -1794,6 +1794,7 @@
     catch (e) { aviso(Nuvem.traduzir(e), "erro"); sessao = null; }
     if (!sessao) { prepararLogin(); mostrar("telaAtivacao"); $(EMAIL_CONVITE ? "#ativSenha" : "#ativEmail").focus(); return; }
 
+    if (Nuvem.ehDemo) Nuvem.ehDemo().then(function (v) { window.__demo = v; if (v) try { atualizarMenu(); } catch (e) {} });
     if (sessao.semSalao) {
       // Funcionário que entrou pela tela normal, sem o link: o sistema acha o convite pelo e-mail dele
       if (!CONVITE && Nuvem.conviteParaMim) CONVITE = (await Nuvem.conviteParaMim()) || "";
@@ -1880,8 +1881,17 @@
       var eu = dono() ? null : S.profissionais.filter(function (p) { return p.id === Nuvem.meuProfId(); })[0];
       pf.hidden = false; pf.className = "papel-faixa " + (dono() ? "papel-faixa--dono" : "papel-faixa--prof");
       pf.innerHTML = dono()
-        ? Icone("tesoura") + "<div><b>Painel do salão · " + esc(nomeNegocio()) + "</b><span>Administração: agenda de todos, equipe, plano e configurações</span></div>"
+        ? Icone("tesoura") + "<div><b>Painel do salão · " + esc(nomeNegocio()) + (window.__demo ? ' <span class="tag tag--info">DEMONSTRAÇÃO</span>' : "") + "</b><span>" + (window.__demo ? "Conta de demonstração: nada aqui vai para a Central" : "Administração: agenda de todos, equipe, plano e configurações") + "</span></div>"
         : Icone("calendario") + "<div><b>Agenda do colaborador · " + esc((eu && eu.nome) || "Profissional") + "</b><span>" + esc(nomeNegocio()) + " · seus horários, clientes e comissões</span></div>";
+    }
+    if (pf && window.__demo && dono()) {
+      pf.insertAdjacentHTML("beforeend", '<button type="button" class="btn btn--sec btn--peq papel-faixa__demo" id="recomecarDemo">' + Icone("recarregar") + "Recomeçar demonstração</button>");
+      pf.classList.add("papel-faixa--demo");
+      $("#recomecarDemo").onclick = async function () {
+        if (!confirm("Recomeçar a demonstração?\nApaga TUDO desta conta de demonstração (agenda, clientes, equipe, serviços) e volta para o começo do tutorial.")) return;
+        this.disabled = true; this.textContent = "Apagando...";
+        try { await Nuvem.recomecarDemo(); location.href = location.pathname; } catch (e) { aviso("Não deu para recomeçar: " + e.message, "erro"); this.disabled = false; }
+      };
     }
     $$(".menu__sub").forEach(function (m) { var t = dono() ? m.dataset.subDono : m.dataset.subProf; m.textContent = t || ""; m.hidden = !t; });
     $$("[data-so-dono]").forEach(function (a) { a.hidden = !dono(); });
