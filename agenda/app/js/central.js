@@ -111,6 +111,8 @@
     await carregar(); desenhar(); buscarUso();
     setInterval(buscarUso, 60000);                        // uso do banco: atualiza sozinho a cada minuto
     setInterval(function () { if (rota().tela !== "salao") carregar().then(desenhar); }, 5 * 60000);
+    // Ficha aberta: atualiza os números do salão sozinha a cada minuto (faturamento, agendamentos)
+    setInterval(function () { var r = rota(); if (r.tela === "salao" && r.id && !document.querySelector("dialog[open]") && !(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) { var y = window.scrollY; Promise.resolve(telaSalao(r.id)).then(function () { window.scrollTo(0, y); }); } }, 60000);
     aoVivo();
     window.onhashchange = desenhar;
   }
@@ -344,10 +346,10 @@
     var s = DADOS.saloes.filter(function (x) { return x.id === sid; })[0];
     if (!s) { C.innerHTML = '<section class="painel"><p>Salão não encontrado. <a href="#saloes">Voltar</a></p></section>'; return; }
     C.innerHTML = '<p class="sub">Carregando a ficha de ' + esc(s.nome || "") + "...</p>";
-    var mes = new Date().toISOString().slice(0, 7), pega = function (p) { return p.catch(function () { return []; }); };
+    var mes = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()).slice(0, 7), pega = function (p) { return p.catch(function () { return []; }); };
     var r = await Promise.all([
       pega(lista(col("saloes", sid, "profissionais"))), pega(lista(col("saloes", sid, "servicos"))), pega(lista(col("saloes", sid, "clientes"))),
-      pega(lista(FB.query(col("saloes", sid, "agendamentos"), FB.where("data", ">=", mes + "-01")))), pega(lista(col("saloes", sid, "resumos"))),
+      pega(lista(FB.query(col("saloes", sid, "agendamentos"), FB.where("data", ">=", mes + "-01"), FB.where("data", "<=", mes + "-31")))), pega(lista(col("saloes", sid, "resumos"))),
       pega(lista(FB.query(col("central", "dados", "auditoria"), FB.where("salaoId", "==", sid))))
     ]);
     if (rota().tela !== "salao" || rota().id !== sid) return;   // a pessoa já saiu da ficha
