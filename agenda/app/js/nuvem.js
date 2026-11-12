@@ -132,6 +132,8 @@ window.Nuvem = (function () {
     }
     await b.commit();
     st.eu = { papel: "dono", salaoId: uid };
+    // Avisa a Central da Sitebooster (celular do dono do sistema). Se falhar, não atrapalha nada.
+    try { if (APP.robo) auth.currentUser.getIdToken().then(function (tk) { return fetch(APP.robo + "/aviso/novo-salao", { method: "POST", headers: { Authorization: "Bearer " + tk } }); }).catch(function () {}); } catch (e) {}
     return st.eu;
   }
 

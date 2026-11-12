@@ -106,6 +106,7 @@
     nav.innerHTML = ABAS.map(function (a) { return '<a href="#' + a[0] + '" data-aba="' + a[0] + '">' + Icone(a[2]) + "<span>" + a[1] + "</span></a>"; }).join("");
     if (iniciado) { desenhar(); return; }
     iniciado = true;
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
     C.innerHTML = '<p class="sub">Carregando os números...</p>';
     await carregar(); desenhar(); buscarUso();
     setInterval(buscarUso, 60000);                        // uso do banco: atualiza sozinho a cada minuto
@@ -151,6 +152,7 @@
     $$("#cenNav a").forEach(function (a) { var on = a.dataset.aba === r.tela || (r.tela === "salao" && a.dataset.aba === "saloes"); if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     var T = { geral: telaGeral, saloes: telaSaloes, salao: telaSalao, uso: telaUso, comunicados: telaComunicados, sugestoes: telaSugestoes, atividade: telaAtividade }[r.tela] || telaGeral;
     T(r.id);
+    if (T === telaGeral) avisosCel().catch(function () {});
   }
 
   /* ---------- números ---------- */
@@ -220,6 +222,7 @@
     C.innerHTML =
       '<section class="painel"><h2>' + Icone("alerta") + "Alertas</h2>" +
       (al.length ? al.map(function (t) { return '<div class="alerta-c">' + Icone("alerta") + "<div>" + t + "</div></div>"; }).join("") : '<div class="alerta-c alerta-c--ok">' + Icone("check") + "<div>Tudo certo. Nada precisa da sua atenção agora.</div></div>") + "</section>" +
+      '<section class="painel" id="avisosCel"><h2>' + Icone("sino") + 'Avisos no celular</h2><p class="sub">Verificando este aparelho...</p></section>' +
       '<div class="cen-duas"><section class="painel"><h2>' + Icone("nuvem") + "Saúde do sistema</h2>" + saudeHTML() + "</section>" +
       '<section class="painel"><h2>' + Icone("relogio") + 'Ao vivo <span class="pisca" aria-hidden="true"></span></h2><div id="feed">' + feedHTML() + "</div></section></div>" +
       '<section class="painel"><h2>' + Icone("grafico") + "Números do negócio</h2><div class=\"kpis\">" +
@@ -234,6 +237,53 @@
       grafico(dia.map(function (d) { return { r: d.id.slice(8, 10) + "/" + d.id.slice(5, 7), v: (d.ativos || 0) }; }), { titulo: "assinantes" }) +
       '<p class="sub">Hoje: ' + n.ativos + " assinantes e " + n.testes + " em teste.</p></section></div>";
   }
+
+  /* ---------- Avisos no celular (Web Push) ---------- */
+  function ehIOS() { return /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1); }
+  function instaladoApp() { return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; }
+  function b64Bytes(t) { var b = atob(t.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((t.length + 3) % 4)), o = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) o[i] = b.charCodeAt(i); return o; }
+  async function avisosCel() {
+    var box = $("#avisosCel"); if (!box) return;
+    var titulo = "<h2>" + Icone("sino") + "Avisos no celular</h2>";
+    var explica = '<p class="sub">Receba no celular, na hora: pagamento recebido, cancelamento, estorno, salão novo no teste e um resumo do dia. Funciona com o app fechado.</p>';
+    function por(html) { box.innerHTML = titulo + explica + html; }
+    if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
+      return por(ehIOS() && !instaladoApp()
+        ? '<div class="alerta-c alerta-c--info">' + Icone("info") + "<div><b>No iPhone, primeiro instale a Central:</b> abra esta página no <b>Safari</b>, toque em <b>Compartilhar</b> (quadrado com seta) → <b>Adicionar à Tela de Início</b>. Depois abra pelo ícone <b>Central</b> e volte aqui.</div></div>"
+        : '<p class="sub">Este navegador não recebe avisos. Use o Chrome (Android/computador) ou a Central instalada no iPhone.</p>');
+    }
+    if (Notification.permission === "denied") return por('<div class="alerta-c">' + Icone("alerta") + "<div>Os avisos foram bloqueados neste aparelho. " + (ehIOS() ? "No iPhone: <b>Ajustes → Notificações → Central</b> → Permitir." : "Libere nas configurações do site (cadeado ao lado do endereço) → Notificações → Permitir.") + "</div></div>");
+    var reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      por('<div class="alerta-c alerta-c--ok">' + Icone("check") + "<div><b>Ligado neste aparelho.</b></div></div>" +
+        '<div class="atalhos"><button class="btn btn--sec" id="pushTeste" type="button">' + Icone("sino") + "Mandar um aviso de teste</button>" +
+        '<button class="btn btn--sec" id="pushDesl" type="button">Desligar neste aparelho</button></div><p class="sub" id="pushMsg"></p>');
+      $("#pushTeste").onclick = async function () {
+        this.disabled = true; $("#pushMsg").textContent = "Enviando...";
+        try { await inscreverNoRobo(sub); var r = await chamarRobo("/central/push/teste"); $("#pushMsg").textContent = r.enviados ? "Enviado! Deve chegar em alguns segundos." : "Não consegui enviar (" + (r.motivo || (r.erros || []).join(", ") || "sem aparelho") + ")."; }
+        catch (e) { $("#pushMsg").textContent = "Erro: " + e.message; } this.disabled = false;
+      };
+      $("#pushDesl").onclick = async function () { await sub.unsubscribe(); avisosCel(); };
+      return;
+    }
+    por('<button class="btn btn--pri" id="pushLigar" type="button">' + Icone("sino") + 'Ligar avisos neste aparelho</button><p class="sub" id="pushMsg"></p>');
+    $("#pushLigar").onclick = async function () {
+      var bt = this; bt.disabled = true; $("#pushMsg").textContent = "Pedindo permissão...";
+      try {
+        var perm = await Notification.requestPermission(); if (perm !== "granted") { avisosCel(); return; }
+        var ch = (await (await fetch(ROBO + "/central/push/chave")).json()).chave;
+        if (!ch) throw new Error("o robô ainda não tem a chave de avisos");
+        var s = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64Bytes(ch) });
+        await inscreverNoRobo(s); await chamarRobo("/central/push/teste"); avisosCel();
+      } catch (e) { $("#pushMsg").textContent = "Não deu certo: " + e.message; bt.disabled = false; }
+    };
+  }
+  async function chamarRobo(caminho, corpo) {
+    var tk = await auth.currentUser.getIdToken();
+    var r = await fetch(ROBO + caminho, { method: "POST", headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json" }, body: JSON.stringify(corpo || {}) });
+    var j = await r.json().catch(function () { return {}; }); if (!r.ok) throw new Error(j.erro || ("erro " + r.status)); return j;
+  }
+  function inscreverNoRobo(sub) { return chamarRobo("/central/push", { inscricao: sub.toJSON(), aparelho: (ehIOS() ? "iPhone" : /Android/.test(navigator.userAgent) ? "Android" : "Computador") }); }
 
   function telaUso() {
     var u = USO, topo = '<section class="painel"><h2>' + Icone("nuvem") + 'Uso do banco de dados (plano grátis) <span class="pisca" aria-hidden="true"></span></h2>';

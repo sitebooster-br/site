@@ -1,6 +1,6 @@
 /* Service worker: deixa o app abrindo sem internet.
    IMPORTANTE: a cada versão nova publicada, aumente o número em VERSAO. */
-var VERSAO = "booster-agenda-v1.1.0-a8";
+var VERSAO = "booster-agenda-v1.1.0-a9";
 var ARQUIVOS = [
   "./",
   "index.html",
@@ -28,7 +28,7 @@ var ARQUIVOS = [
 ];
 
 self.addEventListener("install", function (e) {
-  e.waitUntil(caches.open(VERSAO).then(function (c) { return c.addAll(ARQUIVOS); }).then(function () { return self.skipWaiting(); }));
+  e.waitUntil(caches.open(VERSAO).then(function (c) { return c.addAll(ARQUIVOS.map(function (u) { return new Request(u, { cache: "reload" }); })); }).then(function () { return self.skipWaiting(); }));
 });
 
 self.addEventListener("activate", function (e) {
@@ -50,5 +50,22 @@ self.addEventListener("fetch", function (e) {
       if (resp && resp.ok && fonte) { var copia = resp.clone(); caches.open(VERSAO).then(function (c) { c.put(e.request, copia); }); }
       return resp;
     }).catch(function () { if (e.request.mode === "navigate") return caches.match("index.html"); });
+  }));
+});
+
+// Avisos no celular (Central do dono): mostra a notificação e abre a Central ao tocar
+self.addEventListener("push", function (e) {
+  var d = {}; try { d = e.data ? e.data.json() : {}; } catch (x) { d = { titulo: "Central Sitebooster", texto: e.data ? e.data.text() : "" }; }
+  e.waitUntil(self.registration.showNotification(d.titulo || "Central Sitebooster", {
+    body: d.texto || "", icon: "icone-192.png", badge: "icone-192.png", tag: d.tag || undefined, renotify: !!d.tag,
+    data: { url: d.url || "central.html" }
+  }));
+});
+self.addEventListener("notificationclick", function (e) {
+  e.notification.close();
+  var alvo = new URL((e.notification.data && e.notification.data.url) || "central.html", self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(function (lista) {
+    for (var i = 0; i < lista.length; i++) if (lista[i].url.indexOf("central.html") >= 0 && "focus" in lista[i]) { lista[i].navigate && lista[i].navigate(alvo); return lista[i].focus(); }
+    return self.clients.openWindow(alvo);
   }));
 });

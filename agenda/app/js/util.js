@@ -161,3 +161,15 @@ window.Som = (function () {
   }
   return { tocar: tocar, ligado: ligado, definir: definir };
 })();
+
+/* ===== Versão nova publicada: recarrega sozinho uma vez, para ninguém ficar com o app antigo ===== */
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  var tinha = !!navigator.serviceWorker.controller, recarregou = false;
+  navigator.serviceWorker.addEventListener("controllerchange", function () {
+    if (!tinha || recarregou) return; recarregou = true;
+    var ativo = document.activeElement; // não interrompe quem está digitando
+    if (ativo && /INPUT|TEXTAREA|SELECT/.test(ativo.tagName)) return;
+    location.reload();
+  });
+})();
