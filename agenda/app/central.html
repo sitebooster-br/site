@@ -55,6 +55,27 @@
  .tag--ok { background: rgba(61,220,151,.16); color: var(--ok-txt); } .tag--erro { background: rgba(255,122,107,.16); color: var(--erro-txt); }
  .tag--info { background: rgba(90,169,255,.18); color: var(--info-txt); } .tag--alerta { background: rgba(255,194,26,.16); color: var(--destaque); }
  .tab th { white-space: nowrap; }
+ /* Celular: textos longos (e-mails) quebram dentro das caixas; menu em grade; lista de salões vira cartões */
+ .cen p, .cen li, .cen td, .cen b, .cen span, .cen div, .cen h2, .cen h3 { overflow-wrap: anywhere; }
+ .cen .btn, .cen .tag, .cen-nav a { overflow-wrap: normal; }
+ .alerta-c > :last-child, .feed li > :first-child { min-width: 0; }
+ #cenQuem { display: inline-block; max-width: 52vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+ .cen__topo > div:last-child { display: flex; align-items: center; gap: 8px; min-width: 0; }
+ @media (max-width: 640px) {
+  .cen { padding: 14px 12px 60px; }
+  .cen-nav { display: grid; grid-template-columns: repeat(3, 1fr); overflow: visible; }
+  .cen-nav a { justify-content: center; padding: 9px 6px; font-size: .86rem; white-space: normal; text-align: center; line-height: 1.15; min-height: 44px; }
+  .cen-nav a svg { display: none; }
+  .feed li { flex-direction: column; gap: 2px; }
+  .saude li { grid-template-columns: 22px 1fr; } .saude li span { grid-column: 2; text-align: left; }
+  .tab--click, .tab--click tbody, .tab--click tr, .tab--click td { display: block; width: 100%; }
+  .tab--click tr:first-child { display: none; }
+  .tab--click tr[data-id] { border: 1px solid var(--linha); border-radius: 12px; padding: 8px 10px; margin: 8px 0; }
+  .tab--click td { border: 0; padding: 3px 0; }
+  .tab--click td[data-l]::before { content: attr(data-l) ": "; color: var(--txt-2); font-size: .85rem; }
+  .kpis { grid-template-columns: 1fr 1fr; } .kpi b { font-size: 1.2rem; }
+  .filtros label { flex-basis: 100%; }
+ }
 </style>
 </head>
 <body>

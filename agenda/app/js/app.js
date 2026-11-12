@@ -327,13 +327,33 @@
     }).join("") + "</div>";
   }
 
+  // Horários desmarcados (pelo cliente ou pelo salão): ficam visíveis para o dono e o profissional poderem chamar a pessoa
+  function desmarcadosHTML(lista, modo) {
+    return '<section class="desmarcados"><h2>' + Icone("x") + "Desmarcados " + (modo === "dia" ? "neste dia" : "nesta semana") + " (" + lista.length + ')</h2><ul>' +
+      lista.map(function (a) {
+        var peloCliente = !!a.prova || a.canceladoPor === "cliente";
+        var quem = peloCliente ? "O cliente desmarcou pelo link" : "Cancelado pelo salão";
+        var motivo = peloCliente ? a.motivoCliente : a.motivo;
+        var msg = "Olá, " + (a.clienteNome || "").split(" ")[0] + "! Vi que o seu horário de " + (a.servicoNome || "") + " em " + U.dataBR(a.data) + " às " + a.inicio +
+          " foi desmarcado. Quer escolher outro dia? Estou à disposição.";
+        return "<li><div><b>" + esc(a.clienteNome || "Cliente") + "</b> · " + esc(a.servicoNome || "") + (a.profNome && equipeVisivel() ? " com " + esc(a.profNome) : "") +
+          '<span class="sub">' + (modo === "dia" ? "" : esc(U.dataCurta(a.data)) + " · ") + esc(a.inicio || "") + " · " + quem +
+          (a.respondidoEm ? " em " + esc(new Date(a.respondidoEm).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })) : "") + "</span>" +
+          (motivo ? '<span class="desmarcados__motivo">Motivo: ' + esc(motivo) + "</span>" : (peloCliente ? '<span class="sub">Não informou o motivo.</span>' : "")) + "</div>" +
+          (a.clienteWhats ? '<a class="btn btn--sec btn--peq" target="_blank" rel="noopener" href="' + U.linkZap(a.clienteWhats, msg) + '">' + Icone("whatsapp") + "Chamar</a>" : "") + "</li>";
+      }).join("") + "</ul></section>";
+  }
+
   TELAS.agenda = async function (el) {
     if (!dono()) vista.prof = Nuvem.meuProfId();
     else if (vista.prof !== "todos" && !prof(vista.prof)) vista.prof = "todos";
     var equipe = profs();
     var dia = vista.dia, modo = vista.modo;
     var de = modo === "dia" ? dia : U.inicioSemana(dia), ate = modo === "dia" ? dia : U.somaDias(U.inicioSemana(dia), 6);
-    var ags = (await Nuvem.agsEntre(de, ate)).filter(function (a) { return a.status !== "cancelado" && (vista.prof === "todos" || a.profId === vista.prof); })
+    var todosAgs = await Nuvem.agsEntre(de, ate);
+    var desmarcados = todosAgs.filter(function (a) { return a.status === "cancelado" && (vista.prof === "todos" || a.profId === vista.prof); })
+      .sort(function (a, b) { return (a.data + a.inicio).localeCompare(b.data + b.inicio); });
+    var ags = todosAgs.filter(function (a) { return a.status !== "cancelado" && (vista.prof === "todos" || a.profId === vista.prof); })
       .sort(function (a, b) { return (a.data + a.inicio).localeCompare(b.data + b.inicio); });
     var novosLink = 0; S.ags.forEach(function (a) { if (a.origem === "online" && !a.visto && a.status !== "cancelado") novosLink++; });
     var titulo = modo === "dia" ? U.dataLonga(dia) : "Semana de " + U.dataCurta(de) + " a " + U.dataCurta(ate);
@@ -387,6 +407,7 @@
       }
       corpo.innerHTML = '<div class="semana">' + col.join("") + "</div>";
     }
+    if (desmarcados.length) corpo.insertAdjacentHTML("beforeend", desmarcadosHTML(desmarcados, modo));
 
     function mover(n) { vista.dia = U.somaDias(vista.dia, n); TELAS.agenda(el); }
     $("#ant").onclick = function () { mover(modo === "dia" ? -1 : -7); };
@@ -1035,12 +1056,19 @@
       '<p style="margin:0 0 8px">Cores do app neste aparelho:</p><div class="alternar tema-op" role="group" aria-label="Aparência">' +
       op("auto", "Automático", "relogio") + op("claro", "Claro", "estrela") + op("escuro", "Escuro", "olho") + "</div>" +
       '<p class="sub" style="margin-top:6px">Automático segue o modo do celular ou do computador.</p>' +
+      '<h3 style="margin:16px 0 6px;font-size:1rem">Sons de aviso</h3>' +
+      '<div class="alternar som-op" role="group" aria-label="Sons de aviso"><button type="button" data-som="1" aria-pressed="' + Som.ligado() + '">' + Icone("check") + 'Ligados</button><button type="button" data-som="0" aria-pressed="' + !Som.ligado() + '">' + Icone("x") + "Desligados</button></div>" +
+      '<p class="sub" style="margin-top:6px">Toca um som quando um cliente marca, confirma ou desmarca pelo link (com o app aberto). <button type="button" class="link-btn" id="testarSom">Ouvir os sons</button></p>' +
       '<h3 style="margin:16px 0 6px;font-size:1rem">Instalar o app</h3>' + inst + "</section>";
   }
   function ligarAparencia() {
     $$(".tema-op button").forEach(function (b) {
       b.onclick = function () { Tema.definir(b.dataset.tema); $$(".tema-op button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); };
     });
+    $$(".som-op button").forEach(function (b) {
+      b.onclick = function () { Som.definir(b.dataset.som === "1"); $$(".som-op button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); if (b.dataset.som === "1") Som.tocar("novo"); };
+    });
+    var ts = $("#testarSom"); if (ts) ts.onclick = function () { Som.tocar("novo", true); setTimeout(function () { Som.tocar("desmarcou", true); }, 900); };
     var bi = $("#btnInstalar"); if (bi) bi.onclick = async function () {
       if (!pedidoInstalar) return;
       pedidoInstalar.prompt(); try { await pedidoInstalar.userChoice; } catch (e) {} pedidoInstalar = null; bi.hidden = true;
@@ -1831,11 +1859,11 @@
     document.addEventListener("nuvem", function (e) { setTimeout(conferirPassos, 50); if (e.detail && e.detail.tabela === "perfil") faixaAssinatura(); if (e.detail && e.detail.tabela === "profissionais") atualizarMenu(); redesenhar(); });
     document.addEventListener("nuvem-erro", function (e) { aviso(e.detail, "erro"); });
     document.addEventListener("resposta-cliente", function (e) {
-      var a = e.detail;
-      aviso(a.clienteNome + (a.status === "cancelado" ? " desmarcou" : " confirmou") + " pelo link: " + U.quandoTexto(a.data) + " às " + a.inicio + (a.profNome && equipeVisivel() ? " com " + a.profNome : "") + ".", a.status === "cancelado" ? "erro" : "info");
+      var a = e.detail; Som.tocar(a.status === "cancelado" ? "desmarcou" : "ok");
+      aviso(a.clienteNome + (a.status === "cancelado" ? " desmarcou" : " confirmou") + " pelo link: " + U.quandoTexto(a.data) + " às " + a.inicio + (a.profNome && equipeVisivel() ? " com " + a.profNome : "") + "." + (a.status === "cancelado" && a.motivoCliente ? " Motivo: " + a.motivoCliente + "." : ""), a.status === "cancelado" ? "erro" : "info");
     });
     document.addEventListener("novo-online", function (e) {
-      var a = e.detail;
+      var a = e.detail; Som.tocar("novo");
       aviso("Novo agendamento pelo link: " + a.clienteNome + ", " + U.quandoTexto(a.data) + " às " + a.inicio + (a.profNome && equipeVisivel() ? " com " + a.profNome : "") + ".", "info");
     });
     if (dono()) Backup.iniciar();

@@ -48,7 +48,7 @@
     for (var i = 0; i <= (pag.diasAFrente || 30); i++) { var d = U.somaDias(hoje, i); if (diaAberto(d)) dias.push(d); }
     var n = 1;
 
-    el.innerHTML = cabecalho() +
+    el.innerHTML = cabecalho() + minhasReservasHTML() +
       '<p class="pub__passos">Escolha o serviço' + ((pag.profissionais || []).length > 1 ? ", o profissional" : "") + ", o dia e o horário. Depois é só colocar seu nome e WhatsApp.</p>" +
       '<section class="pub__passo"><h2><span class="num">' + (n++) + '</span>Escolha o serviço</h2><div class="servs" role="radiogroup" aria-label="Serviço">' +
       servs.map(function (s) {
@@ -196,6 +196,15 @@
     $("#passoDados").hidden = true; esc_.hora = null; carregarHoras();
   }
 
+  // Horários que esta pessoa já marcou neste aparelho: botão direto para ver, confirmar ou desmarcar
+  function minhasReservasHTML() {
+    var l = [];
+    try { l = JSON.parse(localStorage.getItem("ba-reservas-" + slug) || "[]").filter(function (x) { return x.data >= U.hojeISO(); }); } catch (e) {}
+    if (!l.length) return "";
+    return '<section class="pub__caixa pub__minhas"><h2>Seus horários marcados</h2>' + l.map(function (x) {
+      return '<a class="btn btn--sec btn--bloco" href="' + linkReserva(x.tk) + '">' + Icone("calendario") + "<span>" + esc(x.servico || "Horário") + " · " + esc(U.dataCurta(x.data)) + " às " + esc(x.inicio) + '</span><small>Ver, confirmar ou desmarcar</small></a>';
+    }).join("") + "</section>";
+  }
   function linkReserva(tk) { return location.href.split("?")[0] + "?s=" + encodeURIComponent(slug) + "&r=" + tk; }
   function guardarReserva(tk, ag) {
     try {
@@ -214,9 +223,10 @@
     el.innerHTML = cabecalho() +
       '<section class="pub__caixa pub__caixa--centro"><div class="pub__ok" aria-hidden="true">' + Icone("check") + "</div><h2>Horário marcado!</h2>" +
       '<p class="pub__confirma"><b>' + esc(ag.servicoNome) + "</b>" + esc(comQuem) + "<br>" + esc(U.dataLonga(ag.data)) + " às " + ag.inicio + "</p>" +
-      "<p>Para <b>confirmar ou desmarcar</b> depois, use este link (guarde ou salve nos favoritos):</p>" +
-      '<p class="pub__link-res"><a href="' + linkReserva(tk) + '">' + esc(linkReserva(tk)) + "</a></p>" +
-      '<button class="btn btn--sec btn--bloco" id="copiarRes" type="button">' + Icone("copiar") + "Copiar link</button>" +
+      "<p>Precisa <b>confirmar ou desmarcar</b> depois? Use o botão abaixo. Ele também aparece aqui sempre que você abrir a agenda neste celular.</p>" +
+      '<a class="btn btn--pri btn--bloco" href="' + linkReserva(tk) + '">' + Icone("calendario") + "Ver ou desmarcar meu horário</a>" +
+      '<a class="btn btn--sec btn--bloco" style="margin-top:10px" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent("Meu horário em " + pag.nome + ": " + ag.servicoNome + ", " + U.dataLonga(ag.data) + " às " + ag.inicio + ". Para confirmar ou desmarcar: " + linkReserva(tk)) + '">' + Icone("whatsapp") + "Guardar no meu WhatsApp</a>" +
+      '<button class="btn btn--sec btn--bloco" id="copiarRes" type="button" style="margin-top:10px">' + Icone("copiar") + "Copiar link</button>" +
       "<p>Se quiser, avise " + esc(pag.nome) + " pelo WhatsApp.</p>" +
       (pag.whatsapp ? botaoZap(msg, "Avisar no WhatsApp") : "") +
       '<button class="btn btn--sec btn--bloco" id="outro" style="margin-top:10px">Marcar outro horário</button></section>';
@@ -240,19 +250,38 @@
       (r.status === "cancelado" ? '<a class="btn btn--pri btn--bloco" href="?s=' + encodeURIComponent(slug) + '">Marcar outro horário</a>' : "") +
       (pag.whatsapp ? '<div style="margin-top:10px">' + botaoZap("Olá! Sobre o meu horário de " + r.servicoNome + " em " + U.dataBR(r.data) + " às " + r.inicio + ".", "Falar com o salão") + "</div>" : "") +
       "</section>";
-    async function responder(status) {
+    async function responder(status, motivo) {
       var refA = FB.doc(db, "saloes", pag.salaoId, "agendamentos", r.ag);
       var b = FB.writeBatch(db), quando = new Date().toISOString();
       var upd = { status: status, prova: tk, respondidoEm: quando };
+      if (status === "cancelado" && motivo) upd.motivoCliente = String(motivo).slice(0, 200);
       if (status === "cancelado") upd.slots = [];
       b.update(refA, upd);
       b.update(refR, { status: status, respondidoEm: quando });
       if (status === "cancelado") (r.slots || []).forEach(function (sl) { b.delete(FB.doc(db, "paginas", slug, "ocupados", sl)); });
-      try { await b.commit(); telaReserva(tk); }
+      try {
+        await b.commit();
+        if (status === "cancelado") try { localStorage.setItem("ba-reservas-" + slug, JSON.stringify(JSON.parse(localStorage.getItem("ba-reservas-" + slug) || "[]").filter(function (x) { return x.tk !== tk; }))); } catch (x) {}
+        telaReserva(tk);
+      }
       catch (e) { console.error(e); alert("Não foi possível " + (status === "cancelado" ? "desmarcar" : "confirmar") + " agora. Confira a internet ou fale com o salão pelo WhatsApp."); }
     }
     if ($("#rConf")) $("#rConf").onclick = function () { this.disabled = true; responder("confirmado"); };
-    if ($("#rDesm")) $("#rDesm").onclick = function () { if (confirm("Desmarcar este horário? Ele fica livre para outra pessoa.")) { this.disabled = true; responder("cancelado"); } };
+    if ($("#rDesm")) $("#rDesm").onclick = function () {
+      var bt = this; bt.hidden = true; if ($("#rConf")) $("#rConf").hidden = true;
+      var motivos = ["Tive um imprevisto", "Não estou bem de saúde", "Vou remarcar para outro dia", "Outro motivo"];
+      bt.insertAdjacentHTML("afterend", '<form class="pub__desmarcar" id="fDesm"><p><b>Por que vai desmarcar?</b> Assim ' + esc(pag.nome) + ' pode te ajudar a remarcar.</p>' +
+        motivos.map(function (m, i) { return '<label class="pub__opcao"><input type="radio" name="motivo" value="' + esc(m) + '"' + (i === 0 ? " checked" : "") + "> " + esc(m) + "</label>"; }).join("") +
+        '<label class="pub__opcao-txt">Quer explicar? (opcional)<input name="obs" maxlength="140" autocomplete="off"></label>' +
+        '<button class="btn btn--perigo btn--bloco" type="submit">Desmarcar horário</button>' +
+        '<button class="btn btn--sec btn--bloco" type="button" id="fDesmVoltar" style="margin-top:10px">Voltar, não quero desmarcar</button></form>');
+      $("#fDesmVoltar").onclick = function () { $("#fDesm").remove(); bt.hidden = false; if ($("#rConf")) $("#rConf").hidden = false; };
+      $("#fDesm").onsubmit = function (ev) {
+        ev.preventDefault(); var f = ev.target, m = (f.motivo.value || "").trim(), o = (f.obs.value || "").trim();
+        f.querySelector("button[type=submit]").disabled = true;
+        responder("cancelado", o ? (m && m !== "Outro motivo" ? m + ": " : "") + o : m);
+      };
+    };
   }
 
   async function iniciar() {

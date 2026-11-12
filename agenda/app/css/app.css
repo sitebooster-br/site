@@ -220,3 +220,10 @@ body { padding-left: env(safe-area-inset-left); padding-right: env(safe-area-ins
 .zona-perigo summary { cursor: pointer; color: var(--erro); font-weight: 600; }
 @media (max-width: 800px) { .avisos { left: 12px; right: 12px; bottom: calc(80px + env(safe-area-inset-bottom)); } }
 .passos li.pulado summary { color: var(--txt-3); }
+
+/* iPhone: campos de data/hora não podem ficar mais largos que a tela (isso fazia a página "andar" de lado ao digitar) */
+html, body { overflow-x: clip; }
+input[type="date"], input[type="time"], input[type="datetime-local"], input[type="month"] { -webkit-appearance: none; appearance: none; min-width: 0; width: 100%; text-align: left; }
+input::-webkit-date-and-time-value { text-align: left; min-height: 1.4em; }
+.janela { max-width: calc(100vw - 16px); max-height: calc(100dvh - 24px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }
+@media (max-width: 480px) { .janela { padding: 20px 16px; } }

@@ -280,3 +280,14 @@ input[readonly] { opacity: .8; cursor: not-allowed; }
   .cartaz__zap { font-size: 12pt; margin: 0 0 6mm; }
   .cartaz__rod { font-size: 10pt; color: #5a6c8c; margin: 0; }
 }
+
+/* Desmarcados (pelo cliente ou pelo salão) */
+.desmarcados { margin-top: 22px; border: 1px solid var(--linha); border-radius: var(--raio, 14px); background: var(--bg-2); padding: 14px 16px; }
+.desmarcados h2 { font-size: 1rem; margin: 0 0 8px; color: var(--txt-2); }
+.desmarcados h2 .i { color: var(--erro); }
+.desmarcados ul { list-style: none; margin: 0; padding: 0; }
+.desmarcados li { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--linha); }
+.desmarcados li:first-child { border-top: 0; }
+.desmarcados li > div { min-width: 0; overflow-wrap: anywhere; }
+.desmarcados .btn { flex: none; }
+.desmarcados__motivo { display: block; margin-top: 3px; font-size: .9rem; color: var(--txt); background: rgba(255,122,107,.1); border-radius: 8px; padding: 4px 8px; }

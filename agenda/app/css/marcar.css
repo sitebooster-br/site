@@ -54,3 +54,15 @@
 .pub__status--confirmado { background: rgba(46,204,113,.15); color: var(--ok-txt); }
 .pub__status--cancelado { background: rgba(255,122,107,.15); color: var(--erro-txt); }
 .pub__rodape-sub { display: inline-block; margin-top: 4px; font-size: .8rem; }
+
+/* Horários já marcados neste aparelho */
+.pub__minhas h2 { font-size: 1rem; margin: 0 0 10px; }
+.pub__minhas .btn { display: grid; grid-template-columns: 22px 1fr; column-gap: 10px; align-items: center; justify-content: stretch; text-align: left; margin-top: 8px; height: auto; padding-top: 10px; padding-bottom: 10px; }
+.pub__minhas .btn span { min-width: 0; }
+.pub__minhas .btn small { grid-column: 2; color: var(--txt-2); font-weight: 500; }
+/* Desmarcar com motivo */
+.pub__desmarcar { text-align: left; margin-top: 12px; }
+.pub__opcao { display: flex; align-items: center; gap: 10px; font-weight: 500; margin: 8px 0; padding: 10px 12px; border: 1px solid var(--linha); border-radius: 10px; cursor: pointer; }
+.pub__opcao input { width: 20px; height: 20px; min-height: 0; margin: 0; flex: none; accent-color: var(--destaque); }
+.pub__opcao-txt { font-weight: 500; margin: 12px 0; }
+.pub__desmarcar .btn--perigo { margin-top: 6px; }

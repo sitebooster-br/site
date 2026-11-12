@@ -104,3 +104,60 @@ window.U = (function () {
     esc: esc, brl: brl, duracaoTexto: duracaoTexto, slugify: slugify, codigo: codigo, horariosLivres: horariosLivres
   };
 })();
+
+/* ===== Formulários: Enter / "Próximo" no teclado do celular pula para o próximo campo ===== */
+(function () {
+  function campos(form) {
+    return Array.prototype.filter.call(form.querySelectorAll("input, select, textarea"), function (c) {
+      return !c.disabled && !c.readOnly && c.type !== "hidden" && c.type !== "checkbox" && c.type !== "radio" && c.type !== "file" && c.offsetParent !== null;
+    });
+  }
+  // Mostra "Próximo" ou "OK" no teclado do celular conforme o campo
+  document.addEventListener("focusin", function (e) {
+    var c = e.target, form = c && c.form; if (!form || c.tagName === "TEXTAREA" || c.tagName === "SELECT") return;
+    var lista = campos(form), i = lista.indexOf(c);
+    if (i >= 0 && !c.hasAttribute("enterkeyhint")) c.setAttribute("enterkeyhint", i < lista.length - 1 ? "next" : "done");
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" || e.shiftKey || e.isComposing) return;
+    var c = e.target, form = c && c.form; if (!form || c.tagName !== "INPUT" || c.type === "submit" || c.type === "button") return;
+    var lista = campos(form), i = lista.indexOf(c);
+    if (i < 0 || i >= lista.length - 1) return; // último campo: confirma o formulário normalmente
+    e.preventDefault();
+    var prox = lista[i + 1]; prox.focus();
+    if (prox.select && /^(text|tel|email|number|search|url)$/.test(prox.type)) { try { prox.select(); } catch (x) {} }
+  });
+})();
+
+/* ===== Sons de aviso (gerados na hora, sem arquivo). Liga/desliga em Conta → Aparência; padrão: ligado ===== */
+window.Som = (function () {
+  var ctx = null;
+  function ligado() { try { return localStorage.getItem("bs-som") !== "0"; } catch (e) { return true; } }
+  function definir(v) { try { localStorage.setItem("bs-som", v ? "1" : "0"); } catch (e) {} }
+  function contexto() {
+    var C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
+    if (!ctx) ctx = new C();
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  }
+  // iPhone só libera som depois do primeiro toque na tela
+  ["touchend", "click", "keydown"].forEach(function (ev) { document.addEventListener(ev, function () { if (ligado()) contexto(); }, { once: true, passive: true }); });
+  function nota(c, freq, ini, dur, vol) {
+    var o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, c.currentTime + ini); g.gain.exponentialRampToValueAtTime(vol, c.currentTime + ini + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + ini + dur);
+    o.connect(g); g.connect(c.destination); o.start(c.currentTime + ini); o.stop(c.currentTime + ini + dur + 0.05);
+  }
+  var TONS = {
+    novo: [[880, 0, .18], [1318.5, .16, .32]],          // "plim-plim" subindo: horário novo / venda
+    ok: [[1046.5, 0, .25]],                               // confirmou
+    desmarcou: [[659.3, 0, .2], [440, .18, .35]],         // descendo: desmarcou / cancelou
+    alerta: [[523.3, 0, .15], [523.3, .22, .15], [523.3, .44, .2]]
+  };
+  function tocar(tipo, forcar) {
+    if (!forcar && !ligado()) return;
+    try { var c = contexto(); if (!c) return; (TONS[tipo] || TONS.novo).forEach(function (n) { nota(c, n[0], n[1], n[2], 0.25); }); } catch (e) {}
+    try { if (navigator.vibrate && tipo !== "ok") navigator.vibrate(tipo === "desmarcou" ? [120, 80, 120] : 150); } catch (e) {}
+  }
+  return { tocar: tocar, ligado: ligado, definir: definir };
+})();

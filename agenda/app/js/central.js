@@ -120,11 +120,12 @@
     desligar.forEach(function (f) { f(); }); desligar = [];
     var inicio = Date.now(), semana = FB.Timestamp.fromMillis(Date.now() - 7 * D);
     function mostrarFeed() { FEED.sort(function (a, b) { return ms(b.quando) - ms(a.quando); }); FEED = FEED.slice(0, 60); var f = $("#feed"); if (f) f.innerHTML = feedHTML(); }
-    function novo(txt, quando, recarrega) { FEED.push({ txt: txt, quando: quando || Date.now() }); if (ms(quando) > inicio - 5000) { aviso(txt); if (recarrega) carregar().then(desenhar); } }
+    function novo(txt, quando, recarrega) { FEED.push({ txt: txt, quando: quando || Date.now() }); if (ms(quando) > inicio - 5000) { aviso(txt); if (window.Som) Som.tocar(/^(⚠️|↩️|⏰)/.test(txt) ? "desmarcou" : "novo"); if (recarrega) carregar().then(desenhar); } }
     try {
       desligar.push(FB.onSnapshot(FB.query(col("central", "dados", "eventos"), FB.where("quando", ">=", semana)), function (q) {
         q.docChanges().forEach(function (c) {
           if (c.type !== "added") return; var e = c.doc.data();
+          if (!e.acao) e.acao = { order_approved: "pago", order_refunded: "estornado", order_chargedback: "estornado", subscription_canceled: "cancelado", subscription_late: "atrasado" }[e.evento] || "";
           var t = e.acao === "pago" ? "💰 Pagamento: " + e.email + " (" + ((PLANOS[e.plano] || {}).nome || e.plano || "") + ")" : e.acao === "estornado" ? "⚠️ Estorno: " + e.email : e.acao === "cancelado" ? "↩️ Cancelamento: " + e.email : e.acao === "atrasado" ? "⏰ Pagamento atrasado: " + e.email : "• " + (e.evento || "evento") + (e.email ? ": " + e.email : "");
           novo(t, e.quando, true);
         });
@@ -275,7 +276,7 @@
       '<button class="btn btn--sec btn--peq" id="fCsv">' + Icone("baixar") + "Baixar planilha</button></div>" +
       '<p class="sub">Toque num salão para abrir a ficha completa.</p>' +
       '<div class="rolar"><table class="tab tab--click"><tr><th>Salão</th><th>Dono</th><th>Situação</th><th>Plano</th><th>Acesso até</th><th>Criado</th></tr>' +
-      (linhas.length ? linhas.map(function (x) { var a = x.s.assinatura || {}; return '<tr data-id="' + esc(x.s.id) + '" tabindex="0"><td><b>' + esc(x.s.nome || "(sem nome)") + '</b><br><span class="sub">/' + esc(x.s.slug || "sem link") + "</span></td><td>" + esc(x.dono.email || "-") + "</td><td>" + tag(x.st) + "</td><td>" + esc((PLANOS[a.plano] || {}).nome || "-") + "</td><td>" + data(a.status === "ativa" ? a.pagoAte : a.testeAte) + "</td><td>" + data(x.s.criadoEm) + "</td></tr>"; }).join("") : '<tr><td colspan="6" class="sub">Nenhum salão com esse filtro.</td></tr>') +
+      (linhas.length ? linhas.map(function (x) { var a = x.s.assinatura || {}; return '<tr data-id="' + esc(x.s.id) + '" tabindex="0"><td><b>' + esc(x.s.nome || "(sem nome)") + '</b><br><span class="sub">/' + esc(x.s.slug || "sem link") + "</span></td><td data-l=\"Dono\">" + esc(x.dono.email || "-") + "</td><td>" + tag(x.st) + "</td><td data-l=\"Plano\">" + esc((PLANOS[a.plano] || {}).nome || "-") + "</td><td data-l=\"Acesso até\">" + data(a.status === "ativa" ? a.pagoAte : a.testeAte) + "</td><td data-l=\"Criado\">" + data(x.s.criadoEm) + "</td></tr>"; }).join("") : '<tr><td colspan="6" class="sub">Nenhum salão com esse filtro.</td></tr>') +
       "</table></div></section>";
     $("#fBusca").oninput = function (e) { filtro.busca = e.target.value; var pos = e.target.selectionStart; telaSaloes(); var b = $("#fBusca"); b.focus(); b.setSelectionRange(pos, pos); };
     $("#fStatus").onchange = function (e) { filtro.status = e.target.value; telaSaloes(); };
