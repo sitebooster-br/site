@@ -1,6 +1,6 @@
 /* Service worker: deixa o app abrindo sem internet.
    IMPORTANTE: a cada versão nova publicada, aumente o número em VERSAO. */
-var VERSAO = "booster-agenda-v1.1.0-a10";
+var VERSAO = "booster-agenda-v1.1.0-a11";
 var ARQUIVOS = [
   "./",
   "index.html",

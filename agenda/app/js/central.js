@@ -79,10 +79,10 @@
   var DADOS = { saloes: [], usuarios: [], sugestoes: [], comunicados: [], pendentes: [], eventos: [], trocas: [], diario: [], rotina: null, auditoria: [] };
   var USO = null, desligar = [], iniciado = false;
   async function carregar() {
-    var desde = FB.Timestamp.fromMillis(Date.now() - 90 * D), pega = function (p) { return p.catch(function () { return []; }); };
+    var desde = FB.Timestamp.fromMillis(Date.now() - 90 * D), desdeEv = FB.Timestamp.fromMillis(Date.now() - 400 * D), pega = function (p) { return p.catch(function () { return []; }); };
     var r = await Promise.all([
       pega(lista(col("saloes"))), pega(lista(col("usuarios"))), pega(lista(col("sugestoes"))), pega(lista(col("comunicados"))), pega(lista(col("pagamentosPendentes"))),
-      pega(lista(FB.query(col("central", "dados", "eventos"), FB.where("quando", ">=", desde)))), pega(lista(col("central", "dados", "trocas"))),
+      pega(lista(FB.query(col("central", "dados", "eventos"), FB.where("quando", ">=", desdeEv)))), pega(lista(col("central", "dados", "trocas"))),
       pega(lista(col("central", "dados", "diario"))), FB.getDoc(FB.doc(db, "central", "dados", "rotina", "ultima")).then(function (d) { return d.exists() ? d.data() : null; }, function () { return null; }),
       pega(lista(FB.query(col("central", "dados", "auditoria"), FB.where("quando", ">=", desde))))
     ]);
@@ -99,7 +99,7 @@
   }
 
   /* ---------- navegação ---------- */
-  var ABAS = [["geral", "Visão geral", "grafico"], ["saloes", "Salões", "usuarios"], ["uso", "Uso do banco", "nuvem"], ["comunicados", "Comunicados", "whatsapp"], ["sugestoes", "Sugestões", "estrela"], ["atividade", "Atividade", "lista"]];
+  var ABAS = [["geral", "Visão geral", "grafico"], ["notificacoes", "Notificações", "sino"], ["saloes", "Salões", "usuarios"], ["uso", "Uso do banco", "nuvem"], ["comunicados", "Comunicados", "whatsapp"]];
   function rota() { var h = (location.hash || "#geral").slice(1).split("/"); return { tela: h[0] || "geral", id: h[1] ? decodeURIComponent(h[1]) : "" }; }
   async function iniciar() {
     var nav = $("#cenNav"); nav.hidden = false;
@@ -110,10 +110,8 @@
     C.innerHTML = '<p class="sub">Carregando os números...</p>';
     await carregar(); desenhar(); buscarUso();
     setInterval(buscarUso, 60000);                        // uso do banco: atualiza sozinho a cada minuto
-    setInterval(function () { if (rota().tela !== "salao") carregar().then(desenhar); }, 5 * 60000);
-    // Ficha aberta: atualiza os números do salão sozinha a cada minuto (faturamento, agendamentos)
-    setInterval(function () { var r = rota(); if (r.tela === "salao" && r.id && !document.querySelector("dialog[open]") && !(document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))) { var y = window.scrollY; Promise.resolve(telaSalao(r.id)).then(function () { window.scrollTo(0, y); }); } }, 60000);
-    aoVivo();
+    setInterval(function () { var t = rota().tela; if (t === "geral" || t === "saloes") carregar().then(desenhar); }, 5 * 60000);
+    ouvirLidas(); aoVivo();
     window.onhashchange = desenhar;
   }
 
@@ -122,8 +120,8 @@
   function aoVivo() {
     desligar.forEach(function (f) { f(); }); desligar = [];
     var inicio = Date.now(), semana = FB.Timestamp.fromMillis(Date.now() - 7 * D);
-    function mostrarFeed() { FEED.sort(function (a, b) { return ms(b.quando) - ms(a.quando); }); FEED = FEED.slice(0, 60); var f = $("#feed"); if (f) f.innerHTML = feedHTML(); }
-    function novo(txt, quando, recarrega) { FEED.push({ txt: txt, quando: quando || Date.now() }); if (ms(quando) > inicio - 5000) { aviso(txt); if (window.Som) Som.tocar(/^(⚠️|↩️|⏰)/.test(txt) ? "desmarcou" : "novo"); if (recarrega) carregar().then(desenhar); } }
+    function mostrarFeed() { atualizarBadge(); }
+    function novo(txt, quando, recarrega) { FEED.push({ txt: txt, quando: quando || Date.now() }); if (ms(quando) > inicio - 5000) { aviso(txt); if (window.Som) Som.tocar(/^(⚠️|↩️|⏰)/.test(txt) ? "desmarcou" : "novo"); if (recarrega) carregar().then(function () { var t = rota().tela; if (t !== "salao") desenhar(); else atualizarBadge(); }); } }
     try {
       desligar.push(FB.onSnapshot(FB.query(col("central", "dados", "eventos"), FB.where("quando", ">=", semana)), function (q) {
         q.docChanges().forEach(function (c) {
@@ -135,7 +133,7 @@
         mostrarFeed();
       }, function () {}));
       desligar.push(FB.onSnapshot(col("sugestoes"), function (q) {
-        q.docChanges().forEach(function (c) { var x = c.doc.data(); if (c.type === "added" && ms(x.quando) > Date.now() - 7 * D) novo("💬 " + (x.tipo === "problema" ? "Problema relatado" : "Nova sugestão") + ": " + String(x.texto || "").slice(0, 60), x.quando, false); });
+        q.docChanges().forEach(function (c) { var x = c.doc.data(); if (c.type === "added" && ms(x.quando) > Date.now() - 7 * D) novo("💬 " + (x.tipo === "problema" ? "Problema relatado" : "Nova sugestão") + ": " + String(x.texto || "").slice(0, 60), x.quando, true); });
         mostrarFeed();
       }, function () {}));
       desligar.push(FB.onSnapshot(col("saloes"), function (q) {
@@ -152,9 +150,12 @@
   function desenhar() {
     var r = rota();
     $$("#cenNav a").forEach(function (a) { var on = a.dataset.aba === r.tela || (r.tela === "salao" && a.dataset.aba === "saloes"); if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
-    var T = { geral: telaGeral, saloes: telaSaloes, salao: telaSalao, uso: telaUso, comunicados: telaComunicados, sugestoes: telaSugestoes, atividade: telaAtividade }[r.tela] || telaGeral;
+    if (r.tela === "sugestoes" || r.tela === "atividade") { location.replace("#notificacoes/" + (r.tela === "sugestoes" ? "sugestoes" : "acoes")); return; }
+    if (r.tela !== "salao") pararFat();
+    var T = { geral: telaGeral, notificacoes: telaNotificacoes, saloes: telaSaloes, salao: telaSalao, uso: telaUso, comunicados: telaComunicados }[r.tela] || telaGeral;
     T(r.id);
     if (T === telaGeral) avisosCel().catch(function () {});
+    atualizarBadge();
   }
 
   /* ---------- números ---------- */
@@ -220,24 +221,13 @@
       "</ul>";
   }
   function telaGeral() {
-    var n = numeros(), al = alertas(), dia = DADOS.diario.slice(-60);
-    C.innerHTML =
-      '<section class="painel"><h2>' + Icone("alerta") + "Alertas</h2>" +
-      (al.length ? al.map(function (t) { return '<div class="alerta-c">' + Icone("alerta") + "<div>" + t + "</div></div>"; }).join("") : '<div class="alerta-c alerta-c--ok">' + Icone("check") + "<div>Tudo certo. Nada precisa da sua atenção agora.</div></div>") + "</section>" +
-      '<section class="painel" id="avisosCel"><h2>' + Icone("sino") + 'Avisos no celular</h2><p class="sub">Verificando este aparelho...</p></section>' +
-      '<div class="cen-duas"><section class="painel"><h2>' + Icone("nuvem") + "Saúde do sistema</h2>" + saudeHTML() + "</section>" +
-      '<section class="painel"><h2>' + Icone("relogio") + 'Ao vivo <span class="pisca" aria-hidden="true"></span></h2><div id="feed">' + feedHTML() + "</div></section></div>" +
-      '<section class="painel"><h2>' + Icone("grafico") + "Números do negócio</h2><div class=\"kpis\">" +
-      kpi(brl(n.mrr), "receita por mês (assinaturas ativas)") + kpi(brl(n.liquido), "o que sobra depois da taxa da Kiwify (aprox.)") +
-      kpi(n.ativos, "salões assinantes") + kpi(n.testes, "em teste grátis" + (n.testesFim ? " (" + n.testesFim + " acabando em 5 dias)" : "")) +
-      kpi(n.conversao + "%", "dos salões criados já pagaram") + kpi(n.cancelando, "cancelaram (usando até o fim do mês)") +
-      kpi(n.vendasMes, "pagamentos nos últimos 30 dias") + kpi(n.cancelMes + " / " + n.estornosMes, "cancelamentos / estornos (30 dias)") +
-      "</div><p class=\"sub\">Por plano: " + (Object.keys(n.porPlano).map(function (k) { return k + " " + n.porPlano[k]; }).join(" · ") || "nenhum ainda") + " · Encerrados: " + n.encerrados + " · Bloqueados: " + n.bloqueados + "</p></section>" +
-      '<div class="cen-duas"><section class="painel"><h2>' + Icone("dinheiro") + "Receita por mês (evolução)</h2>" +
-      grafico(dia.map(function (d) { return { r: d.id.slice(8, 10) + "/" + d.id.slice(5, 7), v: d.mrr || 0 }; }), { fmt: brl, titulo: "receita por mês" }) + "</section>" +
-      '<section class="painel"><h2>' + Icone("usuarios") + "Assinantes (evolução)</h2>" +
-      grafico(dia.map(function (d) { return { r: d.id.slice(8, 10) + "/" + d.id.slice(5, 7), v: (d.ativos || 0) }; }), { titulo: "assinantes" }) +
-      '<p class="sub">Hoje: ' + n.ativos + " assinantes e " + n.testes + " em teste.</p></section></div>";
+    C.innerHTML = painelPendentes() +
+      '<details class="painel painel--rec" id="avisosCel"><summary><h2>' + Icone("sino") + 'Avisos no celular <span class="sub" id="avisosCelResumo">verificando...</span></h2></summary><div id="avisosCelCorpo"></div></details>' +
+      '<section class="painel"><h2>' + Icone("nuvem") + "Saúde do sistema</h2>" + saudeHTML() + "</section>" +
+      painelReceita();
+    ligarNotifs($("#painelPend"), function () { telaGeral(); avisosCel().catch(function () {}); });
+    var lg = $("#lerTudoGeral"); if (lg) lg.onclick = function () { marcarNotif(pendentes().map(function (n) { return n.id; }), "lida").then(function () { telaGeral(); avisosCel().catch(function () {}); }); };
+    ligarPer("perRec", PER, function () { var y = window.scrollY; telaGeral(); avisosCel().catch(function () {}); window.scrollTo(0, y); });
   }
 
   /* ---------- Avisos no celular (Web Push) ---------- */
@@ -245,21 +235,20 @@
   function instaladoApp() { return (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true; }
   function b64Bytes(t) { var b = atob(t.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((t.length + 3) % 4)), o = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) o[i] = b.charCodeAt(i); return o; }
   async function avisosCel() {
-    var box = $("#avisosCel"); if (!box) return;
-    var titulo = "<h2>" + Icone("sino") + "Avisos no celular</h2>";
+    var box = $("#avisosCelCorpo"), res = $("#avisosCelResumo"), det = $("#avisosCel"); if (!box) return;
     var explica = '<p class="sub">Receba no celular, na hora: pagamento recebido, cancelamento, estorno, salão novo no teste e um resumo do dia. Funciona com o app fechado.</p>';
-    function por(html) { box.innerHTML = titulo + explica + html; }
+    function por(html, resumo, abrir) { box.innerHTML = explica + html; if (res) res.textContent = resumo || ""; if (det && abrir) det.open = true; }
     if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
       return por(ehIOS() && !instaladoApp()
         ? '<div class="alerta-c alerta-c--info">' + Icone("info") + "<div><b>No iPhone, primeiro instale a Central:</b> abra esta página no <b>Safari</b>, toque em <b>Compartilhar</b> (quadrado com seta) → <b>Adicionar à Tela de Início</b>. Depois abra pelo ícone <b>Central</b> e volte aqui.</div></div>"
-        : '<p class="sub">Este navegador não recebe avisos. Use o Chrome (Android/computador) ou a Central instalada no iPhone.</p>');
+        : '<p class="sub">Este navegador não recebe avisos. Use o Chrome (Android/computador) ou a Central instalada no iPhone.</p>', "não disponível neste aparelho");
     }
-    if (Notification.permission === "denied") return por('<div class="alerta-c">' + Icone("alerta") + "<div>Os avisos foram bloqueados neste aparelho. " + (ehIOS() ? "No iPhone: <b>Ajustes → Notificações → Central</b> → Permitir." : "Libere nas configurações do site (cadeado ao lado do endereço) → Notificações → Permitir.") + "</div></div>");
+    if (Notification.permission === "denied") return por('<div class="alerta-c">' + Icone("alerta") + "<div>Os avisos foram bloqueados neste aparelho. " + (ehIOS() ? "No iPhone: <b>Ajustes → Notificações → Central</b> → Permitir." : "Libere nas configurações do site (cadeado ao lado do endereço) → Notificações → Permitir.") + "</div></div>", "bloqueados neste aparelho", true);
     var reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription();
     if (sub) {
       por('<div class="alerta-c alerta-c--ok">' + Icone("check") + "<div><b>Ligado neste aparelho.</b></div></div>" +
         '<div class="atalhos"><button class="btn btn--sec" id="pushTeste" type="button">' + Icone("sino") + "Mandar um aviso de teste</button>" +
-        '<button class="btn btn--sec" id="pushDesl" type="button">Desligar neste aparelho</button></div><p class="sub" id="pushMsg"></p>');
+        '<button class="btn btn--sec" id="pushDesl" type="button">Desligar neste aparelho</button></div><p class="sub" id="pushMsg"></p>', "✅ ligados neste aparelho · toque para alterar");
       $("#pushTeste").onclick = async function () {
         this.disabled = true; $("#pushMsg").textContent = "Enviando...";
         try { await inscreverNoRobo(sub); var r = await chamarRobo("/central/push/teste"); $("#pushMsg").textContent = r.enviados ? "Enviado! Deve chegar em alguns segundos." : "Não consegui enviar (" + (r.motivo || (r.erros || []).join(", ") || "sem aparelho") + ")."; }
@@ -268,7 +257,7 @@
       $("#pushDesl").onclick = async function () { await sub.unsubscribe(); avisosCel(); };
       return;
     }
-    por('<button class="btn btn--pri" id="pushLigar" type="button">' + Icone("sino") + 'Ligar avisos neste aparelho</button><p class="sub" id="pushMsg"></p>');
+    por('<button class="btn btn--pri" id="pushLigar" type="button">' + Icone("sino") + 'Ligar avisos neste aparelho</button><p class="sub" id="pushMsg"></p>', "desligados neste aparelho", true);
     $("#pushLigar").onclick = async function () {
       var bt = this; bt.disabled = true; $("#pushMsg").textContent = "Pedindo permissão...";
       try {
@@ -307,7 +296,7 @@
     html += '<section class="painel"><h2>' + Icone("pasta") + "O que está guardado</h2>" +
       (u.contagem ? '<div class="kpis">' + Object.keys(u.contagem).map(function (k) { return kpi(num(u.contagem[k]), k); }).join("") + "</div>" : '<p class="sub">O robô conta os documentos todo dia às 6h.</p>') +
       '<p class="sub">Limites do plano grátis por dia: ' + num(L.leituras) + " leituras, " + num(L.gravacoes) + " gravações, " + num(L.exclusoes) + ' exclusões; 1 GB guardado. <a href="https://console.firebase.google.com/project/booster-agenda/firestore/databases/-default-/usage" target="_blank" rel="noopener">Ver no Firebase</a>.</p></section>';
-    C.innerHTML = html;
+    C.innerHTML = html + explicaUso(u); ligarCalc();
   }
 
   var filtro = { status: "", plano: "", busca: "" };
@@ -390,15 +379,15 @@
       '<div class="cen-duas"><section class="painel"><h2>' + Icone("usuarios") + "Equipe</h2>" +
       (profs.length ? '<table class="tab">' + profs.map(function (x) { return "<tr><td><b>" + esc(x.nome || "") + "</b>" + (x.ehDono ? " (dono)" : "") + "</td><td>" + (x.removido ? "removido" : x.ativo ? (x.uid ? "ativo" : "convite pendente") : "desativado") + "</td></tr>"; }).join("") + "</table>" : '<p class="sub">Nenhum profissional.</p>') +
       '<h3 class="cen-h3">Serviços</h3>' + (servs.length ? '<p class="sub">' + servs.map(function (x) { return esc(x.nome) + " (" + brl(x.preco) + ", " + (x.duracao || "?") + " min)"; }).join(" · ") + "</p>" : '<p class="sub">Nenhum serviço.</p>') + "</section>" +
-      '<section class="painel"><h2>' + Icone("grafico") + "Faturamento do salão por mês</h2>" +
-      grafico(resumos.slice(-12).map(function (x) { return { r: x.id.slice(5, 7) + "/" + x.id.slice(2, 4), v: x.fat || 0 }; }).concat([{ r: "atual", v: fatMes }]), { barras: true, fmt: brl, titulo: "faturamento" }) +
-      '<p class="sub">Atendimentos concluídos. Os meses passados vêm dos resumos mensais que o app guarda para sempre.</p></section></div>' +
+      '<section class="painel"><h2>' + Icone("estrela") + "Dados do salão</h2>" + (s.endereco ? "<p>" + esc(s.endereco) + "</p>" : "") + '<p class="sub">Cidade, tipo de negócio e outros dados entram na próxima etapa.</p></section></div>' +
+      '<section class="painel" id="fatSalao"></section>' +
 
       '<div class="cen-duas"><section class="painel"><h2>' + Icone("estrela") + "Sugestões deste salão</h2>" +
       (sugs.length ? sugs.map(function (x) { return '<div class="sug"><span class="tag">' + (x.tipo === "problema" ? "Problema" : "Sugestão") + '</span> <span class="sub" style="display:inline">' + dataHora(x.quando) + " · " + esc(x.status || "nova") + "</span><p>" + esc(x.texto) + "</p></div>"; }).join("") : '<p class="sub">Nenhuma.</p>') + "</section>" +
       '<section class="painel"><h2>' + Icone("lista") + "Histórico de ações da Central</h2>" +
       (aud.length ? '<ul class="feed">' + aud.map(function (x) { return "<li><span>" + esc(x.acao) + (x.detalhe ? ": " + esc(x.detalhe) : "") + '</span><span class="sub">' + dataHora(x.quando) + " · " + esc(x.por) + "</span></li>"; }).join("") + "</ul>" : '<p class="sub">Nenhuma ação ainda.</p>') + "</section></div>";
     ligarFicha(s);
+    montarFaturamento(sid, profs, resumos);
   }
 
   async function salvarAssinatura(s, mud, acao, detalhe) {
@@ -419,8 +408,18 @@
       salvarAssinatura(s, mud, "cortesia", dias + " dias");
     };
     $("#aPlano").onclick = function () {
-      var k = prompt("Plano (escreva: essencial, equipe ou salao). Atual: " + (a.plano || "essencial"), a.plano || "essencial"); if (!k) return;
-      k = k.trim().toLowerCase().replace("ã", "a"); if (!PLANOS[k]) { alert("Plano inválido."); return; }
+      var k = prompt("Mudar para qual situação? Escreva uma opção:\n\n• essencial, equipe ou salao  → plano pago (manual)\n• teste  → voltar para o teste grátis\n• nenhum  → sem plano (o salão só consegue ver os dados)\n\nAgora: " + statusDe(s).t + " · " + ((PLANOS[a.plano] || {}).nome || "-"), a.plano || "essencial"); if (!k) return;
+      k = k.trim().toLowerCase().replace("ã", "a");
+      if (k === "teste") {
+        var dt = Number(prompt("Teste grátis por quantos dias a partir de hoje? (1 a 90)", "30")); if (!dt || dt < 1 || dt > 90) return;
+        salvarAssinatura(s, { status: "teste", testeAte: FB.Timestamp.fromMillis(Date.now() + dt * D), cancelada: false, avisoApagar: null }, "voltou para teste", dt + " dias"); return;
+      }
+      if (k === "nenhum" || k === "sem plano") {
+        if (!confirm("Deixar \"" + (s.nome || s.id) + "\" SEM PLANO?\nO salão continua vendo os dados, mas não consegue marcar nem alterar até assinar.")) return;
+        var agoraTs = FB.Timestamp.fromMillis(Date.now());
+        salvarAssinatura(s, { status: "cancelada", cancelada: true, pagoAte: agoraTs, testeAte: agoraTs }, "sem plano", "acesso encerrado pela Central"); return;
+      }
+      if (!PLANOS[k]) { alert("Opção inválida."); return; }
       var v = Number(prompt("Quantas vagas de profissional? (padrão do plano: " + PLANOS[k].limite + ")", String(PLANOS[k].limite)));
       if (!v || v < 1 || v > 50) return;
       salvarAssinatura(s, { plano: k, limiteProf: v }, "plano manual", PLANOS[k].nome + ", " + v + " vagas");
@@ -474,4 +473,253 @@
       '<section class="painel"><h2>' + Icone("lista") + "Ações feitas na Central (90 dias)</h2>" +
       (aud.length ? '<div class="rolar"><table class="tab"><tr><th>Quando</th><th>Ação</th><th>Salão</th><th>Por</th></tr>' + aud.map(function (x) { return "<tr><td>" + dataHora(x.quando) + "</td><td>" + esc(x.acao) + (x.detalhe ? '<br><span class="sub">' + esc(x.detalhe) + "</span>" : "") + "</td><td>" + (x.salaoId ? '<a href="#salao/' + encodeURIComponent(x.salaoId) + '">' + esc(nomeSalao(x.salaoId) || x.salaoId) + "</a>" : "todos") + "</td><td>" + esc(x.por || "") + "</td></tr>"; }).join("") + "</table></div>" : '<p class="sub">Nenhuma ação ainda.</p>') + "</section></div>";
   }
+
+  /* =====================================================================
+     NOTIFICAÇÕES: tudo num lugar só, separado por tipo. Na Visão geral só
+     ficam as que ainda não foram lidas/resolvidas. O "lido" vale em todos
+     os seus aparelhos (fica em central/dados/lidas/{seu uid}).
+     ===================================================================== */
+  var LIDAS = {}, lidasDesliga = null;
+  function ouvirLidas() {
+    if (lidasDesliga) return;
+    try {
+      lidasDesliga = FB.onSnapshot(FB.doc(db, "central", "dados", "lidas", auth.currentUser.uid), function (d) {
+        LIDAS = (d.exists() && d.data().m) || {}; atualizarBadge();
+        var t = rota().tela; if (t === "geral" || t === "notificacoes") desenhar();
+      }, function () {});
+    } catch (e) {}
+  }
+  function marcarNotif(ids, estado) {
+    var m = {}; ids.forEach(function (id) { m[id] = estado; LIDAS[id] = estado; });
+    atualizarBadge();
+    return FB.setDoc(FB.doc(db, "central", "dados", "lidas", auth.currentUser.uid), { m: m }, { merge: true }).catch(function (e) { aviso("Não salvou: " + e.message); });
+  }
+  function hashTxt(t) { var h = 0; t = String(t).replace(/<[^>]+>/g, ""); for (var i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0; return (h >>> 0).toString(36); }
+  var CATS = [["pendentes", "Pendentes", "sino"], ["kiwify", "Kiwify", "dinheiro"], ["saloes", "Salões", "usuarios"], ["alertas", "Alertas", "alerta"], ["sugestoes", "Sugestões", "estrela"], ["acoes", "Ações da Central", "lista"]];
+  function notifs() {
+    var L = [], salaoPorEmail = {};
+    DADOS.usuarios.forEach(function (u) { if (u.papel === "dono" && u.email) salaoPorEmail[u.email] = u.salaoId; });
+    DADOS.eventos.forEach(function (e) {
+      var ac = e.acao || { order_approved: "pago", order_refunded: "estornado", order_chargedback: "estornado", subscription_canceled: "cancelado", subscription_late: "atrasado" }[e.evento] || "";
+      if (!ac && /^ignorado/.test(e.evento || "")) return;
+      var t = ac === "pago" ? "💰 Pagamento recebido: " + e.email + " · " + ((PLANOS[e.plano] || {}).nome || e.plano || "") + (PLANOS[e.plano] ? " · " + brl(PLANOS[e.plano].preco) : "")
+        : ac === "estornado" ? "⚠️ Estorno / reembolso: " + e.email : ac === "cancelado" ? "↩️ Assinatura cancelada: " + e.email : ac === "atrasado" ? "⏰ Pagamento atrasado: " + e.email : "• " + (e.evento || "evento") + (e.email ? ": " + e.email : "");
+      L.push({ id: "ev:" + e.id, cat: "kiwify", txt: t, quando: e.quando, salao: salaoPorEmail[e.email] || "", grave: ac === "estornado" || ac === "atrasado" });
+    });
+    DADOS.saloes.forEach(function (s) { if (ms(s.criadoEm) > Date.now() - 400 * D) L.push({ id: "sl:" + s.id, cat: "saloes", txt: "🎉 Novo salão no teste grátis: " + (s.nome || "sem nome") + (s.slug ? " · /" + s.slug : ""), quando: s.criadoEm, salao: s.id }); });
+    DADOS.trocas.forEach(function (t) { L.push({ id: "tr:" + t.id, cat: "saloes", txt: "🔁 Troca de plano: " + t.email + " (" + ((PLANOS[t.de] || {}).nome || t.de) + " → " + ((PLANOS[t.para] || {}).nome || t.para) + ")", quando: t.quando, salao: salaoPorEmail[t.email] || "" }); });
+    alertas().forEach(function (h) { L.push({ id: "al:" + hashTxt(h), cat: "alertas", html: h, quando: Date.now(), grave: true }); });
+    DADOS.sugestoes.forEach(function (s) { L.push({ id: "sg:" + s.id, cat: "sugestoes", txt: (s.tipo === "problema" ? "🛠️ Problema: " : "💡 Sugestão: ") + String(s.texto || ""), quando: s.quando, salao: s.salaoId, sug: s }); });
+    DADOS.auditoria.forEach(function (x) { L.push({ id: "ac:" + x.id, cat: "acoes", txt: "🧾 " + x.acao + (x.detalhe ? ": " + x.detalhe : "") + " · " + (x.salaoId ? nomeSalao(x.salaoId) || x.salaoId : "todos os salões"), quando: x.quando, salao: x.salaoId, minha: true }); });
+    L.forEach(function (n) {
+      n.estado = LIDAS[n.id] || (n.sug && n.sug.status && n.sug.status !== "nova" ? "lida" : "") || (n.minha ? "lida" : "");
+    });
+    return L.sort(function (a, b) { return ms(b.quando) - ms(a.quando); });
+  }
+  function pendentes(L) { return (L || notifs()).filter(function (n) { return !n.estado; }); }
+  function atualizarBadge() {
+    var a = $('#cenNav a[data-aba="notificacoes"]'); if (!a) return;
+    var n = pendentes().length, b = a.querySelector(".badge");
+    if (!b) { b = document.createElement("span"); b.className = "badge"; a.appendChild(b); }
+    b.textContent = n > 99 ? "99+" : String(n); b.hidden = !n;
+  }
+  function itemNotif(n, compacto) {
+    var cor = n.estado === "resolvida" ? "ok" : n.estado === "lida" ? "" : n.grave ? "erro" : "info";
+    var est = n.estado === "resolvida" ? "resolvida" : n.estado === "lida" ? "lida" : "nova";
+    return '<li class="notif notif--' + (n.estado ? "vista" : "nova") + '" data-n="' + esc(n.id) + '">' +
+      '<div class="notif__txt">' + (n.html || esc(n.txt)) +
+      '<span class="sub">' + (n.cat === "alertas" ? "situação atual" : dataHora(n.quando) + " · " + ha(n.quando)) +
+      (n.salao ? ' · <a href="#salao/' + encodeURIComponent(n.salao) + '">abrir salão</a>' : "") + (compacto ? "" : ' · <span class="tag tag--' + (cor || "info") + '">' + est + "</span>") + "</span>" +
+      (n.sug && !compacto ? '<label class="sub">Situação da mensagem <select data-sug="' + esc(n.sug.id) + '">' + ["nova", "lida", "vai entrar", "feito", "não vai entrar"].map(function (o) { return "<option" + ((n.sug.status || "nova") === o ? " selected" : "") + ">" + o + "</option>"; }).join("") + "</select></label>" : "") +
+      "</div>" +
+      '<div class="notif__acoes">' + (n.estado ? '<button class="btn btn--sec btn--peq" data-marca="">Voltar para pendente</button>'
+        : '<button class="btn btn--sec btn--peq" data-marca="lida">' + Icone("check") + "Lida</button>" + (n.cat !== "acoes" ? '<button class="btn btn--sec btn--peq" data-marca="resolvida">Resolvida</button>' : "")) + "</div></li>";
+  }
+  function ligarNotifs(raiz, depois) {
+    $$("[data-marca]", raiz).forEach(function (b) {
+      b.onclick = function () { var li = b.closest("[data-n]"); marcarNotif([li.dataset.n], b.dataset.marca || null).then(depois); if (b.dataset.marca) li.classList.add("notif--saindo"); };
+    });
+    $$("[data-sug]", raiz).forEach(function (sel) { sel.onchange = async function () { await FB.updateDoc(FB.doc(db, "sugestoes", sel.dataset.sug), { status: sel.value }); var x = DADOS.sugestoes.filter(function (y) { return y.id === sel.dataset.sug; })[0]; if (x) x.status = sel.value; aviso("Situação salva."); }; });
+  }
+  function painelPendentes() {
+    var p = pendentes(), mostra = p.slice(0, 8);
+    return '<section class="painel" id="painelPend"><h2>' + Icone("sino") + "Precisa da sua atenção" + (p.length ? ' <span class="badge">' + p.length + "</span>" : "") + "</h2>" +
+      (p.length ? '<ul class="notifs">' + mostra.map(function (n) { return itemNotif(n, true); }).join("") + "</ul>" +
+        '<div class="atalhos"><a class="btn btn--sec btn--peq" href="#notificacoes">Ver todas as notificações</a>' + (p.length > 1 ? '<button class="btn btn--sec btn--peq" id="lerTudoGeral">Marcar todas como lidas</button>' : "") + "</div>"
+        : '<div class="alerta-c alerta-c--ok">' + Icone("check") + '<div>Tudo em dia. Nada novo precisa da sua atenção. O histórico completo fica em <a href="#notificacoes">Notificações</a>.</div></div>') + "</section>";
+  }
+  function telaNotificacoes(sub) {
+    sub = CATS.some(function (c) { return c[0] === sub; }) ? sub : "pendentes";
+    var todas = notifs(), lista = sub === "pendentes" ? pendentes(todas) : todas.filter(function (n) { return n.cat === sub; });
+    var conta = function (c) { return c === "pendentes" ? pendentes(todas).length : todas.filter(function (n) { return n.cat === c && !n.estado; }).length; };
+    C.innerHTML = '<section class="painel"><h2>' + Icone("sino") + "Notificações</h2>" +
+      '<div class="chips" role="tablist">' + CATS.map(function (c) { var n = conta(c[0]); return '<a role="tab" class="chip' + (c[0] === sub ? " chip--on" : "") + '" href="#notificacoes/' + c[0] + '">' + Icone(c[2]) + esc(c[1]) + (n ? ' <span class="badge">' + n + "</span>" : "") + "</a>"; }).join("") + "</div>" +
+      '<p class="sub">' + ({ pendentes: "Só o que ainda não foi lido ou resolvido, de todos os tipos.", kiwify: "Pagamentos, cancelamentos, estornos e atrasos que a Kiwify avisou (últimos 13 meses).", saloes: "Salões novos e trocas de plano.", alertas: "Situações que pedem atenção agora (robô, limites, estornos). Somem sozinhas quando a situação acaba.", sugestoes: "Mensagens enviadas pelos salões no botão Ajuda. Mude a situação para o salão saber o andamento.", acoes: "Tudo o que foi feito aqui na Central: cortesias, planos, bloqueios, avisos." })[sub] + "</p>" +
+      (lista.some(function (n) { return !n.estado; }) ? '<div class="atalhos"><button class="btn btn--sec btn--peq" id="lerTudo">' + Icone("check") + "Marcar todas desta aba como lidas</button></div>" : "") +
+      (lista.length ? '<ul class="notifs">' + lista.slice(0, 200).map(function (n) { return itemNotif(n, false); }).join("") + "</ul>" : '<p class="sub">Nada aqui.</p>') + "</section>";
+    ligarNotifs(C, function () { telaNotificacoes(sub); });
+    var lt = $("#lerTudo"); if (lt) lt.onclick = function () { marcarNotif(lista.filter(function (n) { return !n.estado; }).map(function (n) { return n.id; }), "lida").then(function () { telaNotificacoes(sub); }); };
+  }
+
+  /* =====================================================================
+     RECEITA E ASSINANTES DA SITEBOOSTER com filtro (dia, mês, ano)
+     ===================================================================== */
+  var PER = { modo: "mes", ref: hojeBR() };
+  function hojeBR() { return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()); }
+  function diaBR(v) { return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date(ms(v))); }
+  var MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  function faixa(p) {  // devolve {de, ate (inclusive, AAAA-MM-DD), rotulo, partes:[{r, de, ate}], ant:{de,ate}}
+    var r = p.ref, y = +r.slice(0, 4), m = +r.slice(5, 7);
+    var iso = function (d) { return d.toISOString().slice(0, 10); }, U0 = function (yy, mm, dd) { return new Date(Date.UTC(yy, mm, dd)); };
+    if (p.modo === "dia") { var d0 = U0(y, m - 1, +r.slice(8, 10)), ontem = iso(new Date(d0 - D)); return { de: r, ate: r, rotulo: r.split("-").reverse().join("/"), partes: [{ r: r.slice(8, 10) + "/" + r.slice(5, 7), de: r, ate: r }], ant: { de: ontem, ate: ontem }, nomeAnt: "dia anterior" }; }
+    if (p.modo === "ano") { var pt = []; for (var i = 0; i < 12; i++) pt.push({ r: MESES[i], de: iso(U0(y, i, 1)), ate: iso(U0(y, i + 1, 0)) }); return { de: y + "-01-01", ate: y + "-12-31", rotulo: String(y), partes: pt, ant: { de: (y - 1) + "-01-01", ate: (y - 1) + "-12-31" }, nomeAnt: "ano anterior" }; }
+    var ult = U0(y, m, 0).getUTCDate(), pd = []; for (var j = 1; j <= ult; j++) { var dd = iso(U0(y, m - 1, j)); pd.push({ r: String(j), de: dd, ate: dd }); }
+    return { de: iso(U0(y, m - 1, 1)), ate: iso(U0(y, m, 0)), rotulo: MESES[m - 1] + " de " + y, partes: pd, ant: { de: iso(U0(y, m - 2, 1)), ate: iso(U0(y, m - 1, 0)) }, nomeAnt: "mês anterior" };
+  }
+  function moverPer(p, passo) {
+    var y = +p.ref.slice(0, 4), m = +p.ref.slice(5, 7), d = +p.ref.slice(8, 10), dt;
+    if (p.modo === "dia") dt = new Date(Date.UTC(y, m - 1, d + passo));
+    else if (p.modo === "mes") dt = new Date(Date.UTC(y, m - 1 + passo, 1));
+    else dt = new Date(Date.UTC(y + passo, 0, 1));
+    p.ref = dt.toISOString().slice(0, 10);
+  }
+  function seletorPer(p, id) {
+    var f = faixa(p), op = function (v, t) { return '<option value="' + v + '"' + (p.modo === v ? " selected" : "") + ">" + t + "</option>"; };
+    var campo = p.modo === "dia" ? '<input type="date" data-per-ref value="' + p.ref + '" max="' + hojeBR() + '">'
+      : p.modo === "mes" ? '<input type="month" data-per-ref value="' + p.ref.slice(0, 7) + '">'
+      : '<input type="number" data-per-ref min="2025" max="2100" value="' + p.ref.slice(0, 4) + '" inputmode="numeric">';
+    return '<div class="periodo" id="' + id + '"><select data-per-modo aria-label="Ver por">' + op("dia", "Por dia") + op("mes", "Por mês") + op("ano", "Por ano") + "</select>" +
+      '<button class="btn btn--sec btn--peq" data-per-passo="-1" aria-label="Período anterior">‹</button>' + campo +
+      '<button class="btn btn--sec btn--peq" data-per-passo="1" aria-label="Próximo período">›</button><b class="periodo__rot">' + esc(f.rotulo) + "</b></div>";
+  }
+  function ligarPer(id, p, redesenha) {
+    var box = $("#" + id); if (!box) return;
+    $("[data-per-modo]", box).onchange = function (e) { p.modo = e.target.value; redesenha(); };
+    $$("[data-per-passo]", box).forEach(function (b) { b.onclick = function () { moverPer(p, +b.dataset.perPasso); redesenha(); }; });
+    $("[data-per-ref]", box).onchange = function (e) {
+      var v = e.target.value; if (!v) return;
+      p.ref = p.modo === "dia" ? v : p.modo === "mes" ? v + "-01" : String(v).slice(0, 4) + "-01-01"; redesenha();
+    };
+  }
+  function dentro(v, de, ate) { var d = diaBR(v); return d >= de && d <= ate; }
+  function somaPagos(de, ate) {
+    return DADOS.eventos.filter(function (e) { return e.acao === "pago" && dentro(e.quando, de, ate); })
+      .reduce(function (t, e) { return t + ((PLANOS[e.plano] || {}).preco || 0); }, 0);
+  }
+  function contaEv(acao, de, ate) { return DADOS.eventos.filter(function (e) { return e.acao === acao && dentro(e.quando, de, ate); }).length; }
+  function fotoAte(ate) { var f = null; DADOS.diario.forEach(function (d) { if (d.id <= ate) f = d; }); return f; }
+  function varia(a, b, fmt) { if (!b) return a ? "novo" : "—"; var p = (a - b) / b * 100; return (p >= 0 ? "▲ " : "▼ ") + Math.abs(p).toFixed(0) + "%"; }
+  function painelReceita() {
+    var f = faixa(PER), rec = somaPagos(f.de, f.ate), recAnt = somaPagos(f.ant.de, f.ant.ate);
+    var hoje = hojeBR(), fim = f.ate > hoje ? hoje : f.ate, foto = fotoAte(fim), fotoAnt = fotoAte(f.ant.ate), n = numeros();
+    var ativosFim = fim === hoje ? n.ativos : (foto ? foto.ativos || 0 : 0), mrrFim = fim === hoje ? n.mrr : (foto ? foto.mrr || 0 : 0), testesFim = fim === hoje ? n.testes : (foto ? foto.testes || 0 : 0);
+    var vendas = contaEv("pago", f.de, f.ate), canc = contaEv("cancelado", f.de, f.ate), est = contaEv("estornado", f.de, f.ate);
+    var novosSal = DADOS.saloes.filter(function (s) { return dentro(s.criadoEm, f.de, f.ate); }).length;
+    var pts = f.partes.map(function (x) { return { r: x.r, v: somaPagos(x.de, x.ate) }; });
+    var ptsAss = f.partes.filter(function (x) { return x.de <= hoje; }).map(function (x) { var fo = fotoAte(x.ate > hoje ? hoje : x.ate); return { r: x.r, v: x.ate >= hoje ? n.ativos : (fo ? fo.ativos || 0 : 0) }; });
+    return '<section class="painel" id="painelRec"><h2>' + Icone("dinheiro") + "Receita e assinantes da Sitebooster</h2>" + seletorPer(PER, "perRec") +
+      '<div class="kpis">' + kpi(brl(rec), "recebido no período (pagamentos aprovados) · " + varia(rec, recAnt) + " vs " + f.nomeAnt) +
+      kpi(brl(rec - vendas * 2.49 - rec * 0.0899), "líquido aprox. (depois da taxa Kiwify)") +
+      kpi(brl(mrrFim), "receita mensal recorrente " + (fim === hoje ? "hoje" : "no fim do período")) +
+      kpi(ativosFim, "assinantes " + (fim === hoje ? "hoje" : "no fim do período") + (fotoAnt ? " · " + varia(ativosFim, fotoAnt.ativos || 0) + " vs " + f.nomeAnt : "")) +
+      kpi(testesFim, "em teste grátis") + kpi(novosSal, "salões novos no período") + kpi(vendas, "pagamentos no período") + kpi(canc + " / " + est, "cancelamentos / estornos") + "</div>" +
+      (PER.modo !== "dia" ? '<div class="cen-duas"><div><h3 class="cen-h3">Recebido por ' + (PER.modo === "ano" ? "mês" : "dia") + "</h3>" + grafico(pts, { barras: true, fmt: brl, titulo: "recebido" }) + "</div>" +
+        "<div><h3 class=\"cen-h3\">Assinantes</h3>" + (ptsAss.length > 1 ? grafico(ptsAss, { titulo: "assinantes" }) : '<p class="sub">Ainda sem histórico suficiente.</p>') + "</div></div>" : "") +
+      '<p class="sub">Por plano hoje: ' + (Object.keys(n.porPlano).map(function (k) { return k + " " + n.porPlano[k]; }).join(" · ") || "nenhum") + " · Conversão (salões que já pagaram): " + n.conversao + "% · Encerrados: " + n.encerrados + " · Bloqueados: " + n.bloqueados + ". \"Recebido\" usa o preço de cada plano; o valor exato fica no painel da Kiwify.</p></section>";
+  }
+
+  /* =====================================================================
+     FATURAMENTO DE CADA SALÃO com filtro (dia, mês, ano), em tempo real
+     ===================================================================== */
+  var PERS = { modo: "mes", ref: hojeBR(), prof: "", serv: "" }, fatDesliga = null;
+  function pararFat() { if (fatDesliga) { try { fatDesliga(); } catch (e) {} fatDesliga = null; } }
+  function montarFaturamento(sid, profs, resumos) {
+    pararFat();
+    var box = $("#fatSalao"); if (!box) return;
+    var f = faixa(PERS), hoje = hojeBR(), mesAtual = hoje.slice(0, 7);
+    // Ano: meses fechados vêm do resumo mensal (guardado para sempre); o mês atual é calculado ao vivo
+    var de = PERS.modo === "ano" ? (f.ate.slice(0, 4) === hoje.slice(0, 4) ? mesAtual + "-01" : f.ate) : f.de;
+    var desenhaFat = function (ags) {
+      if (!$("#fatSalao")) { pararFat(); return; }
+      var filtra = function (a) { return (!PERS.prof || a.profId === PERS.prof) && (!PERS.serv || a.servicoNome === PERS.serv); };
+      var lista = ags.filter(filtra), concl = lista.filter(function (a) { return a.status === "concluido"; });
+      var soma = function (L) { return L.reduce(function (t, a) { return t + (Number(a.preco) || 0); }, 0); };
+      var pts, total, nConcl, faltas, canc;
+      if (PERS.modo === "ano") {
+        pts = f.partes.map(function (p) {
+          var mes = p.de.slice(0, 7);
+          if (mes === mesAtual) return { r: p.r, v: soma(concl.filter(function (a) { return a.data.slice(0, 7) === mes; })) };
+          var rs = resumos.filter(function (x) { return x.id === mes; })[0];
+          if (!rs) return { r: p.r, v: 0 };
+          if (PERS.prof) { var pp = (rs.porProf || []).filter(function (x) { return x.id === PERS.prof || x.profId === PERS.prof; })[0]; return { r: p.r, v: pp ? (pp.v || pp.fat || 0) : 0 }; }
+          if (PERS.serv) { var ss = (rs.porServ || []).filter(function (x) { return x.nome === PERS.serv; })[0]; return { r: p.r, v: ss ? ss.v || 0 : 0 }; }
+          return { r: p.r, v: rs.fat || 0 };
+        });
+        total = pts.reduce(function (t, x) { return t + x.v; }, 0);
+        var rsAno = resumos.filter(function (x) { return x.id.slice(0, 4) === f.de.slice(0, 4) && x.id !== mesAtual; });
+        nConcl = concl.length + rsAno.reduce(function (t, x) { return t + (x.concluidos || 0); }, 0);
+        faltas = lista.filter(function (a) { return a.status === "faltou"; }).length + rsAno.reduce(function (t, x) { return t + (x.faltas || 0); }, 0);
+        canc = lista.filter(function (a) { return a.status === "cancelado"; }).length + rsAno.reduce(function (t, x) { return t + (x.cancelados || 0); }, 0);
+      } else {
+        pts = f.partes.map(function (p) { return { r: p.r, v: soma(concl.filter(function (a) { return a.data >= p.de && a.data <= p.ate; })) }; });
+        total = soma(concl); nConcl = concl.length;
+        faltas = lista.filter(function (a) { return a.status === "faltou"; }).length; canc = lista.filter(function (a) { return a.status === "cancelado"; }).length;
+      }
+      var marcados = lista.filter(function (a) { return a.status !== "cancelado" && a.data >= hoje; }).length;
+      var servs = {}; ags.forEach(function (a) { if (a.servicoNome) servs[a.servicoNome] = 1; });
+      var opP = '<option value="">Todos os profissionais</option>' + profs.map(function (p) { return '<option value="' + esc(p.id) + '"' + (PERS.prof === p.id ? " selected" : "") + ">" + esc(p.nome || p.id) + "</option>"; }).join("");
+      var opS = '<option value="">Todos os serviços</option>' + Object.keys(servs).sort().map(function (n) { return "<option" + (PERS.serv === n ? " selected" : "") + ">" + esc(n) + "</option>"; }).join("");
+      box.innerHTML = "<h2>" + Icone("dinheiro") + 'Faturamento do salão <span class="pisca" aria-hidden="true" title="ao vivo"></span></h2>' + seletorPer(PERS, "perFat") +
+        '<div class="filtros"><label>Profissional<select id="fatProf">' + opP + '</select></label><label>Serviço<select id="fatServ">' + opS + "</select></label></div>" +
+        '<div class="kpis">' + kpi(brl(total), "faturamento (atendimentos concluídos)") + kpi(nConcl, "atendimentos concluídos") + kpi(nConcl ? brl(total / nConcl) : "-", "tíquete médio") +
+        kpi(faltas, "faltas") + kpi(canc, "cancelados / desmarcados") + (PERS.modo !== "ano" && f.ate >= hoje ? kpi(marcados, "ainda marcados no período") : "") + "</div>" +
+        (PERS.modo !== "dia" ? grafico(pts, { barras: true, fmt: brl, titulo: "faturamento" }) : "") +
+        '<p class="sub">Atualiza sozinho quando o salão conclui, cancela ou marca um atendimento.' + (PERS.modo === "ano" ? " Meses fechados vêm do resumo mensal que o app guarda para sempre." : "") + "</p>";
+      ligarPer("perFat", PERS, function () { montarFaturamento(sid, profs, resumos); });
+      $("#fatProf").onchange = function (e) { PERS.prof = e.target.value; desenhaFat(ags); };
+      $("#fatServ").onchange = function (e) { PERS.serv = e.target.value; desenhaFat(ags); };
+    };
+    box.innerHTML = "<h2>" + Icone("dinheiro") + 'Faturamento do salão</h2><p class="sub">Carregando...</p>';
+    if (de > f.ate) { desenhaFat([]); return; }
+    try {
+      fatDesliga = FB.onSnapshot(FB.query(col("saloes", sid, "agendamentos"), FB.where("data", ">=", de), FB.where("data", "<=", f.ate)),
+        function (q) { desenhaFat(q.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); })); },
+        function (e) { box.innerHTML = "<h2>" + Icone("dinheiro") + 'Faturamento do salão</h2><p class="nota nota--alerta">Não consegui ler os agendamentos deste salão (' + esc(e.code || e.message) + ").</p>"; });
+    } catch (e) { desenhaFat([]); }
+  }
+
+  /* =====================================================================
+     USO DO BANCO: explicação + quantos salões cabem
+     ===================================================================== */
+  function explicaUso(u) {
+    var cont = (u && u.contagem) || {}, docs = Object.keys(cont).reduce(function (t, k) { return t + Math.max(0, cont[k] || 0); }, 0);
+    var ativos = DADOS.saloes.filter(function (s) { var k = statusDe(s).k; return k === "ativo" || k === "teste" || k === "cancelando"; }).length;
+    var porSalaoMB = ativos && docs ? docs * 1536 / ativos / 1048576 : 20, cabemEspaco = Math.floor(1024 / Math.max(1, porSalaoMB));
+    return '<section class="painel"><h2>' + Icone("info") + "Entenda o banco de dados (leia uma vez)</h2>" +
+      "<p>O banco é onde ficam guardados os dados de todos os salões. O plano grátis do Google (Firebase) tem <b>limites por dia</b>. Se um limite acabar, o sistema <b>para de salvar e carregar até zerar</b>, à 0h no horário do Pacífico, <b>5h da manhã em Brasília</b>. <b>Nada é cobrado</b>: sem cartão, o Google só bloqueia.</p>" +
+      '<div class="rolar"><table class="tab"><tr><th>Nome</th><th>O que é, na prática</th><th>Exemplos</th><th>Limite grátis</th></tr>' +
+      "<tr><td><b>Leitura</b></td><td>Cada dado <b>mostrado</b> para alguém</td><td>Dono abre a agenda; cliente abre o link e vê os horários; você abre a Central</td><td>50.000 por dia</td></tr>" +
+      "<tr><td><b>Gravação</b></td><td>Cada dado <b>salvo ou alterado</b></td><td>Marcar, concluir ou desmarcar horário; cadastrar cliente ou serviço</td><td>20.000 por dia</td></tr>" +
+      "<tr><td><b>Exclusão</b></td><td>Cada dado <b>apagado</b></td><td>Limpeza automática de dados com mais de 12 meses</td><td>20.000 por dia</td></tr>" +
+      "<tr><td><b>Espaço</b></td><td>Tudo que fica <b>guardado</b></td><td>Agendamentos, clientes, histórico, resumos</td><td>1 GB no total</td></tr></table></div>" +
+      '<h3 class="cen-h3">Quantos salões cabem no plano grátis?</h3>' +
+      '<div class="rolar"><table class="tab"><tr><th>Limite</th><th>Gasto estimado de 1 salão pequeno (≈15 atendimentos/dia)</th><th>Cabem</th></tr>' +
+      "<tr><td>Leituras</td><td>1.000 a 2.500 por dia (agenda aberta no celular do dono e da equipe + clientes abrindo o link)</td><td><b>20 a 50 salões</b> ← o primeiro a apertar</td></tr>" +
+      "<tr><td>Gravações</td><td>≈ 150 por dia</td><td>≈ 130 salões</td></tr>" +
+      "<tr><td>Espaço</td><td>" + (ativos && docs ? "<b>" + porSalaoMB.toFixed(1).replace(".", ",") + " MB</b> por salão hoje (medido pelo robô)" : "≈ 20 MB por salão (os detalhes somem depois de 12 meses)") + "</td><td>≈ " + num(cabemEspaco) + " salões</td></tr></table></div>" +
+      "<p><b>Resumo:</b> com segurança, o plano grátis aguenta <b>uns 20 a 30 salões ativos</b>. Isso é uma estimativa: os números reais aparecem quando houver salões usando.</p>" +
+      '<h3 class="cen-h3">Calcular com os números reais</h3><p class="sub">Abra o <a href="https://console.firebase.google.com/project/booster-agenda/firestore/databases/-default-/usage" target="_blank" rel="noopener">painel de uso do Firebase</a>, veja as <b>leituras de ontem</b> e digite aqui:</p>' +
+      '<div class="filtros"><label>Leituras de um dia<input id="calcLeit" type="number" inputmode="numeric" min="0" placeholder="ex.: 4200"></label><label>Salões ativos<input id="calcSal" type="number" inputmode="numeric" min="1" value="' + Math.max(1, ativos) + '"></label></div><p id="calcRes" class="nota"></p>' +
+      '<h3 class="cen-h3">E quando passar do limite?</h3><p>Aí vale ligar o plano pago do Firebase (Blaze), que cobra só pelo uso: algo como <b>R$ 0,30 a R$ 1,00 por salão por mês</b>, contra os <b>R$ 37,90 ou mais</b> que cada salão paga. Ou seja, o custo sai da própria receita. A Central te avisa <b>com antecedência</b> (alerta aos 70%).</p></section>';
+  }
+  function ligarCalc() {
+    var l = $("#calcLeit"), s = $("#calcSal"), r = $("#calcRes"); if (!l) return;
+    var f = function () {
+      var v = +l.value, n = Math.max(1, +s.value || 1); if (!v) { r.textContent = ""; return; }
+      var por = v / n, cabe = Math.floor(50000 * 0.8 / por);
+      r.innerHTML = "Cada salão gasta em média <b>" + num(Math.round(por)) + " leituras por dia</b>. Com folga de 20%, o plano grátis aguenta <b>≈ " + num(cabe) + " salões</b>. Hoje você usa <b>" + Math.round(v / 50000 * 100) + "%</b> do limite diário.";
+    };
+    l.oninput = s.oninput = f;
+  }
+
 })();
