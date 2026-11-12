@@ -172,7 +172,7 @@
     durs.sort(function (a, b) { return a - b; });
 
     var j = janelaAbrir(ag.id ? "Editar horário" : "Novo horário",
-      '<label>Cliente<input name="clienteNome" list="listaClientes" required maxlength="80" autocomplete="off" data-erro="Digite o nome do cliente." value="' + esc(ag.clienteNome || (c0 && c0.nome) || "") + '" placeholder="Digite o nome"></label>' +
+      '<label>Cliente (nome e sobrenome)<input name="clienteNome" list="listaClientes" required maxlength="80" autocomplete="off" pattern="\\S+(\\s+\\S+)+\\s*" data-erro="Digite o nome e o sobrenome do cliente (ex.: Carlos Souza)." value="' + esc(ag.clienteNome || (c0 && c0.nome) || "") + '" placeholder="Digite o nome"></label>' +
       '<datalist id="listaClientes">' + lista.map(function (c) { return '<option value="' + esc(c.nome) + '">'; }).join("") + "</datalist>" +
       '<label>WhatsApp do cliente <span class="opc">(para o lembrete)</span><input name="clienteWhats" type="tel" inputmode="tel" maxlength="20" value="' + esc(ag.clienteWhats || (c0 && c0.whatsapp) || "") + '" placeholder="(11) 98765-4321"></label>' +
       (equipe.length > 1 && dono()
@@ -478,7 +478,7 @@
     async function editar(c) {
       c = c || {};
       var r = await janela(c.id ? "Editar cliente" : "Novo cliente",
-        '<label>Nome<input name="nome" required maxlength="80" data-erro="Digite o nome do cliente." value="' + esc(c.nome) + '"></label>' +
+        '<label>Nome e sobrenome<input name="nome" required maxlength="80" pattern="\\S+(\\s+\\S+)+\\s*" autocomplete="off" data-erro="Digite o nome e o sobrenome do cliente (ex.: Carlos Souza)." value="' + esc(c.nome) + '"></label>' +
         '<label>WhatsApp<input name="whatsapp" type="tel" inputmode="tel" maxlength="20" value="' + esc(c.whatsapp) + '" placeholder="(11) 98765-4321"></label>' +
         '<label>Observações <span class="opc">(alergias, preferências...)</span><input name="obs" maxlength="300" value="' + esc(c.obs) + '"></label>' +
         '<label class="check"><input type="checkbox" name="aceitaNovidades"' + (c.aceitaNovidades ? " checked" : "") + '> Aceita receber avisos de horários livres e novidades pelo WhatsApp</label>');
@@ -579,7 +579,7 @@
       if (ativos.length >= a.limite) { aviso("Todas as vagas do plano " + a.planoNome + " estão ocupadas.", "erro"); return; }
       if (!navigator.onLine) { aviso("Conecte-se à internet para convidar.", "erro"); return; }
       var r = await janela("Convidar profissional",
-        '<label>Nome<input name="nome" required maxlength="60" data-erro="Digite o nome do profissional."></label>' +
+        '<label>Nome e sobrenome<input name="nome" required maxlength="60" pattern="\\S+(\\s+\\S+)+\\s*" data-erro="Digite o nome e o sobrenome do profissional (ex.: Carlos Souza)."></label>' +
         '<label>E-mail <span class="opc">(ele vai entrar com este e-mail)</span><input name="email" type="email" required data-erro="Digite o e-mail do profissional."></label>' +
         '<label>WhatsApp <span class="opc">(para enviar o convite)</span><input name="whatsapp" type="tel" inputmode="tel" maxlength="20"></label>' +
         checksServicos([]), "Criar convite");
@@ -596,7 +596,7 @@
       try {
         if (b.dataset.editar) {
           var jp = janelaAbrir("Editar " + p.nome,
-            '<label>Nome<input name="nome" required maxlength="60" value="' + esc(p.nome) + '"></label>' +
+            '<label>Nome e sobrenome<input name="nome" required maxlength="60" pattern="\\S+(\\s+\\S+)+\\s*" data-erro="Digite o nome e o sobrenome (ex.: Carlos Souza)." value="' + esc(p.nome) + '"></label>' +
             '<label>WhatsApp<input name="whatsapp" type="tel" inputmode="tel" maxlength="20" value="' + esc(p.whatsapp) + '"></label>' +
             '<fieldset class="cores"><legend>Cor na agenda</legend>' + Nuvem.CORES.map(function (c, i) {
               return '<label class="cor"><input type="radio" name="cor" value="' + c + '"' + (p.cor === c ? " checked" : "") + '><span style="background:' + c + '"></span><span class="sr">Cor ' + (i + 1) + "</span></label>";
@@ -1810,11 +1810,11 @@
     Nuvem.comunicados().then(function (lista) {
       var f = $("#faixaComunicado"); if (!f) return;
       var vistos; try { vistos = JSON.parse(localStorage.getItem("bs-avisos-vistos") || "[]"); } catch (e) { vistos = []; }
-      var c = lista.filter(function (x) { return vistos.indexOf(x.id) < 0; }).sort(function (a, b) { return (b.criadoEm && b.criadoEm.toMillis ? b.criadoEm.toMillis() : 0) - (a.criadoEm && a.criadoEm.toMillis ? a.criadoEm.toMillis() : 0); })[0];
-      if (!c) { f.hidden = true; return; }
+      // Avisos da Central ficam fixos: só a Sitebooster tira (botão "Desligar" na Central)
+      var ord = lista.slice().sort(function (a, b) { return (b.criadoEm && b.criadoEm.toMillis ? b.criadoEm.toMillis() : 0) - (a.criadoEm && a.criadoEm.toMillis ? a.criadoEm.toMillis() : 0); });
+      if (!ord.length) { f.hidden = true; return; }
       f.hidden = false;
-      f.innerHTML = Icone("alerta") + "<span><b>Aviso da Sitebooster:</b> " + esc(c.texto) + ' <button type="button" class="btn-link" id="fecharComunicado">Entendi</button></span>';
-      $("#fecharComunicado").onclick = function () { vistos.push(c.id); try { localStorage.setItem("bs-avisos-vistos", JSON.stringify(vistos.slice(-50))); } catch (e) {} f.hidden = true; mostrarComunicado(); };
+      f.innerHTML = ord.slice(0, 3).map(function (c) { return '<div class="comunicado">' + Icone("sino") + "<div><b>Aviso da Sitebooster</b><span>" + esc(c.texto) + "</span></div></div>"; }).join("");
     });
   }
   function faixaAssinatura() {
@@ -1835,12 +1835,23 @@
   function temEquipe() { return S.profissionais.some(function (p) { return !p.ehDono && !p.removido; }); }
   var TELAS_SALAO = { salao: 1, servicos: 1, horarios: 1, link: 1, equipe: 1 };
   function atualizarMenu() {
+    // Faixa no topo deixando claro quem está usando: painel do dono (administração) ou agenda do colaborador
+    var pf = $("#papelFaixa");
+    if (pf) {
+      var eu = dono() ? null : S.profissionais.filter(function (p) { return p.id === Nuvem.meuProfId(); })[0];
+      pf.hidden = false; pf.className = "papel-faixa " + (dono() ? "papel-faixa--dono" : "papel-faixa--prof");
+      pf.innerHTML = dono()
+        ? Icone("tesoura") + "<div><b>Painel do salão · " + esc(nomeNegocio()) + "</b><span>Administração: agenda de todos, equipe, plano e configurações</span></div>"
+        : Icone("calendario") + "<div><b>Agenda do colaborador · " + esc((eu && eu.nome) || "Profissional") + "</b><span>" + esc(nomeNegocio()) + " · seus horários, clientes e comissões</span></div>";
+    }
+    $$(".menu__sub").forEach(function (m) { var t = dono() ? m.dataset.subDono : m.dataset.subProf; m.textContent = t || ""; m.hidden = !t; });
     $$("[data-so-dono]").forEach(function (a) { a.hidden = !dono(); });
     $$("[data-so-prof]").forEach(function (a) { a.hidden = dono(); });
     $$("[data-so-equipe]").forEach(function (a) { a.hidden = dono() && !temEquipe(); });
     var nb = $("#navBaixo"); if (!nb) return;
     var principais = $$(".menu a[data-principal]").filter(function (a) { return !a.hidden; });
-    nb.innerHTML = principais.map(function (a) { return '<a href="' + a.getAttribute("href") + '" data-tela="' + a.dataset.tela + '">' + a.innerHTML + "</a>"; }).join("") +
+    var semSub = function (a) { var c = a.cloneNode(true); $$(".menu__sub", c).forEach(function (x) { x.remove(); }); return c.innerHTML; };
+    nb.innerHTML = principais.map(function (a) { return '<a href="' + a.getAttribute("href") + '" data-tela="' + a.dataset.tela + '">' + semSub(a) + "</a>"; }).join("") +
       '<button type="button" id="navMais">' + Icone("lista") + "Mais</button>";
     $("#navMais").onclick = function () {
       var outros = $$(".menu a").filter(function (a) { return !a.hidden && !a.hasAttribute("data-principal"); });

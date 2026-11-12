@@ -64,7 +64,7 @@
       '<section class="pub__passo" id="passoHora" hidden><h2><span class="num" id="numHora"></span>Escolha o horário</h2><div id="horas"></div></section>' +
       '<section class="pub__passo" id="passoDados" hidden><h2><span class="num" id="numDados"></span>Seus dados</h2>' +
       '<form id="formDados" novalidate><div class="pub__resumo" id="resumo"></div>' +
-      '<label for="cNome">Seu nome</label><input id="cNome" autocomplete="name" required maxlength="80">' +
+      '<label for="cNome">Seu nome e sobrenome</label><input id="cNome" autocomplete="name" required maxlength="80" placeholder="Ex.: Maria Souza">' +
       '<label for="cZap">Seu WhatsApp (com DDD)</label><input id="cZap" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20" placeholder="(11) 98765-4321">' +
       '<label for="cObs">Observação <span class="opc">(opcional)</span></label><input id="cObs" maxlength="300">' +
       '<label class="check pub__aceita"><input type="checkbox" id="cAceita"> Quero receber pelo WhatsApp avisos de horários livres e novidades deste salão</label>' +
@@ -149,7 +149,7 @@
   async function marcar(e) {
     e.preventDefault();
     var nome = $("#cNome").value.trim(), zap = $("#cZap").value.trim(), obs = $("#cObs").value.trim();
-    if (nome.length < 2) { $("#dErro").textContent = "Digite o seu nome."; $("#cNome").focus(); return; }
+    if (!/^\S+(\s+\S+)+$/.test(nome)) { $("#dErro").textContent = "Digite o seu nome e sobrenome (ex.: Maria Souza)."; $("#cNome").focus(); return; }
     if (U.soDigitos(zap).length < 10 || U.soDigitos(zap).length > 13) { $("#dErro").textContent = "Digite o WhatsApp com DDD. Ex.: (11) 98765-4321"; $("#cZap").focus(); return; }
     if (!esc_.servico || !esc_.dia || !esc_.hora) { $("#dErro").textContent = "Escolha o serviço, o dia e o horário."; return; }
     $("#dErro").textContent = "";

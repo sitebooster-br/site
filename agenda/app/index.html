@@ -87,19 +87,20 @@
 
 <!-- ============ APLICATIVO ============ -->
 <div class="faixa-assinatura" id="faixaAssinatura" hidden></div>
-<div class="faixa-assinatura faixa-assinatura--info" id="faixaComunicado" hidden></div>
+<div class="comunicados-central" id="faixaComunicado" hidden></div>
+<div class="papel-faixa" id="papelFaixa" hidden></div>
 <div class="app" id="app" hidden>
  <aside class="lateral">
   <div class="marca" data-marca></div>
   <nav class="menu" aria-label="Menu principal">
-   <a href="#agenda" data-tela="agenda" data-principal><span data-icone="calendario"></span>Agenda</a>
-   <a href="#clientes" data-tela="clientes" data-principal><span data-icone="usuarios"></span>Clientes</a>
-   <a href="#trazer" data-tela="trazer" data-so-dono data-principal><span data-icone="estrela"></span>Trazer clientes</a>
-   <a href="#comissoes" data-tela="comissoes" data-so-equipe><span data-icone="dinheiro"></span><span data-rotulo-comissoes>Comissões</span></a>
-   <a href="#horarios" data-tela="horarios" data-so-prof data-principal><span data-icone="relogio"></span>Minhas folgas</a>
-   <a href="#relatorio" data-tela="relatorio"><span data-icone="grafico"></span>Relatório</a>
-   <a href="#salao" data-tela="salao" data-so-dono><span data-icone="tesoura"></span>Meu salão</a>
-   <a href="#conta" data-tela="conta"><span data-icone="engrenagem"></span>Conta</a>
+   <a href="#agenda" data-tela="agenda" data-principal><span data-icone="calendario"></span>Agenda<small class="menu__sub" data-sub-dono="Horários do dia e da semana" data-sub-prof="Seus horários do dia e da semana"></small></a>
+   <a href="#clientes" data-tela="clientes" data-principal><span data-icone="usuarios"></span>Clientes<small class="menu__sub" data-sub-dono="Cadastro, histórico e contato" data-sub-prof="Quem você atendeu e vai atender"></small></a>
+   <a href="#trazer" data-tela="trazer" data-so-dono data-principal><span data-icone="estrela"></span>Trazer clientes<small class="menu__sub" data-sub-dono="Chamar quem sumiu e divulgar" data-sub-prof=""></small></a>
+   <a href="#comissoes" data-tela="comissoes" data-so-equipe><span data-icone="dinheiro"></span><span data-rotulo-comissoes>Comissões</span><small class="menu__sub" data-sub-dono="Quanto cada um tem a receber" data-sub-prof="Quanto você tem a receber"></small></a>
+   <a href="#horarios" data-tela="horarios" data-so-prof data-principal><span data-icone="relogio"></span>Minhas folgas<small class="menu__sub" data-sub-dono="" data-sub-prof="Seus dias e horários de pausa"></small></a>
+   <a href="#relatorio" data-tela="relatorio"><span data-icone="grafico"></span>Relatório<small class="menu__sub" data-sub-dono="Faturamento, faltas e números do salão" data-sub-prof="Seu desempenho e atendimentos"></small></a>
+   <a href="#salao" data-tela="salao" data-so-dono><span data-icone="tesoura"></span>Meu salão<small class="menu__sub" data-sub-dono="Serviços, equipe, horários e link" data-sub-prof=""></small></a>
+   <a href="#conta" data-tela="conta"><span data-icone="engrenagem"></span>Conta<small class="menu__sub" data-sub-dono="Plano, aparência, ajuda e sair" data-sub-prof="Aparência, ajuda e sair"></small></a>
   </nav>
   <div class="lateral__rodape">
    <span class="rede" id="rede"></span>
