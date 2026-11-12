@@ -168,8 +168,20 @@ window.Som = (function () {
   var tinha = !!navigator.serviceWorker.controller, recarregou = false;
   navigator.serviceWorker.addEventListener("controllerchange", function () {
     if (!tinha || recarregou) return; recarregou = true;
-    var ativo = document.activeElement; // não interrompe quem está digitando
-    if (ativo && /INPUT|TEXTAREA|SELECT/.test(ativo.tagName)) return;
-    location.reload();
+    function tenta() {
+      var ativo = document.activeElement, dlg = document.querySelector("dialog[open]");
+      if ((ativo && /INPUT|TEXTAREA|SELECT/.test(ativo.tagName)) || dlg) { setTimeout(tenta, 5000); return; } // espera terminar de digitar
+      location.reload();
+    }
+    tenta();
   });
+})();
+
+/* ===== Procura versão nova sozinho (a cada 20 min e quando o app volta para a tela). Se tiver, troca e recarrega
+   (o recarregamento espera a pessoa parar de digitar). Assim ninguém fica com o sistema antigo aberto. ===== */
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  function checar() { navigator.serviceWorker.getRegistration().then(function (r) { if (r) r.update().catch(function () {}); }).catch(function () {}); }
+  setInterval(checar, 20 * 60000);
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") checar(); });
 })();

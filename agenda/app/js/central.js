@@ -41,15 +41,16 @@
   // Gráfico simples (SVG, sem biblioteca): linha ou barras
   function grafico(pontos, op) {
     op = op || {}; if (!pontos.length) return '<p class="sub">Ainda sem dados. O robô guarda uma foto dos números todo dia às 6h.</p>';
-    var W = 640, H = 170, P = 30, max = Math.max.apply(null, pontos.map(function (p) { return p.v; }).concat([op.min || 1]));
+    var cel = window.innerWidth < 640, W = cel ? 360 : 640, H = cel ? 210 : 190, P = cel ? 24 : 30, FS = cel ? 12 : 12, max = Math.max.apply(null, pontos.map(function (p) { return p.v; }).concat([op.min || 1]));
     var x = function (i) { return op.barras ? P + (i + 0.5) * (W - 2 * P) / pontos.length : P + (pontos.length === 1 ? (W - 2 * P) / 2 : i * (W - 2 * P) / (pontos.length - 1)); }, y = function (v) { return H - P - (v / max) * (H - 2 * P); };
     var dica = function (p) { return "<title>" + esc(p.r + ": " + (op.fmt ? op.fmt(p.v) : num(p.v))) + "</title>"; };
     var corpo = op.barras
       ? pontos.map(function (p, i) { var w = Math.max(6, (W - 2 * P) / pontos.length * 0.6); return '<rect x="' + (x(i) - w / 2) + '" y="' + y(p.v) + '" width="' + w + '" height="' + (H - P - y(p.v)) + '" rx="3" fill="var(--ouro-2)">' + dica(p) + "</rect>"; }).join("")
       : '<polyline fill="none" stroke="var(--ouro-2)" stroke-width="3" points="' + pontos.map(function (p, i) { return x(i) + "," + y(p.v); }).join(" ") + '"/>' + pontos.map(function (p, i) { return '<circle cx="' + x(i) + '" cy="' + y(p.v) + '" r="4" fill="var(--ouro-2)">' + dica(p) + "</circle>"; }).join("");
-    var rot = pontos.map(function (p, i) { return (pontos.length <= 8 || i % Math.ceil(pontos.length / 8) === 0) ? '<text x="' + x(i) + '" y="' + (H - 8) + '" font-size="11" text-anchor="middle" fill="var(--txt-2)">' + esc(p.r) + "</text>" : ""; }).join("");
+    var rot = pontos.map(function (p, i) { return (pontos.length <= 8 || i % Math.ceil(pontos.length / 8) === 0) ? '<text x="' + x(i) + '" y="' + (H - 8) + '" font-size="' + FS + '" text-anchor="middle" fill="var(--txt-2)">' + esc(p.r) + "</text>" : ""; }).join("");
     return '<svg class="grafico" viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + esc(op.titulo || "gráfico") + '"><line x1="' + P + '" y1="' + (H - P) + '" x2="' + (W - P) + '" y2="' + (H - P) + '" stroke="var(--linha-2)"/>' +
-      '<text x="' + P + '" y="14" font-size="11" fill="var(--txt-2)">máx. ' + esc(op.fmt ? op.fmt(max) : num(max)) + "</text>" + corpo + rot + "</svg>";
+      '<text x="' + P + '" y="14" font-size="' + FS + '" fill="var(--txt-2)">máx. ' + esc(op.fmt ? op.fmt(max) : num(max)) + "</text>" + corpo + rot + "</svg>" +
+      (op.barras && pontos.some(function (p) { return p.v > 0; }) ? '<ul class="graf-lista">' + pontos.filter(function (p) { return p.v > 0; }).map(function (p) { return "<li><span>" + esc(p.r) + "</span><b>" + esc(op.fmt ? op.fmt(p.v) : num(p.v)) + "</b></li>"; }).join("") + "</ul>" : "");
   }
 
   /* ---------- entrar ---------- */
@@ -99,7 +100,7 @@
   }
 
   /* ---------- navegação ---------- */
-  var ABAS = [["geral", "Visão geral", "grafico"], ["notificacoes", "Notificações", "sino"], ["saloes", "Salões", "usuarios"], ["uso", "Uso do banco", "nuvem"], ["comunicados", "Comunicados", "whatsapp"]];
+  var ABAS = [["geral", "Visão geral", "grafico"], ["notificacoes", "Notificações", "sino"], ["financeiro", "Financeiro", "dinheiro"], ["saloes", "Salões", "usuarios"], ["uso", "Uso do banco", "nuvem"], ["comunicados", "Comunicados", "whatsapp"], ["ajuda", "Ajuda", "info"]];
   function rota() { var h = (location.hash || "#geral").slice(1).split("/"); return { tela: h[0] || "geral", id: h[1] ? decodeURIComponent(h[1]) : "" }; }
   async function iniciar() {
     var nav = $("#cenNav"); nav.hidden = false;
@@ -152,7 +153,7 @@
     $$("#cenNav a").forEach(function (a) { var on = a.dataset.aba === r.tela || (r.tela === "salao" && a.dataset.aba === "saloes"); if (on) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     if (r.tela === "sugestoes" || r.tela === "atividade") { location.replace("#notificacoes/" + (r.tela === "sugestoes" ? "sugestoes" : "acoes")); return; }
     if (r.tela !== "salao") pararFat();
-    var T = { geral: telaGeral, notificacoes: telaNotificacoes, saloes: telaSaloes, salao: telaSalao, uso: telaUso, comunicados: telaComunicados }[r.tela] || telaGeral;
+    var T = { geral: telaGeral, notificacoes: telaNotificacoes, financeiro: telaFinanceiro, saloes: telaSaloes, salao: telaSalao, uso: telaUso, comunicados: telaComunicados, ajuda: telaAjuda }[r.tela] || telaGeral;
     T(r.id);
     if (T === telaGeral) avisosCel().catch(function () {});
     atualizarBadge();
@@ -224,10 +225,19 @@
     C.innerHTML = painelPendentes() +
       '<details class="painel painel--rec" id="avisosCel"><summary><h2>' + Icone("sino") + 'Avisos no celular <span class="sub" id="avisosCelResumo">verificando...</span></h2></summary><div id="avisosCelCorpo"></div></details>' +
       '<section class="painel"><h2>' + Icone("nuvem") + "Saúde do sistema</h2>" + saudeHTML() + "</section>" +
-      painelReceita();
+      resumoHoje();
     ligarNotifs($("#painelPend"), function () { telaGeral(); avisosCel().catch(function () {}); });
     var lg = $("#lerTudoGeral"); if (lg) lg.onclick = function () { marcarNotif(pendentes().map(function (n) { return n.id; }), "lida").then(function () { telaGeral(); avisosCel().catch(function () {}); }); };
-    ligarPer("perRec", PER, function () { var y = window.scrollY; telaGeral(); avisosCel().catch(function () {}); window.scrollTo(0, y); });
+  }
+  function resumoHoje() {
+    var n = numeros(), hoje = hojeBR(), mes = faixa({ modo: "mes", ref: hoje });
+    return '<section class="painel"><h2>' + Icone("dinheiro") + "Resumo de hoje</h2>" +
+      '<div class="kpis">' + kpi(brl(n.mrr), "receita mensal (assinaturas ativas)") + kpi(n.ativos, "assinantes") + kpi(n.testes, "em teste grátis") + kpi(brl(somaPagos(mes.de, mes.ate)), "recebido neste mês") + "</div>" +
+      '<div class="atalhos"><a class="btn btn--sec btn--peq" href="#financeiro">' + Icone("grafico") + "Ver o financeiro completo</a></div></section>";
+  }
+  function telaFinanceiro() {
+    C.innerHTML = painelReceita() + painelPlanos() + painelMovimento() + painelPagamentos();
+    ligarPer("perRec", PER, function () { var y = window.scrollY; telaFinanceiro(); window.scrollTo(0, y); });
   }
 
   /* ---------- Avisos no celular (Web Push) ---------- */
@@ -296,7 +306,7 @@
     html += '<section class="painel"><h2>' + Icone("pasta") + "O que está guardado</h2>" +
       (u.contagem ? '<div class="kpis">' + Object.keys(u.contagem).map(function (k) { return kpi(num(u.contagem[k]), k); }).join("") + "</div>" : '<p class="sub">O robô conta os documentos todo dia às 6h.</p>') +
       '<p class="sub">Limites do plano grátis por dia: ' + num(L.leituras) + " leituras, " + num(L.gravacoes) + " gravações, " + num(L.exclusoes) + ' exclusões; 1 GB guardado. <a href="https://console.firebase.google.com/project/booster-agenda/firestore/databases/-default-/usage" target="_blank" rel="noopener">Ver no Firebase</a>.</p></section>';
-    C.innerHTML = html + explicaUso(u); ligarCalc();
+    C.innerHTML = html + '<p class="sub" style="margin-top:12px">' + Icone("info") + ' O que é leitura, gravação, exclusão e espaço, e quantos salões cabem: veja a aba <a href="#ajuda">Ajuda</a>.</p>';
   }
 
   var filtro = { status: "", plano: "", busca: "" };
@@ -367,7 +377,7 @@
       (a.avisoApagar ? "<tr><th>Dados apagados em</th><td><b>" + data(a.avisoApagar) + "</b> (6 meses sem assinatura)</td></tr>" : "") +
       "<tr><th>Cortesias</th><td>" + ((a.cortesias || []).map(function (c) { return c.dias + " dias em " + data(c.em) + " por " + esc(c.por || ""); }).join("<br>") || "nenhuma") + "</td></tr></table>" +
       '<h3 class="cen-h3">Ações</h3><div class="atalhos">' +
-      '<button class="btn btn--sec btn--peq" id="aCortesia">Dar dias de cortesia</button>' +
+      '<button class="btn btn--sec btn--peq" id="aCortesia">Dar ou tirar dias</button>' +
       '<button class="btn btn--sec btn--peq" id="aPlano">Mudar plano / vagas</button>' +
       (a.bloqueado ? '<button class="btn btn--pri btn--peq" id="aDesbloq">Desbloquear</button>' : '<button class="btn btn--perigo btn--peq" id="aBloq">Bloquear acesso</button>') +
       '<button class="btn btn--sec btn--peq" id="aAviso">Mandar aviso só para este salão</button></div>' +
@@ -398,21 +408,24 @@
   function ligarFicha(s) {
     var a = s.assinatura || {};
     $("#aCortesia").onclick = function () {
-      var dias = Number(prompt("Quantos dias de cortesia para \"" + (s.nome || s.id) + "\"? (1 a 90)\nO acesso é estendido a partir de hoje ou do fim atual, o que for maior.", "7"));
-      if (!dias || dias < 1 || dias > 90) return;
+      var dias = Number(prompt("Dias de cortesia para \"" + (s.nome || s.id) + "\"\n\n• Número positivo (ex.: 7) = DAR dias\n• Número negativo (ex.: -5) = TIRAR dias\n\nVale para o período atual (teste grátis ou plano pago). Entre -90 e 90.", "7"));
+      if (!dias || dias < -90 || dias > 90) return;
       var campo = a.status === "ativa" ? "pagoAte" : "testeAte", mud = {};
-      if (a.status !== "ativa" && a.status !== "teste") { mud.status = "teste"; campo = "testeAte"; }
-      mud[campo] = FB.Timestamp.fromMillis(Math.max(Date.now(), ms(a[campo])) + dias * D);
+      if (dias > 0 && a.status !== "ativa" && a.status !== "teste") { mud.status = "teste"; campo = "testeAte"; }
+      var base = dias > 0 ? Math.max(Date.now(), ms(a[campo])) : ms(a[campo]);
+      if (dias < 0 && !base) { alert("Este salão não tem dias para tirar."); return; }
+      if (dias < 0 && !confirm("Tirar " + (-dias) + " dia(s) de \"" + (s.nome || s.id) + "\"?\nNovo fim: " + new Date(base + dias * D).toLocaleDateString("pt-BR") + (base + dias * D < Date.now() ? "\n\nATENÇÃO: com isso o acesso termina na hora." : ""))) return;
+      mud[campo] = FB.Timestamp.fromMillis(base + dias * D);
       mud.cortesias = (a.cortesias || []).concat([{ dias: dias, em: FB.Timestamp.fromMillis(Date.now()), por: auth.currentUser.email }]);
       mud.avisoApagar = null;
-      salvarAssinatura(s, mud, "cortesia", dias + " dias");
+      salvarAssinatura(s, mud, dias > 0 ? "cortesia" : "dias retirados", dias + " dias");
     };
     $("#aPlano").onclick = function () {
       var k = prompt("Mudar para qual situação? Escreva uma opção:\n\n• essencial, equipe ou salao  → plano pago (manual)\n• teste  → voltar para o teste grátis\n• nenhum  → sem plano (o salão só consegue ver os dados)\n\nAgora: " + statusDe(s).t + " · " + ((PLANOS[a.plano] || {}).nome || "-"), a.plano || "essencial"); if (!k) return;
       k = k.trim().toLowerCase().replace("ã", "a");
       if (k === "teste") {
         var dt = Number(prompt("Teste grátis por quantos dias a partir de hoje? (1 a 90)", "30")); if (!dt || dt < 1 || dt > 90) return;
-        salvarAssinatura(s, { status: "teste", testeAte: FB.Timestamp.fromMillis(Date.now() + dt * D), cancelada: false, avisoApagar: null }, "voltou para teste", dt + " dias"); return;
+        salvarAssinatura(s, { status: "teste", plano: "teste", limiteProf: 10, testeAte: FB.Timestamp.fromMillis(Date.now() + dt * D), cancelada: false, avisoApagar: null }, "voltou para teste", dt + " dias, tudo liberado"); return;
       }
       if (k === "nenhum" || k === "sem plano") {
         if (!confirm("Deixar \"" + (s.nome || s.id) + "\" SEM PLANO?\nO salão continua vendo os dados, mas não consegue marcar nem alterar até assinar.")) return;
@@ -422,7 +435,11 @@
       if (!PLANOS[k]) { alert("Opção inválida."); return; }
       var v = Number(prompt("Quantas vagas de profissional? (padrão do plano: " + PLANOS[k].limite + ")", String(PLANOS[k].limite)));
       if (!v || v < 1 || v > 50) return;
-      salvarAssinatura(s, { plano: k, limiteProf: v }, "plano manual", PLANOS[k].nome + ", " + v + " vagas");
+      // Liga o plano de verdade (status "ativa"), sem perder os dias grátis que sobram: o plano conta a partir do fim do teste
+      var dp = Number(prompt("Liberar o plano " + PLANOS[k].nome + " por quantos dias? (1 a 400)\n" + (a.status === "teste" && ms(a.testeAte) > Date.now() ? "Os dias grátis que sobram (até " + data(a.testeAte) + ") continuam valendo: o plano começa a contar depois deles." : "Conta a partir de hoje ou do fim atual do plano, o que for maior."), "30"));
+      if (!dp || dp < 1 || dp > 400) return;
+      var inicio = Math.max(Date.now(), ms(a.testeAte) || 0, a.status === "ativa" ? ms(a.pagoAte) || 0 : 0);
+      salvarAssinatura(s, { status: "ativa", plano: k, limiteProf: v, pagoAte: FB.Timestamp.fromMillis(inicio + dp * D), cancelada: false, atrasada: false, avisoApagar: null }, "plano manual", PLANOS[k].nome + ", " + v + " vagas, " + dp + " dias");
     };
     var bq = $("#aBloq"); if (bq) bq.onclick = function () {
       var m = prompt("Bloquear o acesso de \"" + (s.nome || s.id) + "\"?\nO salão continua vendo os dados, mas não consegue marcar nem alterar.\n\nEscreva o motivo (fica registrado):", ""); if (m == null) return;
@@ -573,7 +590,7 @@
     var iso = function (d) { return d.toISOString().slice(0, 10); }, U0 = function (yy, mm, dd) { return new Date(Date.UTC(yy, mm, dd)); };
     if (p.modo === "dia") { var d0 = U0(y, m - 1, +r.slice(8, 10)), ontem = iso(new Date(d0 - D)); return { de: r, ate: r, rotulo: r.split("-").reverse().join("/"), partes: [{ r: r.slice(8, 10) + "/" + r.slice(5, 7), de: r, ate: r }], ant: { de: ontem, ate: ontem }, nomeAnt: "dia anterior" }; }
     if (p.modo === "ano") { var pt = []; for (var i = 0; i < 12; i++) pt.push({ r: MESES[i], de: iso(U0(y, i, 1)), ate: iso(U0(y, i + 1, 0)) }); return { de: y + "-01-01", ate: y + "-12-31", rotulo: String(y), partes: pt, ant: { de: (y - 1) + "-01-01", ate: (y - 1) + "-12-31" }, nomeAnt: "ano anterior" }; }
-    var ult = U0(y, m, 0).getUTCDate(), pd = []; for (var j = 1; j <= ult; j++) { var dd = iso(U0(y, m - 1, j)); pd.push({ r: String(j), de: dd, ate: dd }); }
+    var ult = U0(y, m, 0).getUTCDate(), pd = []; for (var j = 1; j <= ult; j++) { var dd = iso(U0(y, m - 1, j)); pd.push({ r: (j < 10 ? "0" : "") + j + "/" + (m < 10 ? "0" : "") + m, de: dd, ate: dd }); }
     return { de: iso(U0(y, m - 1, 1)), ate: iso(U0(y, m, 0)), rotulo: MESES[m - 1] + " de " + y, partes: pd, ant: { de: iso(U0(y, m - 2, 1)), ate: iso(U0(y, m - 1, 0)) }, nomeAnt: "mês anterior" };
   }
   function moverPer(p, passo) {
@@ -720,6 +737,86 @@
       r.innerHTML = "Cada salão gasta em média <b>" + num(Math.round(por)) + " leituras por dia</b>. Com folga de 20%, o plano grátis aguenta <b>≈ " + num(cabe) + " salões</b>. Hoje você usa <b>" + Math.round(v / 50000 * 100) + "%</b> do limite diário.";
     };
     l.oninput = s.oninput = f;
+  }
+
+
+  /* ===================== FINANCEIRO detalhado ===================== */
+  function painelPlanos() {
+    var por = {}, total = 0;
+    DADOS.saloes.forEach(function (s) { var a = s.assinatura || {}, k = statusDe(s).k; if (k !== "ativo" && k !== "cancelando") return; var p = PLANOS[a.plano] ? a.plano : "essencial"; por[p] = por[p] || { n: 0, v: 0 }; por[p].n++; por[p].v += PLANOS[p].preco; total += PLANOS[p].preco; });
+    var linhas = ["essencial", "equipe", "salao"].map(function (k) {
+      var x = por[k] || { n: 0, v: 0 }, pct = total ? Math.round(x.v / total * 100) : 0;
+      return '<div class="linha-fin"><div><b>' + esc(PLANOS[k].nome) + "</b><span class=\"sub\">" + brl(PLANOS[k].preco) + "/mês · até " + PLANOS[k].limite + " profissionais</span></div>" +
+        "<div class=\"linha-fin__num\"><b>" + x.n + "</b><span class=\"sub\">assinante(s)</span></div><div class=\"linha-fin__num\"><b>" + brl(x.v) + "</b><span class=\"sub\">" + pct + "% da receita</span></div>" +
+        '<div class="barra-uso" style="grid-column:1/-1"><i style="width:' + pct + '%"></i></div></div>';
+    }).join("");
+    return '<section class="painel"><h2>' + Icone("estrela") + "Receita por plano (hoje)</h2>" + linhas + '<p class="sub">Conta os salões com assinatura ativa, inclusive os que cancelaram e ainda estão usando até o fim do mês pago.</p></section>';
+  }
+  function painelMovimento() {
+    var f = faixa(PER), primeiro = {};
+    DADOS.eventos.filter(function (e) { return e.acao === "pago"; }).sort(function (a, b) { return ms(a.quando) - ms(b.quando); }).forEach(function (e) { if (!primeiro[e.email]) primeiro[e.email] = e.id; });
+    var pagos = DADOS.eventos.filter(function (e) { return e.acao === "pago" && dentro(e.quando, f.de, f.ate); });
+    var novos = pagos.filter(function (e) { return primeiro[e.email] === e.id; }), renov = pagos.length - novos.length;
+    var canc = contaEv("cancelado", f.de, f.ate), est = contaEv("estornado", f.de, f.ate), atras = contaEv("atrasado", f.de, f.ate);
+    var fotoIni = fotoAte(f.ant.ate), baseAtivos = fotoIni ? fotoIni.ativos || 0 : 0, churn = baseAtivos ? Math.round((canc + est) / baseAtivos * 100) : 0;
+    var testesNovos = DADOS.saloes.filter(function (s) { return dentro(s.criadoEm, f.de, f.ate); }).length;
+    var item = function (ic, t, v, sub) { return '<div class="mov"><span class="mov__ic">' + ic + "</span><div><b>" + v + "</b><span>" + t + "</span>" + (sub ? '<small class="sub">' + sub + "</small>" : "") + "</div></div>"; };
+    return '<section class="painel"><h2>' + Icone("grafico") + "Movimento no período · " + esc(f.rotulo) + "</h2>" +
+      '<div class="movs">' + item("🎉", "salões começaram o teste grátis", testesNovos) + item("🆕", "primeiros pagamentos (novos assinantes)", novos.length, brl(novos.reduce(function (t, e) { return t + ((PLANOS[e.plano] || {}).preco || 0); }, 0))) +
+      item("🔁", "renovações (mensalidades seguintes)", renov) + item("↩️", "cancelamentos", canc) + item("⚠️", "estornos / reembolsos", est) + item("⏰", "pagamentos atrasados", atras) +
+      item("📉", "taxa de saída (cancelamentos + estornos ÷ assinantes no início)", churn + "%", baseAtivos ? "base: " + baseAtivos + " assinante(s)" : "sem base anterior ainda") + "</div></section>";
+  }
+  function painelPagamentos() {
+    var f = faixa(PER);
+    var L = DADOS.eventos.filter(function (e) { return (e.acao === "pago" || e.acao === "estornado" || e.acao === "cancelado") && dentro(e.quando, f.de, f.ate); }).sort(function (a, b) { return ms(b.quando) - ms(a.quando); });
+    return '<section class="painel"><h2>' + Icone("lista") + "Lançamentos do período (" + L.length + ")</h2>" +
+      (L.length ? '<ul class="lanc">' + L.slice(0, 100).map(function (e) {
+        var v = (PLANOS[e.plano] || {}).preco || 0, sinal = e.acao === "pago" ? "+" : e.acao === "estornado" ? "−" : "";
+        return '<li class="lanc--' + e.acao + '"><div><b>' + esc(e.email || "-") + '</b><span class="sub">' + dataHora(e.quando) + " · " + esc((PLANOS[e.plano] || {}).nome || e.plano || "") + " · " + ({ pago: "pagamento", estornado: "estorno", cancelado: "cancelamento" })[e.acao] + "</span></div><b class=\"lanc__v\">" + (sinal ? sinal + " " + brl(v) : "—") + "</b></li>";
+      }).join("") + "</ul>" : '<p class="sub">Nenhum lançamento neste período.</p>') +
+      '<p class="sub">Valores pelo preço de cada plano. O valor exato (com taxas) fica no painel da Kiwify.</p></section>';
+  }
+
+  /* ===================== AJUDA da Central ===================== */
+  function cartaoAjuda(t, txt) { return '<div class="ajuda-c"><b>' + t + "</b><p>" + txt + "</p></div>"; }
+  function telaAjuda() {
+    var u = USO || {}, cont = u.contagem || {}, docs = Object.keys(cont).reduce(function (t, k) { return t + Math.max(0, cont[k] || 0); }, 0);
+    var ativos = DADOS.saloes.filter(function (s) { var k = statusDe(s).k; return k === "ativo" || k === "teste" || k === "cancelando"; }).length;
+    var porSalaoMB = ativos && docs ? docs * 1536 / ativos / 1048576 : 20, cabemEspaco = Math.floor(1024 / Math.max(1, porSalaoMB));
+    C.innerHTML = '<section class="painel"><h2>' + Icone("info") + "Ajuda da Central</h2><p class=\"sub\">Explicações de cada parte, para consultar quando precisar. As outras abas ficam só com os números.</p></section>" +
+      '<section class="painel"><h2>' + Icone("dinheiro") + "Palavras do financeiro</h2><div class=\"ajuda-g\">" +
+      cartaoAjuda("Receita mensal recorrente", "Quanto entra por mês se todos os assinantes de hoje continuarem pagando. É a soma do preço do plano de cada salão ativo.") +
+      cartaoAjuda("Recebido no período", "Soma dos pagamentos aprovados pela Kiwify no dia, mês ou ano escolhido.") +
+      cartaoAjuda("Líquido aprox.", "O recebido menos a taxa da Kiwify (cerca de 8,99% + R$ 2,49 por venda).") +
+      cartaoAjuda("Novo assinante x renovação", "Novo = primeiro pagamento daquele e-mail. Renovação = mensalidades seguintes.") +
+      cartaoAjuda("Taxa de saída", "De cada 100 assinantes do começo do período, quantos cancelaram ou pediram estorno. Quanto menor, melhor.") +
+      cartaoAjuda("Conversão", "De todos os salões que já criaram conta, quantos já pagaram pelo menos uma vez.") + "</div></section>" +
+      '<section class="painel"><h2>' + Icone("usuarios") + "Situação dos salões</h2><div class=\"ajuda-g\">" +
+      cartaoAjuda("Teste grátis", "30 dias com tudo liberado (até 10 profissionais). Sem cartão.") +
+      cartaoAjuda("Assinante", "Pagou e está em dia. Se assinou durante o teste, os dias grátis que sobravam continuam valendo.") +
+      cartaoAjuda("Cancelando", "Cancelou na Kiwify, mas usa até o fim do mês já pago.") +
+      cartaoAjuda("Encerrado", "Sem teste e sem plano. Só consegue ver os dados. Depois de 6 meses assim, os dados são apagados (com aviso 30 dias antes).") +
+      cartaoAjuda("Bloqueado", "Você suspendeu pela Central. Só vê os dados até você desbloquear.") +
+      cartaoAjuda("Dar ou tirar dias", "Na ficha do salão. Número positivo dá dias; negativo tira. Vale para o teste ou para o plano, o que estiver ativo.") + "</div></section>" +
+      '<section class="painel"><h2>' + Icone("nuvem") + "Banco de dados (uso do plano grátis)</h2>" +
+      "<p>O plano grátis do Google tem <b>limites por dia</b>. Se um limite acabar, o sistema <b>para até zerar</b> (5h da manhã em Brasília) e <b>nada é cobrado</b>.</p><div class=\"ajuda-g\">" +
+      cartaoAjuda("Leitura · 50.000 por dia", "Cada dado mostrado para alguém: o dono abrindo a agenda, o cliente vendo os horários livres, você abrindo a Central.") +
+      cartaoAjuda("Gravação · 20.000 por dia", "Cada dado salvo ou alterado: marcar, concluir ou desmarcar horário, cadastrar cliente ou serviço.") +
+      cartaoAjuda("Exclusão · 20.000 por dia", "Cada dado apagado, principalmente a limpeza automática de dados com mais de 12 meses.") +
+      cartaoAjuda("Espaço · 1 GB no total", "Tudo que fica guardado. Não zera por dia: vai crescendo devagar.") + "</div>" +
+      '<h3 class="cen-h3">Quantos salões cabem?</h3><div class="ajuda-g">' +
+      cartaoAjuda("Leituras (o primeiro a apertar)", "Um salão pequeno gasta 1.000 a 2.500 por dia. Cabem uns <b>20 a 50 salões</b>.") +
+      cartaoAjuda("Gravações", "Cerca de 150 por salão por dia. Cabem uns <b>130 salões</b>.") +
+      cartaoAjuda("Espaço", (ativos && docs ? "Hoje cada salão ocupa <b>" + porSalaoMB.toFixed(1).replace(".", ",") + " MB</b>." : "Cerca de 20 MB por salão.") + " Cabem uns <b>" + num(cabemEspaco) + " salões</b>.") + "</div>" +
+      "<p><b>Resumo:</b> com folga, o plano grátis aguenta <b>uns 20 a 30 salões ativos</b>. Acima disso, o plano pago do Google custa centavos por salão por mês, e a Central avisa antes (alerta aos 70%).</p>" +
+      '<h3 class="cen-h3">Calcular com os números reais</h3><p class="sub">Veja as <b>leituras de ontem</b> no <a href="https://console.firebase.google.com/project/booster-agenda/firestore/databases/-default-/usage" target="_blank" rel="noopener">painel do Firebase</a> e digite:</p>' +
+      '<div class="filtros"><label>Leituras de um dia<input id="calcLeit" type="number" inputmode="numeric" min="0" placeholder="ex.: 4200"></label><label>Salões ativos<input id="calcSal" type="number" inputmode="numeric" min="1" value="' + Math.max(1, ativos) + '"></label></div><p id="calcRes" class="nota"></p></section>' +
+      '<section class="painel"><h2>' + Icone("sino") + "Notificações e avisos</h2><div class=\"ajuda-g\">" +
+      cartaoAjuda("Pendentes", "O que ainda não foi lido. Aparece na Visão geral e no número vermelho do menu.") +
+      cartaoAjuda("Lida x Resolvida", "Lida = você viu. Resolvida = você já tratou. As duas saem dos pendentes e ficam guardadas na aba de cada tipo.") +
+      cartaoAjuda("Avisos no celular", "Chegam mesmo com a Central fechada: pagamentos, cancelamentos, estornos, salão novo, resumo das 6h e falha do robô.") +
+      cartaoAjuda("Comunicados", "Mensagem que aparece fixa no topo do app dos salões. Só some quando você desliga.") + "</div></section>";
+    ligarCalc();
   }
 
 })();

@@ -360,9 +360,9 @@
 
     el.innerHTML =
       '<header class="topo"><div><h1>' + (dono() ? "Agenda" : "Minha agenda") + '</h1><p class="sub">' + esc(titulo) + (dia === U.hojeISO() && modo === "dia" ? " · hoje" : "") + "</p></div>" +
-      '<div class="grupo grupo--acoes"><button class="btn btn--sec" id="btnLembrar">' + Icone("whatsapp") + "Lembrar amanhã</button>" +
-      '<button class="btn btn--sec" id="btnAtraso">' + Icone("relogio") + "Estou atrasado</button>" +
-      '<button class="btn btn--pri" id="novoAg">' + Icone("mais") + "Novo horário</button></div></header>" + passosHTML() +
+      '<div class="grupo grupo--acoes"><button class="btn btn--pri" id="novoAg">' + Icone("mais") + "Novo horário</button>" +
+      '<button class="btn btn--sec" id="btnLembrar" title="Abre o WhatsApp de cada cliente de amanhã com o lembrete pronto">' + Icone("whatsapp") + "Lembrar amanhã</button>" +
+      '<button class="btn btn--sec" id="btnAtraso" title="Avisa os próximos clientes de hoje que você vai atrasar">' + Icone("relogio") + "Estou atrasado</button></div></header>" + passosHTML() +
       (equipeVisivel() ? '<div class="filtro-prof" role="group" aria-label="Profissional"><button data-fprof="todos" aria-pressed="' + (vista.prof === "todos") + '">Todos</button>' +
         equipe.map(function (p) { return '<button data-fprof="' + p.id + '" aria-pressed="' + (vista.prof === p.id) + '" style="--pc:' + esc(p.cor || "#5aa9ff") + '"><i></i>' + esc(p.nome.split(" ")[0]) + "</button>"; }).join("") + "</div>" : "") +
       '<div class="barra-agenda">' +
@@ -548,7 +548,7 @@
       }).join("") : '<tr><td colspan="5" class="vazio">Ninguém na equipe ainda. Ligue "Eu também atendo" ou convide um profissional.</td></tr>') +
       "</tbody></table></div>" +
       (removidos ? '<p class="nota-info" style="margin-top:12px">' + Icone("usuarios") + "<span>" + removidos + (removidos > 1 ? " pessoas removidas" : " pessoa removida") + ' da equipe. Os atendimentos e o faturamento delas continuam no <a href="#relatorio">Relatório</a>.</span></p>' : "") +
-      '<p class="sub" style="margin-top:12px">Comissões e acerto com cada profissional chegam na próxima atualização.</p>';
+      '<p class="sub" style="margin-top:12px">A comissão de cada profissional você define no lápis de editar. O acerto fica em <a href="#comissoes">Comissões</a>.</p>';
 
     function checksServicos(sel) {
       if (!servs.length) return '<p class="sub">Cadastre os serviços para escolher o que cada um faz. Por enquanto: todos.</p>';
@@ -562,6 +562,7 @@
       var msg = "Olá, " + nome.split(" ")[0] + "! Você foi convidado(a) para a agenda do " + nomeNegocio() + ". Crie sua senha por este link: " + link;
       janelaAbrir("Convite pronto",
         "<p>Envie este link para <strong>" + esc(nome) + "</strong>. Ele(a) cria a senha com o e-mail convidado e já entra na agenda. O link vale por 14 dias.</p>" +
+        '<p class="sub">Sem o link também funciona: ele(a) abre a mesma tela de entrada do app, toca em <b>Criar minha conta</b> e usa o e-mail que você cadastrou. O sistema encontra o convite sozinho.</p>' +
         '<div class="link-box"><code id="linkConvite">' + esc(link) + "</code></div>" +
         '<div class="atalhos"><a class="btn btn--zap" href="' + (zap ? U.linkZap(zap, msg) : "https://wa.me/?text=" + encodeURIComponent(msg)) + '" target="_blank" rel="noopener">' + Icone("whatsapp") + "Enviar no WhatsApp</a>" +
         '<button type="button" class="btn btn--sec" id="copiarConvite">' + Icone("copiar") + "Copiar link</button></div>", "", false, true);
@@ -680,6 +681,8 @@
 
     var formHor = !dono() ? "" :
       '<form class="painel" id="formHor"><h2>' + Icone("relogio") + "Horário de funcionamento</h2>" +
+      '<p class="sub">Arrume o primeiro dia aberto e toque em <b>Copiar para os outros dias</b> para não precisar repetir.</p>' +
+      '<button type="button" class="btn btn--sec btn--peq" id="copiarDias" style="margin-bottom:12px">' + Icone("copiar") + "Copiar o 1º dia aberto para os outros dias abertos</button>" +
       '<div class="dias">' + ordem.map(function (d) {
         var x = h[d] || {};
         return '<div class="dia' + (x.ativo ? "" : " dia--fechado") + '" data-dia="' + d + '">' +
@@ -706,6 +709,13 @@
 
     $$(".dia [name=ativo]", el).forEach(function (c) { c.onchange = function () { c.closest(".dia").classList.toggle("dia--fechado", !c.checked); }; });
 
+    if ($("#copiarDias")) $("#copiarDias").onclick = function () {
+      var dias = $$("#formHor .dia").filter(function (d) { return $("[name=ativo]", d).checked; });
+      if (dias.length < 2) { aviso("Marque pelo menos dois dias abertos."); return; }
+      var base = dias[0], campos = $$("input[type=time]", base);
+      dias.slice(1).forEach(function (d) { $$("input[type=time]", d).forEach(function (inp, i) { if (campos[i]) inp.value = campos[i].value; }); });
+      aviso("Copiado para " + (dias.length - 1) + " dia(s). Agora é só salvar.", "ok");
+    };
     if ($("#formHor")) $("#formHor").onsubmit = async function (e) {
       e.preventDefault();
       var novo = {}, erro = "";
@@ -931,30 +941,47 @@
     $("#mProx").onclick = function () { ir(1); };
   };
 
+  // Abas da tela Conta: cada assunto no seu lugar, com uma linha explicando
+  var abaConta = "";
+  function abasConta(L) {
+    if (!L.some(function (x) { return x[0] === abaConta; })) abaConta = L[0][0];
+    return '<nav class="abas-conta" role="tablist" aria-label="Partes da conta">' + L.map(function (x) {
+      return '<button type="button" role="tab" data-aba-btn="' + x[0] + '" aria-selected="' + (x[0] === abaConta) + '"><b>' + x[1] + "</b><small>" + x[2] + "</small></button>";
+    }).join("") + "</nav>";
+  }
+  function ligarAbasConta(el) {
+    function mostra() { $$("[data-aba]", el).forEach(function (d) { d.hidden = d.dataset.aba !== abaConta; }); $$("[data-aba-btn]", el).forEach(function (b) { b.setAttribute("aria-selected", String(b.dataset.abaBtn === abaConta)); }); }
+    $$("[data-aba-btn]", el).forEach(function (b) { b.onclick = function () { abaConta = b.dataset.abaBtn; mostra(); }; });
+    mostra();
+  }
   TELAS.conta = async function (el) {
     var a = Nuvem.assinatura();
     var contaHTML = '<section class="painel"><h2>' + Icone("usuario") + "Sua conta</h2><p>Você entrou como <strong>" + esc(Nuvem.Conta.email()) + "</strong>" +
       (dono() ? ", dono(a) do salão." : ", profissional do salão <strong>" + esc(nomeNegocio()) + "</strong>.") + "</p>" +
       '<div class="atalhos"><button class="btn btn--sec" id="trocaSenha">' + Icone("chave") + 'Receber e-mail para trocar a senha</button><button class="btn btn--sec" id="sair">' + Icone("sair") + "Sair deste aparelho</button></div></section>";
     if (!dono()) {
-      el.innerHTML = '<header class="topo"><div><h1>Minha conta</h1></div></header>' + contaHTML + aparenciaHTML() + ajudaHTML();
-      ligarConta(); ligarAjuda(); ligarAparencia();
+      el.innerHTML = '<header class="topo"><div><h1>Minha conta</h1><p class="sub">Seu acesso, aparência do app e ajuda.</p></div></header>' +
+        abasConta([["conta", "Minha conta", "Acesso e senha"], ["aparencia", "Aparência", "Tema, sons, instalar"], ["ajuda", "Ajuda", "Dúvidas e sugestões"]]) +
+        '<div data-aba="conta">' + contaHTML + '</div><div data-aba="aparencia">' + aparenciaHTML() + '</div><div data-aba="ajuda">' + ajudaHTML() + "</div>";
+      ligarConta(); ligarAjuda(); ligarAparencia(); ligarAbasConta(el);
       return;
     }
     el.innerHTML =
-      '<header class="topo"><div><h1>Conta e backup</h1><p class="sub">Seus dados ficam guardados na nuvem e aparecem no celular e no computador. O backup é uma cópia extra, só sua.</p></div></header>' +
-      '<section class="painel"><h2>' + Icone("estrela") + "Seu plano</h2>" +
-      "<p><strong>" + esc(a.planoNome) + "</strong> · até " + a.limite + " profissionais · " + brl(a.preco) + " por mês<br>" +
+      '<header class="topo"><div><h1>Conta</h1><p class="sub">Plano, seu acesso, aparência, ajuda e cópia dos dados. Toque numa aba.</p></div></header>' +
+      abasConta([["plano", "Plano", "Assinatura e pagamento"], ["conta", "Minha conta", "Acesso e senha"], ["aparencia", "Aparência", "Tema, sons, instalar"], ["ajuda", "Ajuda", "Dúvidas e sugestões"], ["dados", "Dados", "Backup e privacidade"]]) +
+      '<div data-aba="plano"><section class="painel"><h2>' + Icone("estrela") + "Seu plano</h2>" +
+      "<p><strong>" + esc(a.planoNome) + "</strong> · até " + a.limite + " profissionais" + (a.status === "teste" ? " · grátis" : " · " + brl(a.preco) + " por mês") + "<br>" +
       statusAssinatura(a, true).texto + "</p>" +
-      planosHTML(a) + "</section>" +
-      contaHTML + aparenciaHTML() + ajudaHTML() +
-      '<section class="painel"><h2>' + Icone("pasta") + 'Backup automático <span class="opc">(computador)</span></h2><div id="bkAuto"></div></section>' +
+      planosHTML(a) + "</section></div>" +
+      '<div data-aba="conta">' + contaHTML + '</div><div data-aba="aparencia">' + aparenciaHTML() + '</div><div data-aba="ajuda">' + ajudaHTML() + "</div>" +
+      '<div data-aba="dados"><section class="painel"><h2>' + Icone("pasta") + 'Backup automático <span class="opc">(computador)</span></h2><div id="bkAuto"></div></section>' +
       '<section class="painel"><h2>' + Icone("baixar") + "Backup manual</h2><p>Baixe uma cópia de todos os dados ou restaure a partir de um arquivo de backup.</p>" +
       '<div class="atalhos"><button class="btn btn--sec" id="bkBaixar">' + Icone("baixar") + "Baixar backup agora</button>" +
       '<label class="btn btn--sec">' + Icone("enviar") + 'Restaurar de um arquivo<input type="file" id="bkArquivo" accept=".json,application/json" hidden></label></div></section>' +
       '<section class="painel"><h2>' + Icone("cadeado") + 'Privacidade</h2><p><a href="termos.html" target="_blank">Termos de Uso</a> · <a href="privacidade.html" target="_blank">Política de Privacidade</a></p>' +
       '<details class="zona-perigo"><summary>Excluir minha conta</summary><p>Apaga <b>todos</b> os dados do salão: agenda, clientes, equipe, comissões e relatórios. O acesso é bloqueado na hora, a página de agendamento sai do ar e tudo é apagado em até 7 dias. <b>Não dá para desfazer.</b> Baixe um backup antes, se quiser guardar uma cópia.</p>' +
-      '<p>Isso não cancela a cobrança: cancele também a assinatura na Kiwify.</p><button class="btn btn--perigo" id="btnExcluir">' + Icone("lixo") + "Excluir minha conta</button></details></section>";
+      '<p>Isso não cancela a cobrança: cancele também a assinatura na Kiwify.</p><button class="btn btn--perigo" id="btnExcluir">' + Icone("lixo") + "Excluir minha conta</button></details></section></div>";
+    ligarAbasConta(el);
 
     function desenharAuto() {
       var b = Backup.estado(), box = $("#bkAuto");
@@ -1328,7 +1355,7 @@
         "<li><b>Google (Perfil da Empresa):</b> no Google Maps ou em business.google.com, edite o perfil do salão e cole o link no campo de <b>site</b> ou de <b>agendamento/reservas</b>. Quem procura “salão perto de mim” já marca direto.</li>" +
         "<li><b>Instagram:</b> Editar perfil → Links → Adicionar link externo → cole o link com o título “Agende aqui”. Nos Stories, use a figurinha “Link”.</li>" +
         "<li><b>WhatsApp Business:</b> Ferramentas comerciais → Mensagem de ausência e Mensagem de saudação → inclua o link. Assim, quem chama fora do horário já marca sozinho.</li>" +
-        "<li><b>No salão:</b> imprima o QR Code (em breve, pronto no app) e deixe no balcão e no espelho.</li>" +
+        "<li><b>No salão:</b> imprima o cartaz com QR Code (em <a href=\"#link\">Meu link</a> → Imprimir cartaz) e deixe no balcão e no espelho.</li>" +
       "</ol></section>";
 
     $$("[data-dias]", el).forEach(function (b) { b.onclick = function () { el.dataset.sumidos = b.dataset.dias; TELAS.trazer(el); }; });
@@ -1637,7 +1664,16 @@
   function redesenharJa() { if (TELAS[telaAtual]) TELAS[telaAtual]($("#conteudo")); }
 
   /* ---------- Navegação ---------- */
-  var VIVAS = { agenda: 1, clientes: 1, servicos: 1, equipe: 1 }; // telas que se atualizam sozinhas quando os dados mudam
+  var VIVAS = { agenda: 1, clientes: 1, servicos: 1, equipe: 1, relatorio: 1, comissoes: 1, trazer: 1, salao: 1, conta: 1, horarios: 1, link: 1 }; // todas se atualizam sozinhas
+  // Não redesenha enquanto a pessoa digita ou tem um formulário com mudança não salva (redesenha quando ela terminar)
+  function editando() {
+    var c = $("#conteudo"), at = document.activeElement;
+    if (at && c && c.contains(at) && /INPUT|TEXTAREA|SELECT/.test(at.tagName)) return true;
+    return !!(c && c.querySelector("form[data-sujo]"));
+  }
+  document.addEventListener("input", function (e) { var f = e.target && e.target.closest && e.target.closest("#conteudo form"); if (f) f.setAttribute("data-sujo", "1"); }, true);
+  document.addEventListener("submit", function (e) { var f = e.target; setTimeout(function () { if (f && f.removeAttribute) f.removeAttribute("data-sujo"); }, 60); }, true);
+  document.addEventListener("focusout", function () { setTimeout(function () { if (redesenharDepois && !editando() && !$("#janela").open) { redesenharDepois = false; redesenhar(); } }, 300); });
   var telaAtual = "agenda";
   function irPara() {
     var nome = (location.hash || "#agenda").slice(1);
@@ -1659,7 +1695,7 @@
     clearTimeout(timerRed);
     timerRed = setTimeout(function () {
       if (!VIVAS[telaAtual]) return;
-      if ($("#janela").open) { redesenharDepois = true; return; }
+      if ($("#janela").open || editando()) { redesenharDepois = true; return; }
       var y = window.scrollY, el = $("#conteudo");
       var busca = $("#busca"), txt = busca && busca.value;
       Promise.resolve(TELAS[telaAtual](el)).then(function () {
@@ -1759,6 +1795,8 @@
     if (!sessao) { prepararLogin(); mostrar("telaAtivacao"); $(EMAIL_CONVITE ? "#ativSenha" : "#ativEmail").focus(); return; }
 
     if (sessao.semSalao) {
+      // Funcionário que entrou pela tela normal, sem o link: o sistema acha o convite pelo e-mail dele
+      if (!CONVITE && Nuvem.conviteParaMim) CONVITE = (await Nuvem.conviteParaMim()) || "";
       if (CONVITE) {
         try {
           var r = await Nuvem.aceitarConvite(CONVITE, "");
@@ -1790,9 +1828,10 @@
     var dd = function (n) { return n <= 0 ? "hoje" : n === 1 ? "amanhã" : "em " + n + " dias"; };
     if (a.status === "teste") {
       if (!a.emDia) return { nivel: "erro", texto: "Seu teste grátis <strong>terminou</strong>. Assine para continuar marcando horários." + (a.avisoApagar ? " <strong>Atenção: os dados do salão serão apagados em " + new Date(a.avisoApagar).toLocaleDateString("pt-BR") + "</strong> (6 meses sem assinatura)." : "") };
-      return { nivel: a.dias <= 7 ? "aviso" : "info", texto: "Teste grátis: " + (a.dias === 1 ? "falta <strong>1 dia</strong>" : "faltam <strong>" + a.dias + " dias</strong>") + (a.fim ? " (até " + d(a.fim) + ")." : ".") };
+      return { nivel: a.dias <= 7 ? "aviso" : "info", texto: "Teste grátis com <strong>tudo liberado</strong> (até " + a.limite + " profissionais): " + (a.dias === 1 ? "falta <strong>1 dia</strong>" : "faltam <strong>" + a.dias + " dias</strong>") + (a.fim ? " (até " + d(a.fim) + ")." : ".") };
     }
     if (a.status === "ativa" && a.emDia) {
+      if (a.testeAte && a.testeAte > Date.now() && !a.cancelada) return { nivel: "info", texto: "Plano <strong>" + esc(a.planoNome) + "</strong> já garantido. Você ainda está nos <strong>dias grátis até " + d(a.testeAte) + "</strong>; o plano " + esc(a.planoNome) + " começa a contar depois disso e vai até <strong>" + d(a.fim) + "</strong>. Nenhum dia grátis foi perdido." };
       if (a.cancelada) return { nivel: "aviso", texto: "Assinatura <strong>cancelada</strong>. Você ainda pode usar por <strong>" + a.dias + " dia(s)</strong>: o acesso expira em <strong>" + d(a.fim) + "</strong>." + (completo ? " Para continuar depois disso, assine de novo abaixo." : "") };
       if (a.atrasada) return { nivel: "aviso", texto: "<strong>Pagamento atrasado</strong> na Kiwify. Regularize para não perder o acesso em " + d(a.fim) + "." };
       if (a.proxima) return { nivel: a.diasRenova <= 3 ? "aviso" : "info", texto: "Assinatura <strong>ativa</strong>. Sua assinatura renova <strong>" + dd(a.diasRenova) + "</strong> (" + d(a.proxima) + "), automaticamente pela Kiwify." };

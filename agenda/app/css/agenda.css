@@ -12,7 +12,8 @@
 .btn--peq { min-height: 40px; padding: 0 14px; }
 .grupo { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .grupo input[type=date] { width: auto; margin: 0; min-height: 40px; }
-.mes { font: 600 1.05rem "Poppins", sans-serif; min-width: 170px; text-align: center; text-transform: capitalize; }
+.mes { font: 600 1.05rem "Poppins", sans-serif; min-width: 170px; text-align: center; display: inline-block; }
+.mes::first-letter { text-transform: uppercase; }
 
 /* Barra da agenda */
 .barra-agenda { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 18px; }

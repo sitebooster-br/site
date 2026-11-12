@@ -110,6 +110,30 @@
  .periodo input[type=number] { width: 100px; }
  .periodo__rot { margin-left: 4px; }
  @media (max-width: 640px) { .notif { flex-direction: column; align-items: stretch; } .notif__acoes { justify-content: flex-start; } .cen-nav { grid-template-columns: repeat(3, 1fr); } }
+ /* Financeiro e Ajuda (sem rolagem para o lado) */
+ .linha-fin { display: grid; grid-template-columns: 1.6fr 1fr 1fr; gap: 6px 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--linha); }
+ .linha-fin:first-of-type { border-top: 0; }
+ .linha-fin span { display: block; }
+ .linha-fin__num { text-align: right; }
+ .movs { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; }
+ .mov { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border: 1px solid var(--linha); border-radius: 12px; }
+ .mov__ic { font-size: 1.3rem; line-height: 1; }
+ .mov b { display: block; font-size: 1.25rem; }
+ .mov span { display: block; color: var(--txt-2); font-size: .88rem; }
+ .lanc { list-style: none; margin: 0; padding: 0; }
+ .lanc li { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding: 10px 0; border-top: 1px solid var(--linha); }
+ .lanc li > div { min-width: 0; overflow-wrap: anywhere; }
+ .lanc li .sub { display: block; }
+ .lanc__v { white-space: nowrap; }
+ .lanc--pago .lanc__v { color: #3ddc97; } .lanc--estornado .lanc__v { color: var(--erro); }
+ .graf-lista { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+ .graf-lista li { display: flex; gap: 6px; padding: 4px 10px; border: 1px solid var(--linha); border-radius: 999px; font-size: .85rem; }
+ .graf-lista span { color: var(--txt-2); }
+ .ajuda-g { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin: 8px 0 12px; }
+ .ajuda-c { padding: 12px 14px; border: 1px solid var(--linha); border-radius: 12px; background: rgba(255,255,255,.02); }
+ .ajuda-c b { display: block; margin-bottom: 4px; }
+ .ajuda-c p { margin: 0; color: var(--txt-2); font-size: .92rem; }
+ @media (max-width: 640px) { .linha-fin { grid-template-columns: 1fr 1fr; } .linha-fin > div:first-child { grid-column: 1 / -1; } .linha-fin__num { text-align: left; } }
 </style>
 </head>
 <body>

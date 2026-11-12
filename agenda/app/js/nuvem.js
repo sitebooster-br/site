@@ -123,7 +123,7 @@ window.Nuvem = (function () {
       nome: d.nome, whatsapp: d.whatsapp, donoUid: uid, donoNome: d.nomePessoa || "",
       horarios: d.horarios, antecedenciaHoras: 2, diasAFrente: 30, publico: true, msgLembrete: d.msgLembrete,
       compartilharNumeros: true, origem: d.origem || "", criadoEm: agora(),
-      assinatura: { status: "teste", plano: "essencial", limiteProf: 2, testeAte: testeAte }
+      assinatura: { status: "teste", plano: "teste", limiteProf: 10, testeAte: testeAte }
     }));
     b.set(FB.doc(db, "usuarios", uid), { papel: "dono", salaoId: uid, email: email, nome: d.nomePessoa || "", criadoEm: agora() });
     if (d.atende) {
@@ -137,6 +137,17 @@ window.Nuvem = (function () {
     return st.eu;
   }
 
+  // Profissional entrou pela tela normal (sem o link): procura um convite feito para o e-mail dele
+  async function conviteParaMim() {
+    var mail = ((auth.currentUser && auth.currentUser.email) || "").toLowerCase(); if (!mail) return null;
+    try {
+      var q = await FB.getDocs(FB.query(FB.collection(db, "convites"), FB.where("email", "==", mail)));
+      var ok = q.docs.map(function (d) { return Object.assign({ codigo: d.id }, d.data()); })
+        .filter(function (c) { return !c.usadoPor && (!c.expiraEm || c.expiraEm.toMillis() > Date.now()); })
+        .sort(function (x, y) { return (y.criadoEm && y.criadoEm.toMillis ? y.criadoEm.toMillis() : 0) - (x.criadoEm && x.criadoEm.toMillis ? x.criadoEm.toMillis() : 0); });
+      return ok[0] ? ok[0].codigo : null;
+    } catch (e) { return null; }
+  }
   // Profissional: aceita o convite recebido
   async function aceitarConvite(codigo, nomePessoa) {
     var user = auth.currentUser;
@@ -172,7 +183,7 @@ window.Nuvem = (function () {
     if (a.proximaCobranca && a.proximaCobranca.toMillis) prox = a.proximaCobranca.toMillis();   // data informada pela Kiwify
     else if (a.status === "ativa" && fimMs && !testeMs) prox = fimMs - 3 * 864e5;               // estimativa (sem teste grátis no meio)
     if (prox && prox < Date.now() - 864e5) prox = 0;                                            // data já passou: não mostra
-    return { status: a.status || "teste", plano: a.plano || "essencial", planoNome: plano.nome, limite: a.limiteProf || plano.limite, preco: plano.preco, dias: dias, emDia: emDia, fim: fimMs, cancelada: !!a.cancelada, atrasada: !!a.atrasada,
+    return { status: a.status || "teste", plano: a.plano || "essencial", planoNome: a.status === "teste" ? "Teste grátis (tudo liberado)" : plano.nome, testeAte: testeMs, limite: a.limiteProf || plano.limite, preco: plano.preco, dias: dias, emDia: emDia, fim: fimMs, cancelada: !!a.cancelada, atrasada: !!a.atrasada,
       proxima: prox, diasRenova: prox ? Math.ceil((prox - Date.now()) / 864e5) : null, gerenciar: a.gerenciar || {}, avisoApagar: a.avisoApagar && a.avisoApagar.toMillis ? a.avisoApagar.toMillis() : 0, bloqueado: !!a.bloqueado };
   }
 
@@ -836,7 +847,7 @@ window.Nuvem = (function () {
   return {
     Conta: Conta, estado: st, PLANOS: PLANOS, CORES: CORES, OCUPA: OCUPA,
     carregarSessao: carregarSessao, criarSalao: criarSalao, aceitarConvite: aceitarConvite,
-    ehDono: ehDono, meuProfId: meuProfId, assinatura: assinatura,
+    ehDono: ehDono, meuProfId: meuProfId, assinatura: assinatura, conviteParaMim: conviteParaMim,
     comunicados: comunicados, iniciar: iniciar, agsEntre: agsEntre, agsDoCliente: agsDoCliente,
     salvar: salvar, apagar: apagar, salvarBloqueio: salvarBloqueio, apagarBloqueio: apagarBloqueio,
     enviarSugestao: enviarSugestao, salvarPerfil: salvarPerfil, definirEndereco: definirEndereco, publicarAgora: publicarAgora, reconstruirOcupados: reconstruirOcupados,
