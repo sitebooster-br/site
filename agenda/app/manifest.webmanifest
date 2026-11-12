@@ -1,0 +1,16 @@
+{
+  "name": "BoosterAgenda",
+  "short_name": "Agenda",
+  "description": "Agenda de atendimentos com link para o cliente marcar sozinho.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#06142b",
+  "theme_color": "#06142b",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "icone.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

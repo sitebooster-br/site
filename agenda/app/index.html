@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BoosterAgenda</title>
+<meta name="theme-color" content="#06142b">
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icone-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700;800&amp;display=swap">
+<link rel="stylesheet" href="css/app.css">
+<script src="js/tema.js"></script>
+<link rel="stylesheet" href="css/agenda.css">
+</head>
+<body>
+
+<!-- ============ CARREGANDO ============ -->
+<section class="ativacao" id="telaCarregando" aria-live="polite">
+ <div class="ativacao__box ativacao__box--centro">
+  <div class="marca marca--grande" data-marca></div>
+  <p>Abrindo a sua agenda...</p>
+ </div>
+</section>
+
+<!-- ============ ENTRAR / CRIAR CONTA ============ -->
+<section class="ativacao" id="telaAtivacao" hidden aria-labelledby="tAtiv">
+ <form class="ativacao__box" id="formAtivacao" novalidate>
+  <div class="marca marca--grande" data-marca></div>
+  <h1 id="tAtiv">Entrar na sua agenda</h1>
+  <p id="ativTexto">Use o seu e-mail e a sua senha. Funciona no celular e no computador.</p>
+  <p class="nota nota--novo" id="ativConvite" hidden></p>
+  <label for="ativEmail">E-mail</label>
+  <input id="ativEmail" type="email" autocomplete="email" required>
+  <label for="ativSenha">Senha</label>
+  <input id="ativSenha" type="password" autocomplete="current-password" required minlength="6">
+  <div id="ativConfirma" hidden>
+   <label for="ativSenha2">Repita a senha</label>
+   <input id="ativSenha2" type="password" autocomplete="new-password" minlength="6">
+  </div>
+  <p class="erro" id="ativErro" role="alert"></p>
+  <p class="ok-msg" id="ativOk" role="status"></p>
+  <button class="btn btn--pri btn--bloco" type="submit" id="ativBotao">Entrar</button>
+  <div class="ativacao__links">
+   <button type="button" class="link-btn" id="ativTrocar">Primeira vez? Criar minha conta</button>
+   <button type="button" class="link-btn" id="ativEsqueci">Esqueci minha senha</button>
+  </div>
+ </form>
+</section>
+
+<!-- ============ SEM LICENÇA ============ -->
+<section class="ativacao" id="telaSemLicenca" hidden aria-labelledby="tSemLic">
+ <div class="ativacao__box">
+  <div class="marca marca--grande" data-marca></div>
+  <h1 id="tSemLic">Licença não encontrada</h1>
+  <p>Não encontramos uma licença ativa para <strong id="semLicEmail"></strong>.</p>
+  <p>Se você já comprou, confira se usou o mesmo e-mail da compra. Se ainda não comprou, conheça o BoosterAgenda.</p>
+  <a class="btn btn--pri btn--bloco" id="semLicComprar" href="#" target="_blank" rel="noopener">Conhecer o BoosterAgenda</a>
+  <button class="btn btn--sec btn--bloco" type="button" id="semLicTentar" style="margin-top:10px">Já comprei, verificar de novo</button>
+  <button class="btn btn--sec btn--bloco" type="button" id="semLicSair" style="margin-top:10px">Entrar com outro e-mail</button>
+ </div>
+</section>
+
+<!-- ============ PRIMEIRO ACESSO ============ -->
+<section class="ativacao" id="telaBoasVindas" hidden aria-labelledby="tBV">
+ <form class="ativacao__box" id="formBoasVindas" novalidate>
+  <div class="marca marca--grande" data-marca></div>
+  <h1 id="tBV">Vamos montar a sua agenda</h1>
+  <p>Leva 1 minuto. Dá para mudar tudo depois.</p>
+  <label for="bvNome">Nome do seu negócio</label>
+  <input id="bvNome" required maxlength="60" placeholder="Ex.: Studio Ana Unhas">
+  <label for="bvPessoa">Seu nome</label>
+  <input id="bvPessoa" required maxlength="60" autocomplete="name" placeholder="Ex.: Ana Souza">
+  <label for="bvZap">Seu WhatsApp (com DDD)</label>
+  <input id="bvZap" type="tel" inputmode="tel" required placeholder="(11) 98765-4321">
+  <label class="check check--grande"><input type="checkbox" id="bvAtende" checked> Eu também atendo clientes</label>
+  <p class="sub" style="margin-top:6px">Se você só administra e não atende, desmarque. Quem atende ocupa uma vaga do plano (o Essencial tem 2).</p>
+  <p class="nota nota--ok" style="margin-top:14px">30 dias grátis, sem cartão. Depois, a partir de R$ 37,90 por mês (preço de fundador).</p>
+  <p class="sub" style="margin-top:8px">Ao começar, você concorda com os <a href="termos.html" target="_blank">Termos de Uso</a> e a <a href="privacidade.html" target="_blank">Política de Privacidade</a>.</p>
+  <p class="erro" id="bvErro" role="alert"></p>
+  <button class="btn btn--pri btn--bloco" type="submit">Começar meu teste grátis</button>
+ </form>
+</section>
+
+<!-- ============ APLICATIVO ============ -->
+<div class="faixa-assinatura" id="faixaAssinatura" hidden></div>
+<div class="faixa-assinatura faixa-assinatura--info" id="faixaComunicado" hidden></div>
+<div class="app" id="app" hidden>
+ <aside class="lateral">
+  <div class="marca" data-marca></div>
+  <nav class="menu" aria-label="Menu principal">
+   <a href="#agenda" data-tela="agenda" data-principal><span data-icone="calendario"></span>Agenda</a>
+   <a href="#clientes" data-tela="clientes" data-principal><span data-icone="usuarios"></span>Clientes</a>
+   <a href="#trazer" data-tela="trazer" data-so-dono data-principal><span data-icone="estrela"></span>Trazer clientes</a>
+   <a href="#comissoes" data-tela="comissoes" data-so-equipe><span data-icone="dinheiro"></span><span data-rotulo-comissoes>Comissões</span></a>
+   <a href="#horarios" data-tela="horarios" data-so-prof data-principal><span data-icone="relogio"></span>Minhas folgas</a>
+   <a href="#relatorio" data-tela="relatorio"><span data-icone="grafico"></span>Relatório</a>
+   <a href="#salao" data-tela="salao" data-so-dono><span data-icone="tesoura"></span>Meu salão</a>
+   <a href="#conta" data-tela="conta"><span data-icone="engrenagem"></span>Conta</a>
+  </nav>
+  <div class="lateral__rodape">
+   <span class="rede" id="rede"></span>
+   <span class="versao" id="versao"></span>
+  </div>
+ </aside>
+ <main class="conteudo" id="conteudo" tabindex="-1"></main>
+ <nav class="nav-baixo" id="navBaixo" aria-label="Menu rápido"></nav>
+</div>
+
+<!-- Janela de formulário / confirmação (reutilizável) -->
+<dialog class="janela" id="janela"><form method="dialog" id="janelaForm" novalidate></form></dialog>
+<div class="avisos" id="avisos" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/vendor/firebase.js"></script>
+<script src="js/util.js"></script>
+<script src="js/icones.js"></script>
+<script src="js/nuvem.js"></script>
+<script src="js/backup.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

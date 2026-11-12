@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Central Sitebooster · BoosterAgenda</title>
+<meta name="theme-color" content="#06142b">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="icone.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700;800&amp;display=swap">
+<link rel="stylesheet" href="css/app.css">
+<script src="js/tema.js"></script>
+<link rel="stylesheet" href="css/agenda.css">
+<style>
+ .cen { width: min(100%, 1100px); margin: 0 auto; padding: 20px 16px 60px; }
+ .cen__topo { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+ .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 12px 0; }
+ .kpi { background: var(--bg-2); border: 1px solid var(--linha); border-radius: 12px; padding: 12px 14px; min-width: 0; }
+ .kpi b { display: block; font: 700 1.45rem "Poppins", sans-serif; }
+ .kpi span { color: var(--txt-2); font-size: .85rem; }
+ .alerta-c { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; margin: 6px 0; background: rgba(255,122,107,.1); border: 1px solid rgba(255,122,107,.3); }
+ .alerta-c--ok { background: rgba(61,220,151,.08); border-color: rgba(61,220,151,.3); }
+ .tab { width: 100%; border-collapse: collapse; font-size: .92rem; }
+ .tab th, .tab td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--linha); vertical-align: top; }
+ .tab th { color: var(--txt-2); font-weight: 600; }
+ .rolar { overflow-x: auto; }
+ .sug { border: 1px solid var(--linha); border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+ .sug p { margin: 4px 0 8px; white-space: pre-wrap; word-break: break-word; }
+ .sug select { width: auto; min-height: 36px; margin: 0; display: inline-block; }
+ .cen section.painel { margin-bottom: 16px; }
+ .cen-nav { display: flex; gap: 6px; overflow-x: auto; margin: 0 0 16px; padding-bottom: 4px; }
+ .cen-nav a { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 10px; color: var(--txt-2); text-decoration: none; font-weight: 600; white-space: nowrap; border: 1px solid var(--linha); }
+ .cen-nav a[aria-current="page"] { background: rgba(255,194,26,.14); color: var(--destaque); border-color: var(--ouro-2); }
+ .cen-duas { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+ .cen-duas > section.painel { margin-bottom: 0; } .cen-duas { margin-bottom: 16px; }
+ .barra-uso { margin: 12px 0; } .barra-uso__topo { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: .95rem; margin-bottom: 6px; }
+ .barra-uso__trilho { height: 14px; border-radius: 99px; background: rgba(var(--suave-rgb), .08); overflow: hidden; }
+ .barra-uso__trilho i { display: block; height: 100%; border-radius: 99px; transition: width .6s; }
+ .feed { list-style: none; margin: 0; padding: 0; } .feed li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--linha); font-size: .92rem; }
+ .feed li .sub { display: inline; white-space: nowrap; }
+ .saude { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+ .saude li { display: grid; grid-template-columns: 22px auto 1fr; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(61,220,151,.08); }
+ .saude li.ruim { background: rgba(255,122,107,.12); } .saude li span { color: var(--txt-2); font-size: .9rem; text-align: right; }
+ .saude li.ok .i { color: var(--ok); } .saude li.ruim .i { color: var(--erro); }
+ .pisca { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--ok); animation: pisca 1.6s infinite; }
+ @keyframes pisca { 50% { opacity: .25; } }
+ @media (prefers-reduced-motion: reduce) { .pisca { animation: none; } }
+ .filtros { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 10px; }
+ .filtros label { flex: 1 1 180px; min-width: 0; margin: 0; } .filtros .btn { flex: none; }
+ .tab--click tr[data-id] { cursor: pointer; } .tab--click tr[data-id]:hover, .tab--click tr[data-id]:focus { background: rgba(255,194,26,.08); outline: none; }
+ .ficha-topo { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: flex-start; }
+ .ficha-topo h2 { flex-wrap: wrap; }
+ .cen-h3 { margin: 16px 0 8px; font-size: 1rem; }
+ .grafico { width: 100%; height: auto; display: block; }
+ .tag--ok { background: rgba(61,220,151,.16); color: var(--ok-txt); } .tag--erro { background: rgba(255,122,107,.16); color: var(--erro-txt); }
+ .tag--info { background: rgba(90,169,255,.18); color: var(--info-txt); } .tag--alerta { background: rgba(255,194,26,.16); color: var(--destaque); }
+ .tab th { white-space: nowrap; }
+</style>
+</head>
+<body>
+<main class="cen">
+ <div class="cen__topo"><div class="marca" data-marca></div><div><span class="sub" id="cenQuem"></span> <button class="btn btn--sec btn--peq" id="cenSair" hidden>Sair</button></div></div>
+ <nav class="cen-nav" id="cenNav" hidden aria-label="Seções da Central"></nav>
+ <div id="cenConteudo"><p class="sub">Carregando...</p></div>
+</main>
+<script src="js/config.js"></script>
+<script src="js/vendor/firebase.js"></script>
+<script src="js/util.js"></script>
+<script src="js/icones.js"></script>
+<script src="js/central.js"></script>
+</body>
+</html>
