@@ -893,6 +893,21 @@
       await FB.setDoc(FB.doc(col("demos"), m), { criadoEm: FB.serverTimestamp(), por: auth.currentUser.email });
       await registrar("conta demo marcada", "", m); aviso("E-mail marcado como demonstração."); box.remove(); montarDemos();
     };
-    $$("[data-tira-demo]", box).forEach(function (b) { b.onclick = async function () { if (!confirm("Tirar " + b.dataset.tiraDemo + " das contas de demonstração?")) return; await FB.deleteDoc(FB.doc(col("demos"), b.dataset.tiraDemo)); await registrar("conta demo removida", "", b.dataset.tiraDemo); box.remove(); montarDemos(); }; });
+    $$("[data-tira-demo]", box).forEach(function (b) { b.onclick = async function () {
+      var mail = b.dataset.tiraDemo;
+      if (!confirm("Remover a conta de demonstração " + mail + "?\n\nApaga TUDO dessa conta (salão, equipe da demo e o login). Depois o e-mail fica livre para ser cadastrado de novo do zero.\nNão dá para desfazer.")) return;
+      b.disabled = true; b.textContent = "Apagando...";
+      try {
+        for (var i = 0; i < 12; i++) {
+          var tk = await auth.currentUser.getIdToken();
+          var r = await fetch(ROBO + "/central/demo/apagar", { method: "POST", headers: { Authorization: "Bearer " + tk, "Content-Type": "application/json" }, body: JSON.stringify({ email: mail }) });
+          var j = await r.json().catch(function () { return {}; });
+          if (!r.ok) throw new Error(j.erro || ("erro " + r.status));
+          if (!j.continua) break;
+        }
+        await registrar("conta demo removida", "salão, cadastro e login apagados", mail);
+        box.remove(); montarDemos();
+      } catch (e) { alert("Não deu para remover agora: " + e.message); b.disabled = false; b.textContent = "Remover"; }
+    }; });
   }
 })();

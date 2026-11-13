@@ -375,11 +375,13 @@
     var corpo = $("#corpoAgenda");
     if (modo === "dia") {
       var h = horarioDo(dia);
-      var previsto = ags.filter(function (a) { return a.status !== "faltou"; }).reduce(function (t, a) { return t + (Number(a.preco) || 0); }, 0);
+      var euP = dono() ? null : prof(Nuvem.meuProfId());
+      var previsto = ags.filter(function (a) { return a.status !== "faltou"; }).reduce(function (t, a) { return t + (euP ? ganhoDoAg(euP, a) : (Number(a.preco) || 0)); }, 0);
       var html = '<div class="cards cards--mini">' +
         '<div class="card"><span class="card__rot">Atendimentos</span><strong class="card__num">' + ags.length + "</strong></div>" +
-        '<div class="card"><span class="card__rot">Previsto no dia</span><strong class="card__num card__num--p">' + brl(previsto) + "</strong></div>" +
+        '<div class="card"><span class="card__rot">' + (euP ? "Você recebe no dia" : "Previsto no dia") + '</span><strong class="card__num card__num--p">' + brl(previsto) + "</strong>" + (euP ? '<span class="sub">pela sua comissão</span>' : "") + "</div>" +
         '<div class="card"><span class="card__rot">Funcionamento</span><strong class="card__num card__num--p">' + (h.ativo ? h.abre + " às " + h.fecha : "Fechado") + "</strong>" + (h.ativo && h.pausaIni ? '<span class="sub">Intervalo ' + h.pausaIni + " às " + h.pausaFim + "</span>" : "") + "</div></div>";
+      if (euP && dia === U.hojeISO()) html += painelMarcadosHTML(euP);
       if (vista.prof === "todos" && equipe.length > 1) {
         html += '<div class="colunas-prof" style="--n:' + equipe.length + '">' + equipe.map(function (p) {
           var meus = ags.filter(function (a) { return a.profId === p.id; });
@@ -1408,15 +1410,34 @@
     var base = n < 0 ? U.somaDias(per.de, -1) : U.somaDias(per.ate, 1);
     return periodoDe(base, per.tipo);
   }
+  // Quanto o profissional recebe por um atendimento, pela regra de comissão que vale no dia dele
+  function ganhoDoAg(p, a) {
+    var r = regraEm(p, a.data), v = Number(a.preco) || 0;
+    if (r && r.tipo === "percentual") return Math.round(v * (Number(r.valor) || 0)) / 100;
+    if (r && r.tipo === "fixo") return Math.min(v, Number(r.valor) || 0);
+    if (r && r.tipo === "aluguel") return v;
+    return 0;
+  }
+  // Já marcados para o profissional (ainda não atendidos), de hoje até "dias" à frente
+  function ganhosMarcados(p, dias) {
+    var hoje = U.hojeISO(), ate = U.somaDias(hoje, dias), n = 0, v = 0;
+    S.ags.forEach(function (a) { if (a.profId === p.id && a.data >= hoje && a.data <= ate && (a.status === "marcado" || a.status === "confirmado")) { n++; v += ganhoDoAg(p, a); } });
+    return { n: n, valor: v };
+  }
+  function painelMarcadosHTML(p) {
+    var r = regraEm(p, U.hojeISO()); if (!r || r.tipo === "nenhuma") return "";
+    var s7 = ganhosMarcados(p, 6), s30 = ganhosMarcados(p, 30);
+    return '<section class="painel painel--incentivo"><h2>' + Icone("dinheiro") + "Já marcados para você</h2>" +
+      '<div class="cards cards--mini"><div class="card card--destaque"><span class="card__rot">Próximos 7 dias</span><strong class="card__num card__num--p">' + brl(s7.valor) + '</strong><span class="sub">' + s7.n + " atendimento(s)</span></div>" +
+      '<div class="card"><span class="card__rot">Próximos 30 dias</span><strong class="card__num card__num--p">' + brl(s30.valor) + '</strong><span class="sub">' + s30.n + " atendimento(s)</span></div></div>" +
+      '<p class="sub">Conta pela sua comissão (' + esc(regraTexto(r).split(" · ")[0]) + '). Vira ganho quando o atendimento for marcado como "Concluído". Quanto mais horários marcados, mais você recebe.</p></section>';
+  }
   // Calcula o acerto de um profissional num período (só atendimentos concluídos, valor cheio)
   function calcularAcerto(p, ags, per) {
     var linhas = ags.filter(function (a) { return a.profId === p.id && a.status === "concluido" && a.data >= per.de && a.data <= per.ate; })
       .sort(function (x, y) { return (x.data + x.inicio) < (y.data + y.inicio) ? -1 : 1; })
       .map(function (a) {
-        var r = regraEm(p, a.data), v = Number(a.preco) || 0, c = 0;
-        if (r && r.tipo === "percentual") c = Math.round(v * (Number(r.valor) || 0)) / 100;
-        else if (r && r.tipo === "fixo") c = Math.min(v, Number(r.valor) || 0);
-        else if (r && r.tipo === "aluguel") c = v;
+        var r = regraEm(p, a.data), v = Number(a.preco) || 0, c = ganhoDoAg(p, a);
         return { a: a, valor: v, comissao: c, regra: r };
       });
     var total = linhas.reduce(function (t, l) { return t + l.valor; }, 0);
@@ -1433,7 +1454,7 @@
       '<div class="duas"><label><span id="comRot">Valor</span><input name="comValor" type="number" min="0" step="0.01" inputmode="decimal" value="' + esc(r.valor) + '"></label>' +
       '<label>Acerto<select name="comPeriodo">' + Object.keys(PERIODOS).map(function (k) { return '<option value="' + k + '"' + ((r.periodo || "mes") === k ? " selected" : "") + ">" + PERIODOS[k] + "</option>"; }).join("") + "</select></label></div>" +
       '<p class="sub" id="comExplica"></p>' +
-      (temRegra ? '<p class="nota-info">' + Icone("alerta") + "<span>Mudanças valem a partir de <b>" + U.dataCurta(U.somaDias(U.hojeISO(), AVISO_DIAS)) + "</b> (" + AVISO_DIAS + " dias de aviso). " + esc(p.nome.split(" ")[0]) + " recebe o aviso no app e confirma que está ciente.</span></p>" : "") +
+      (temRegra ? '<p class="nota-info">' + Icone("alerta") + "<span>A mudança vale a partir de hoje. " + esc(p.nome.split(" ")[0]) + " recebe um aviso no app.</span></p>" : "") +
       "</fieldset>";
   }
   function ligarCamposComissao(f) {
@@ -1460,9 +1481,8 @@
     var igual = function (a, b) { return a && b && a.tipo === b.tipo && Number(a.valor) === Number(b.valor) && a.periodo === b.periodo; };
     var futura = regraFutura(p);
     if (igual(futura || vigente, nova)) return null;           // nada mudou
-    lista = lista.filter(function (c) { return c.desde <= hoje; }); // troca mudança ainda não vigente
-    if (igual(vigente, nova)) return lista;                    // voltou para a regra atual: cancela a mudança
-    nova.desde = lista.length ? U.somaDias(hoje, AVISO_DIAS) : hoje;
+    lista = lista.filter(function (c) { return c.desde < hoje; }); // a nova regra vale a partir de hoje (o dono decide, sem prazo)
+    nova.desde = hoje;
     nova.definidaEm = new Date().toISOString();
     lista.push(nova);
     return lista;
@@ -1523,6 +1543,7 @@
       "</section>" +
       (!regraHoje && souDono ? '<p class="nota nota--alerta">' + Icone("alerta") + "<span>" + esc(primeiro) + ' ainda não tem comissão definida. Clique em "Alterar" acima.</span></p>' : "");
 
+    if (!souDono) { var hdr = el.querySelector(".topo"); if (hdr) hdr.insertAdjacentHTML("afterend", painelMarcadosHTML(p)); }
     function ir(novo) { el.dataset.de = novo.de; el.dataset.tper = novo.tipo; TELAS.comissoes(el); }
     $("#pAnt").onclick = function () { ir(moverPeriodo(per, -1)); };
     $("#pProx").onclick = function () { ir(moverPeriodo(per, 1)); };
@@ -1916,7 +1937,7 @@
       var eu = dono() ? null : S.profissionais.filter(function (p) { return p.id === Nuvem.meuProfId(); })[0];
       pf.hidden = false; pf.className = "papel-faixa " + (dono() ? "papel-faixa--dono" : "papel-faixa--prof");
       pf.innerHTML = dono()
-        ? Icone("tesoura") + "<div><b>Painel do salão · " + esc(nomeNegocio()) + (window.__demo ? ' <span class="tag tag--info">DEMONSTRAÇÃO</span>' : "") + "</b><span>" + (window.__demo ? "Conta de demonstração: nada aqui vai para a Central" : "Administração: agenda de todos, equipe, plano e configurações") + "</span></div>"
+        ? Icone("tesoura") + "<div><b>Painel do salão · " + esc(nomeNegocio()) + (window.__demo ? ' <span class="tag tag--info">DEMONSTRAÇÃO</span>' : "") + "</b><span>" + (window.__demo ? "Conta de demonstração: use à vontade e recomece quando quiser" : "Administração: agenda de todos, equipe, plano e configurações") + "</span></div>"
         : Icone("calendario") + "<div><b>Agenda do colaborador · " + esc((eu && eu.nome) || "Profissional") + "</b><span>" + esc(nomeNegocio()) + " · seus horários, clientes e comissões</span></div>";
     }
     if (pf && window.__demo && dono()) {
@@ -1970,6 +1991,8 @@
     if (!dono()) setTimeout(function () {
       var eu = prof(Nuvem.meuProfId()), f = regraFutura(eu);
       if (f && !(eu.ciente && eu.ciente[f.desde])) aviso("Sua comissão vai mudar em " + U.dataCurta(f.desde) + ". Veja em Meus ganhos e confirme que está ciente.", "info");
+      var v = regraEm(eu, U.hojeISO()), k = "bs-com-" + (eu && eu.id);
+      try { if (v && v.definidaEm && localStorage.getItem(k) !== v.definidaEm) { if (localStorage.getItem(k)) aviso("Sua comissão foi atualizada: " + regraTexto(v) + ". Veja em Meus ganhos.", "info"); localStorage.setItem(k, v.definidaEm); } } catch (e) {}
     }, 1500);
   }
 

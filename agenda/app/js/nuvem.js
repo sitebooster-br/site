@@ -158,9 +158,14 @@ window.Nuvem = (function () {
     return demoP;
   }
   async function recomecarDemo() {
-    var tk = await auth.currentUser.getIdToken();
-    var r = await fetch(APP.robo + "/demo/resetar", { method: "POST", headers: { Authorization: "Bearer " + tk } });
-    var j = await r.json().catch(function () { return {}; }); if (!r.ok) throw new Error(j.erro || ("erro " + r.status));
+    // O robô apaga um pouco por vez (limite do plano grátis): repete até terminar
+    for (var i = 0; i < 12; i++) {
+      var tk = await auth.currentUser.getIdToken();
+      var r = await fetch(APP.robo + "/demo/resetar", { method: "POST", headers: { Authorization: "Bearer " + tk } });
+      var j = await r.json().catch(function () { return {}; });
+      if (!r.ok) throw new Error(j.erro || ("erro " + r.status));
+      if (!j.continua) break;
+    }
     try { localStorage.clear(); } catch (e) {}
     return true;
   }

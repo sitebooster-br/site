@@ -42,7 +42,9 @@
   function folga() { return Number(pag.intervalo) || 0; }
   function profNome(id) { var p = (pag.profissionais || []).find(function (x) { return x.id === id; }); return p ? p.nome : ""; }
 
+  var naPrincipal = false;
   function desenhar() {
+    naPrincipal = true;
     var servs = (pag.servicos || []).filter(function (s) { return profsDoServico(s.id).length; });
     var hoje = U.hojeISO(), dias = [];
     for (var i = 0; i <= (pag.diasAFrente || 30); i++) { var d = U.somaDias(hoje, i); if (diaAberto(d)) dias.push(d); }
@@ -214,6 +216,7 @@
     } catch (e) {}
   }
   function sucesso(ag, tk) {
+    naPrincipal = false;
     var comQuem = (pag.profissionais || []).length > 1 && ag.profNome ? " com " + ag.profNome : "";
     var msg = "Olá! Acabei de agendar pelo link: " + ag.servicoNome + comQuem + ", " + U.dataLonga(ag.data) + " às " + ag.inicio + ". Nome: " + ag.clienteNome + ".";
     setTimeout(function () {
@@ -300,6 +303,15 @@
     if (tkR) return telaReserva(tkR);
     if (!(pag.servicos || []).length || !(pag.profissionais || []).length) return erroTela("Agenda em preparação", "Esta agenda ainda está sendo montada. Chame no WhatsApp para marcar.", true);
     desenhar();
+    // Tempo real: se o salão mudar algo (novo profissional, serviço, horário), a página se atualiza sozinha
+    var primeira = true;
+    if (FB.onSnapshot) FB.onSnapshot(FB.doc(db, "paginas", slug), function (d) {
+      if (primeira) { primeira = false; return; }
+      if (!d.exists()) return;
+      pag = d.data();
+      if (naPrincipal && !esc_.servico) desenhar();   // ainda não escolheu nada: redesenha tudo
+      // se já está escolhendo, as listas usam os dados novos no próximo toque
+    }, function () {});
   }
   iniciar();
 })();
