@@ -240,7 +240,8 @@
     // Cliente: acha pelo nome ou WhatsApp, ou cadastra
     var nomeC = r.clienteNome, zapC = r.clienteWhats;
     var c = (c0 && c0.nome.toLowerCase() === nomeC.toLowerCase()) ? c0 : S.clientes.find(function (x) {
-      return x.nome.toLowerCase() === nomeC.toLowerCase() || (zapC && x.whatsapp && U.zap(x.whatsapp) === U.zap(zapC));
+      var pn = function (s) { return String(s || "").trim().split(/\s+/)[0].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); };
+      return x.nome.toLowerCase() === nomeC.toLowerCase() || (zapC && x.whatsapp && U.zap(x.whatsapp) === U.zap(zapC) && pn(x.nome) === pn(nomeC));
     });
     var novoAg = Object.assign({}, ag, {
       clienteNome: nomeC, clienteWhats: zapC, servicoId: r.servicoId, servicoNome: s ? s.nome : "", profId: r.profId,

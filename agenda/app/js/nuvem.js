@@ -319,7 +319,9 @@ window.Nuvem = (function () {
       if (!ehDono() && a.profId !== meuProfId()) return;
       ligadosOnline.add(a.id);
       var z = U.zap(a.clienteWhats);
-      var c = st.clientes.find(function (x) { return x.whatsapp && U.zap(x.whatsapp) === z; });
+      // Mesmo WhatsApp E mesmo primeiro nome = mesmo cliente. Mesmo número com outro nome (família que divide o celular) vira cliente novo.
+      var pn = function (s) { return String(s || "").trim().split(/\s+/)[0].toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); };
+      var c = st.clientes.find(function (x) { return x.whatsapp && U.zap(x.whatsapp) === z && pn(x.nome) === pn(a.clienteNome); });
       var b = FB.writeBatch(db), cid;
       if (!c) {
         cid = novoId("clientes");
