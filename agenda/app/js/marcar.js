@@ -310,6 +310,7 @@
       if (primeira) { primeira = false; return; }
       if (!d.exists()) return;
       pag = d.data();
+      if (window.Tema && Tema.cor) Tema.cor(pag.cor || "dourado", false);
       if (naPrincipal && !esc_.servico) desenhar();   // ainda não escolheu nada: redesenha tudo
       // se já está escolhendo, as listas usam os dados novos no próximo toque
     }, function () {});

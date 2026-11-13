@@ -286,6 +286,7 @@
       '<div class="ag__linha1"><h3>' + esc(a.clienteNome) + "</h3>" + tagStatus(a.status) + (equipeVisivel() && vista.prof === "todos" ? chipProf(a.profId) : "") +
       (novo ? '<span class="tag tag--novo">Novo pelo link</span>' : "") + (conf ? '<span class="tag tag--erro">Conflito</span>' : "") + "</div>" +
       '<p class="ag__serv">' + esc(a.servicoNome) + " · " + brl(a.preco) + (a.clienteWhats ? " · " + esc(U.foneBonito(a.clienteWhats)) : "") + "</p>" +
+      (conf ? '<p class="ag__conf">' + Icone("alerta") + "<span><b>Horário encavalado.</b> " + esc(conflitos(a).join(" ")) + " Toque em Editar para mudar a hora ou o profissional.</span></p>" : "") +
       (a.obs ? '<p class="ag__obs">' + esc(a.obs) + "</p>" : "") +
       '<div class="ag__acoes">' +
       (zapOk ? '<a class="btn-p btn-p--zap" href="' + U.linkZap(a.clienteWhats, mensagemLembrete(a)) + '" target="_blank" rel="noopener">' + Icone("whatsapp") + "Lembrar</a>" : "") +
@@ -300,7 +301,16 @@
   }
 
   // Linha do tempo de um dia para um profissional (agendamentos, bloqueios, intervalo e horários livres)
+  // Agenda compacta: cada horário vira uma linha; toque abre os botões. Padrão para o dono (muitos atendimentos).
+  function compacta() { try { var v = localStorage.getItem("bs-densidade"); if (v) return v === "compacta"; } catch (e) {} return dono(); }
+  function linhaCompacta(a) {
+    var novo = a.origem === "online" && !a.visto, conf = conflitos(a).length && Nuvem.OCUPA[a.status];
+    return '<button class="ag-linha ' + (STATUS[a.status] || STATUS.marcado).classe + '" data-expandir="' + a.id + '" style="--cor:' + corDe(a) + '" aria-label="' + esc(a.inicio + " " + a.clienteNome + ", " + a.servicoNome + ". Toque para ver as ações") + '">' +
+      '<b class="ag-linha__h">' + a.inicio + '</b><span class="ag-linha__c">' + esc(a.clienteNome) + '<small>' + esc(a.servicoNome) + "</small></span>" +
+      (novo ? '<span class="ponto-novo" title="Novo pelo link"></span>' : "") + (conf ? '<span class="tag tag--erro" title="' + esc(conflitos(a).join(" ")) + '">Conflito</span>' : "") + tagStatus(a.status) + "</button>";
+  }
   function linhaTempo(dia, ags, pid) {
+    var cp = compacta();
     var h = horarioDo(dia);
     var bl = S.bloqueios.filter(function (b) { return b.data === dia && (!b.profId || b.profId === pid); });
     var itens = ags.map(function (a) { return { ini: a.inicio, fim: a.fim, tipo: "ag", a: a }; });
@@ -320,7 +330,9 @@
     } else linhas = itens;
     if (!linhas.length) return '<p class="vazio-box">' + Icone("calendario") + "Fechado neste dia." + (dono() ? ' <a href="#horarios">Mudar horários</a>' : "") + "</p>";
     return '<div class="linha-tempo">' + linhas.map(function (it) {
-      if (it.tipo === "ag") return cartaoAg(it.a);
+      if (it.tipo === "ag") return cp ? linhaCompacta(it.a) : cartaoAg(it.a);
+      if (cp && it.tipo === "livre") return '<button class="faixa faixa--livre faixa--fina" data-livre="' + it.ini + '" data-prof="' + esc(pid || "") + '">' + Icone("mais") + "<span>" + it.ini + "–" + it.fim + " · livre</span></button>";
+      if (cp && it.tipo === "pausa") return '<div class="faixa faixa--pausa faixa--fina">' + Icone("relogio") + "<span>" + it.ini + "–" + it.fim + " · intervalo</span></div>";
       if (it.tipo === "pausa") return '<div class="faixa faixa--pausa">' + Icone("relogio") + "<span><b>" + it.ini + " às " + it.fim + "</b> · Intervalo</span></div>";
       if (it.tipo === "bloq") return '<div class="faixa faixa--bloq">' + Icone("cadeado") + "<span><b>" + (it.b.diaInteiro ? "Dia inteiro" : it.ini + " às " + it.fim) + "</b> · " + (it.b.profId ? "Folga" : "Salão fechado") + (it.b.motivo ? " (" + esc(it.b.motivo) + ")" : "") + "</span></div>";
       return '<button class="faixa faixa--livre" data-livre="' + it.ini + '" data-prof="' + esc(pid || "") + '">' + Icone("mais") + "<span><b>" + it.ini + " às " + it.fim + "</b> · Livre. Clique para marcar</span></button>";
@@ -368,7 +380,8 @@
       '<div class="barra-agenda">' +
       '<div class="grupo"><button class="btn-ic" id="ant" aria-label="Anterior">' + Icone("esq") + '</button><button class="btn btn--sec btn--peq" id="hoje">Hoje</button><button class="btn-ic" id="prox" aria-label="Próximo">' + Icone("dir") + "</button>" +
       '<input type="date" id="irData" value="' + dia + '" aria-label="Ir para o dia"></div>' +
-      '<div class="alternar" role="group" aria-label="Ver por"><button data-modo="dia" aria-pressed="' + (modo === "dia") + '">Dia</button><button data-modo="semana" aria-pressed="' + (modo === "semana") + '">Semana</button></div></div>' +
+      '<div class="alternar" role="group" aria-label="Ver por"><button data-modo="dia" aria-pressed="' + (modo === "dia") + '">Dia</button><button data-modo="semana" aria-pressed="' + (modo === "semana") + '">Semana</button></div>' +
+        (modo === "dia" ? '<div class="alternar" role="group" aria-label="Mostrar"><button data-dens="compacta" aria-pressed="' + compacta() + '" title="Uma linha por horário">' + Icone("lista") + 'Compacta</button><button data-dens="detalhada" aria-pressed="' + !compacta() + '" title="Com todos os botões">Detalhada</button></div>' : "") + "</div>" +
       (novosLink ? '<p class="nota nota--novo">' + Icone("link") + "<span><strong>" + novosLink + (novosLink > 1 ? " agendamentos novos" : " agendamento novo") + "</strong> pelo link. Eles aparecem marcados como \"Novo pelo link\".</span></p>" : "") +
       '<div id="corpoAgenda"></div>';
 
@@ -387,7 +400,9 @@
       if (vista.prof === "todos" && equipe.length > 1) {
         html += '<div class="colunas-prof" style="--n:' + equipe.length + '">' + equipe.map(function (p) {
           var meus = ags.filter(function (a) { return a.profId === p.id; });
-          return '<section class="coluna-prof"><h2 class="coluna-prof__cab" style="--pc:' + esc(p.cor || "#5aa9ff") + '"><i></i>' + esc(p.nome) + "<small>" + meus.length + " hoje</small></h2>" + linhaTempo(dia, meus, p.id) + "</section>";
+          var agoraHM = U.hhmm(new Date().getHours() * 60 + new Date().getMinutes());
+          var prox = dia === U.hojeISO() ? meus.filter(function (a) { return (a.status === "marcado" || a.status === "confirmado") && a.inicio >= agoraHM; })[0] : null;
+          return '<details class="coluna-prof"' + (equipe.length <= 3 || window.innerWidth > 800 ? " open" : "") + '><summary class="coluna-prof__cab" style="--pc:' + esc(p.cor || "#5aa9ff") + '"><i></i>' + esc(p.nome) + "<small>" + meus.length + (dia === U.hojeISO() ? " hoje" : "") + (prox ? " · próximo " + prox.inicio : "") + "</small></summary>" + linhaTempo(dia, meus, p.id) + "</details>";
         }).join("") + "</div>";
         // agendamentos antigos sem profissional (versão anterior)
         var semProf = ags.filter(function (a) { return !a.profId || !prof(a.profId); });
@@ -419,6 +434,7 @@
     $("#hoje").onclick = function () { vista.dia = U.hojeISO(); TELAS.agenda(el); };
     $("#irData").onchange = function (e) { if (e.target.value) { vista.dia = e.target.value; TELAS.agenda(el); } };
     $$("[data-modo]", el).forEach(function (b) { b.onclick = function () { vista.modo = b.dataset.modo; TELAS.agenda(el); }; });
+    $$("[data-dens]", el).forEach(function (b) { b.onclick = function () { try { localStorage.setItem("bs-densidade", b.dataset.dens); } catch (e) {} TELAS.agenda(el); }; });
     $$("[data-fprof]", el).forEach(function (b) { b.onclick = function () { vista.prof = b.dataset.fprof; TELAS.agenda(el); }; });
     $("#novoAg").onclick = function () { editarAg(null, { data: vista.dia }); };
     $("#btnLembrar").onclick = lembrarAmanha; ligarPassos(el);
@@ -429,6 +445,14 @@
       var t = e.target.closest("button"); if (!t) return;
       if (t.dataset.ir) { vista.dia = t.dataset.ir; vista.modo = "dia"; return TELAS.agenda(el); }
       if (t.dataset.livre) return editarAg(null, { data: vista.dia, inicio: t.dataset.livre, profId: t.dataset.prof });
+      if (t.dataset.expandir) {
+        var xa = ags.find(function (a) { return a.id === t.dataset.expandir; }); if (!xa) return;
+        var aberto = corpo.querySelector(".ag--aberto"); if (aberto) { var ya = ags.find(function (a) { return a.id === aberto.dataset.id; }); if (ya) aberto.outerHTML = linhaCompacta(ya); }
+        t.outerHTML = cartaoAg(xa).replace('class="ag"', 'class="ag ag--aberto"');
+        var novoCard = corpo.querySelector('.ag--aberto'); if (novoCard) { novoCard.insertAdjacentHTML("afterbegin", '<button class="ag__fechar" data-recolher="' + xa.id + '" aria-label="Recolher">' + Icone("x") + "</button>"); novoCard.scrollIntoView({ block: "nearest", behavior: "smooth" }); }
+        return;
+      }
+      if (t.dataset.recolher) { var za = ags.find(function (a) { return a.id === t.dataset.recolher; }); var cz = t.closest(".ag"); if (za && cz) cz.outerHTML = linhaCompacta(za); return; }
       if (t.dataset.abrir) {
         var x = ags.find(function (a) { return a.id === t.dataset.abrir; });
         if (!podeMexer(x)) { aviso("Este horário já foi " + (STATUS[x.status] || {}).nome.toLowerCase() + ". Só o dono pode alterar.", "erro"); return; }
@@ -1116,10 +1140,79 @@
     };
   }
 
+  // ---------- Central de dúvidas (botão "?" no topo da tela) ----------
+  // p: "d" = só dono, "f" = só funcionário, "" = todos
+  var DUVIDAS = [
+    ["Agenda", "", "O que quer dizer cada etiqueta do horário?", "@legenda"],
+    ["Agenda", "", "O que é \"Conflito\"?", "Dois horários do mesmo profissional encavalados (um começa antes do outro terminar, contando a folga entre clientes). Toque no horário para ver com quem encavala e use Editar para mudar a hora ou o profissional. O aviso some sozinho."],
+    ["Agenda", "", "Como marco um horário?", "Toque em \"Novo horário\" ou num espaço \"livre\" da agenda. Escolha cliente, serviço, profissional, dia e hora e salve."],
+    ["Agenda", "", "Como confirmo, concluo ou marco falta?", "Toque no horário (na agenda compacta ele abre) e use os botões: Confirmar, Concluído ou Faltou. Só os \"Concluídos\" entram no faturamento e nas comissões."],
+    ["Agenda", "", "Qual a diferença entre agenda Compacta e Detalhada?", "Compacta mostra uma linha por horário; toque para abrir os botões. Detalhada mostra todos os botões de uma vez. Troque no botão ao lado de Dia/Semana; o aparelho lembra a escolha."],
+    ["Agenda", "", "Para que serve \"Lembrar amanhã\"?", "Abre a lista dos clientes de amanhã. Cada botão Lembrar abre o seu WhatsApp com a mensagem pronta (com o link para o cliente confirmar ou desmarcar). Quem envia é você: o app não manda mensagem sozinho."],
+    ["Agenda", "", "Para que serve \"Estou atrasado\"?", "Avisa os próximos clientes do dia pelo WhatsApp, com a mensagem pronta, que você vai atrasar."],
+    ["Agenda", "", "Onde vejo quem desmarcou?", "No fim da agenda do dia aparece \"Desmarcados\", com quem desmarcou, quando e o motivo (se o cliente escreveu). Dá para chamar no WhatsApp dali."],
+    ["Link do cliente", "", "Como o cliente marca sozinho?", "Pelo link do salão (Meu salão → Meu link de agendamento). Ele escolhe serviço, profissional, dia e um horário livre e coloca nome e WhatsApp. Não precisa baixar app nem criar senha."],
+    ["Link do cliente", "", "O que é \"Novo pelo link\"?", "Horário que o próprio cliente marcou pelo link e que ainda ninguém viu. Toque em \"Ok, vi\" para tirar o aviso."],
+    ["Link do cliente", "", "O cliente pode desmarcar?", "Pode, pelo mesmo link (\"Ver ou desmarcar meu horário\"). Ele escolhe o motivo, o horário fica livre na hora e você recebe o aviso com som."],
+    ["Link do cliente", "d", "Como divulgo o link?", "Em Meu salão → Meu link de agendamento: copie e coloque na bio do Instagram, no status e nas mensagens do WhatsApp. Em \"Trazer clientes\" tem mensagens prontas para quem sumiu e para os horários vagos."],
+    ["Link do cliente", "d", "Como pauso os agendamentos pelo link?", "Em Meu salão → Meu link de agendamento, desligue o link. O cliente passa a ver um aviso para chamar no WhatsApp."],
+    ["Equipe e comissões", "d", "Como coloco um funcionário?", "Em Meu salão → Equipe → Convidar. Ele cria a conta com o e-mail convidado e passa a ver a agenda dele. Cada profissional que atende ocupa uma vaga do plano; o dono que só administra não ocupa."],
+    ["Equipe e comissões", "d", "Como defino a comissão?", "Em Comissões, escolha o profissional e toque em Alterar: porcentagem, valor fixo por atendimento ou aluguel de cadeira, e o período de acerto. Vale a partir de hoje e ele recebe um aviso no app."],
+    ["Equipe e comissões", "", "Como a comissão é calculada?", "Só conta atendimento marcado como Concluído, pelo valor cheio do serviço e pela regra que valia no dia do atendimento. O acerto aparece por dia, semana, quinzena ou mês."],
+    ["Equipe e comissões", "f", "O que é \"Valor a receber\"?", "Quanto você recebe pelos atendimentos do dia, pela sua comissão. Se um horário for desmarcado, o valor diminui na hora. Sem comissão definida, aparece o faturamento do dia."],
+    ["Equipe e comissões", "f", "O que é \"Já marcados para você\"?", "Quanto você já tem a receber pelos horários marcados nos próximos 7 e 30 dias. Vira ganho quando o atendimento é marcado como Concluído."],
+    ["Equipe e comissões", "f", "Como marco minhas folgas?", "Em Minhas folgas: escolha o dia (ou o horário) e salve. O link do cliente deixa de mostrar esse horário."],
+    ["Clientes", "", "Onde vejo o histórico de um cliente?", "Em Clientes, toque no nome: aparecem as visitas, os serviços, as faltas e quanto gastou (só atendimentos concluídos)."],
+    ["Clientes", "d", "O que é cliente \"Sumido\"?", "Quem não volta há mais de 60 dias. Em Clientes → Sumidos ou em Trazer clientes você chama de volta pelo WhatsApp com mensagem pronta."],
+    ["Plano e conta", "d", "Como funciona o teste grátis?", "30 dias com tudo liberado, para até 10 profissionais, sem cartão. Antes de acabar, escolha o plano em Conta → Plano. Se assinar antes, os dias grátis que sobraram continuam valendo."],
+    ["Plano e conta", "d", "Como troco a cor do app?", "Conta → Aparência → Estilo de cor do salão: Dourado, Rosé ou Lilás. Vale para a equipe e para a página do cliente. Claro/escuro é escolhido em cada aparelho."],
+    ["Plano e conta", "", "Esqueci a senha. E agora?", "Na tela de entrar, digite o seu e-mail e toque em \"Esqueci minha senha\". Chega um link no e-mail para criar uma senha nova."],
+    ["Plano e conta", "", "Como instalo o app no celular?", "Conta → Aparência → Instalar o app. No iPhone: no Safari, Compartilhar → Adicionar à Tela de Início."],
+    ["Problemas", "", "A internet caiu. Perco alguma coisa?", "Não. Você continua vendo a agenda e o que fizer é enviado quando a conexão voltar. O ponto no menu mostra se está Online."],
+    ["Problemas", "", "Não achei minha dúvida.", "Conta → Ajuda → Enviar sugestão ou problema, ou escreva para o suporte por e-mail. A gente responde."]
+  ];
+  function legendaHTML() {
+    var it = function (tag, txt) { return "<li>" + tag + "<span>" + txt + "</span></li>"; };
+    return '<ul class="legenda">' +
+      it(tagStatus("marcado"), "Agendado, o cliente ainda não confirmou.") +
+      it(tagStatus("confirmado"), "O cliente confirmou (pelo link) ou você confirmou.") +
+      it(tagStatus("concluido"), "Atendimento feito. Entra no faturamento e na comissão.") +
+      it(tagStatus("faltou"), "O cliente não veio. Conta como falta no histórico dele.") +
+      it('<span class="tag tag--novo">Novo pelo link</span>', "O cliente marcou sozinho pelo link e ninguém viu ainda.") +
+      it('<span class="tag tag--erro">Conflito</span>', "Dois horários do mesmo profissional encavalados.") +
+      it('<span class="tag tag--cinza">livre</span>', "Espaço vago: toque para marcar um horário nele.") +
+      it('<span class="tag tag--cinza">intervalo</span>', "Pausa do salão (almoço), definida em Horários.") +
+      it('<span class="tag tag--cinza">' + Icone("cadeado") + "bloqueado</span>", "Folga ou horário fechado (do salão ou de um profissional).") + "</ul>";
+  }
+  function semAcento(s) { return String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+  function abrirDuvidas(busca) {
+    var papel = dono() ? "d" : "f";
+    var lista = DUVIDAS.filter(function (q) { return !q[1] || q[1] === papel; });
+    var cats = []; lista.forEach(function (q) { if (cats.indexOf(q[0]) < 0) cats.push(q[0]); });
+    var html = '<div class="busca duvidas__busca">' + Icone("busca") + '<input type="search" id="duvBusca" placeholder="Digite sua dúvida (ex.: comissão, link, falta)" aria-label="Buscar dúvida" value="' + esc(busca || "") + '"></div>' +
+      '<div id="duvLista" class="duvidas">' + cats.map(function (c) {
+        return '<h3 class="duvidas__cat" data-cat="' + esc(c) + '">' + esc(c) + "</h3>" + lista.filter(function (q) { return q[0] === c; }).map(function (q) {
+          return '<details class="duvida" data-txt="' + esc(semAcento(q[2] + " " + q[3])) + '" data-cat="' + esc(c) + '"><summary>' + esc(q[2]) + "</summary><div>" + (q[3] === "@legenda" ? legendaHTML() : "<p>" + esc(q[3]) + "</p>") + "</div></details>";
+        }).join("");
+      }).join("") + '<p class="sub" id="duvNada" hidden>Nada encontrado. Tente outra palavra ou fale com a gente em Conta → Ajuda.</p></div>';
+    janelaAbrir("Central de dúvidas", html, "", false, true);
+    var form = $("#janelaForm"), inp = $("#duvBusca");
+    function filtra() {
+      var f = semAcento(inp.value.trim()), algum = false;
+      $$(".duvida", form).forEach(function (d) { var ok = !f || d.dataset.txt.indexOf(f) >= 0 || (d.dataset.txt.indexOf("etiqueta") >= 0 && /marcado|confirm|conclu|falt|novo|conflito|livre|intervalo|bloque/.test(f)); d.hidden = !ok; if (ok) algum = true; if (f && ok) d.open = true; });
+      $$(".duvidas__cat", form).forEach(function (h) { h.hidden = !$$('.duvida[data-cat="' + h.dataset.cat + '"]', form).some(function (d) { return !d.hidden; }); });
+      $("#duvNada").hidden = algum;
+    }
+    inp.oninput = filtra; inp.onkeydown = function (e) { if (e.key === "Enter") e.preventDefault(); };
+    filtra(); setTimeout(function () { inp.focus(); }, 50);
+  }
+  window.abrirDuvidas = abrirDuvidas;
+
   // Ajuda, sugestões e Sobre (dono e profissional)
   function ajudaHTML() {
     var sup = APP.suporte || "";
     return '<section class="painel" id="ajuda"><h2>' + Icone("estrela") + "Ajuda e sugestões</h2>" +
+      '<div class="atalhos" style="margin-bottom:10px"><button type="button" class="btn btn--sec" id="btnDuvidas">' + Icone("busca") + "Central de dúvidas (o que é cada coisa)</button></div>" +
       "<p>Ficou com dúvida, encontrou um problema ou tem uma ideia para melhorar o BoosterAgenda? Conta pra gente: cada mensagem é lida.</p>" +
       '<div class="atalhos"><button type="button" class="btn btn--pri" id="btnSugestao">' + Icone("mais") + "Enviar sugestão ou problema</button>" +
       '<a class="btn btn--sec" href="mailto:' + esc(sup) + '?subject=' + encodeURIComponent("Suporte BoosterAgenda - " + nomeNegocio()) + '">' + Icone("copiar") + "Escrever para o suporte</a></div>" +
@@ -1131,6 +1224,7 @@
       '<p class="sub" style="margin:8px 0 0"><a href="termos.html" target="_blank" rel="noopener">Termos de Uso</a> · <a href="privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a></p></section>';
   }
   function ligarAjuda() {
+    var bd = $("#btnDuvidas"); if (bd) bd.onclick = function () { abrirDuvidas(""); };
     var g = $("#btnVerGuia"); if (g) g.onclick = async function () { await Nuvem.salvarPerfil({ ocultarPassos: false, verPassos: true, passosPulados: [] }); location.hash = "#agenda"; };
     var b = $("#btnSugestao"); if (!b) return;
     b.onclick = async function () {
@@ -1960,6 +2054,10 @@
         this.disabled = true; this.textContent = "Apagando...";
         try { await Nuvem.recomecarDemo(); location.href = location.pathname; } catch (e) { aviso("Não deu para recomeçar: " + e.message, "erro"); this.disabled = false; }
       };
+    }
+    if (pf && !$("#btnAjudaTopo")) {
+      pf.insertAdjacentHTML("beforeend", '<button type="button" class="papel-faixa__ajuda" id="btnAjudaTopo" aria-label="Dúvidas: o que é cada coisa" title="Dúvidas">?</button>');
+      $("#btnAjudaTopo").onclick = function () { abrirDuvidas(""); };
     }
     $$(".menu__sub").forEach(function (m) { var t = dono() ? m.dataset.subDono : m.dataset.subProf; m.textContent = t || ""; m.hidden = !t; });
     $$("[data-so-dono]").forEach(function (a) { a.hidden = !dono(); });

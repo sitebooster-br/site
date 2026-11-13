@@ -278,3 +278,22 @@ input::-webkit-date-and-time-value { text-align: left; min-height: 1.4em; }
 .papel-faixa__demo { margin-left: auto; flex: none; }
 .papel-faixa--demo { border-color: rgba(90,169,255,.5); }
 @media (max-width: 800px) { .papel-faixa--demo { flex-wrap: wrap; } .papel-faixa__demo { margin-left: 32px; } }
+
+/* Botão de dúvidas (?) no topo e Central de dúvidas */
+.papel-faixa__ajuda { margin-left: auto; flex: none; width: 38px; height: 38px; border-radius: 50%; border: 2px solid var(--destaque); background: transparent; color: var(--destaque); font: 800 1.15rem/1 "Poppins", sans-serif; cursor: pointer; display: grid; place-items: center; }
+.papel-faixa__ajuda:hover { background: rgba(var(--tinta-rgb), .12); }
+.papel-faixa__demo + .papel-faixa__ajuda { margin-left: 8px; }
+.duvidas__busca { margin: 4px 0 10px; }
+.duvidas { max-height: min(62vh, 560px); overflow-y: auto; padding-right: 4px; }
+.duvidas__cat { font: 700 .82rem "Inter", sans-serif; text-transform: uppercase; letter-spacing: .06em; color: var(--txt-3); margin: 14px 0 6px; }
+.duvida { border: 1px solid var(--linha); border-radius: 10px; margin-bottom: 6px; background: var(--bg-2); }
+.duvida summary { cursor: pointer; padding: 11px 14px; font-weight: 600; list-style: none; }
+.duvida summary::-webkit-details-marker { display: none; }
+.duvida summary::after { content: "+"; float: right; color: var(--txt-3); font-weight: 700; }
+.duvida[open] summary::after { content: "–"; }
+.duvida > div { padding: 0 14px 12px; color: var(--txt-2); }
+.duvida p { margin: 0; }
+.legenda { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.legenda li { display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: center; font-size: .92rem; }
+.legenda .tag { justify-self: start; display: inline-flex; align-items: center; gap: 4px; }
+.legenda .tag .i { width: 14px; height: 14px; }
