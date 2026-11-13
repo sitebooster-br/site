@@ -776,7 +776,7 @@
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
     };
     $("#btnCartaz").onclick = function () {
-      if (!(S.perfil || {}).linkDivulgado) Nuvem.salvarPerfil({ linkDivulgado: true });
+      Nuvem.rastro("copiou o link", ""); if (!(S.perfil || {}).linkDivulgado) Nuvem.salvarPerfil({ linkDivulgado: true });
       var c = $("#cartaz"); if (!c) { c = document.createElement("div"); c.id = "cartaz"; document.body.appendChild(c); }
       c.innerHTML = '<div class="cartaz__in"><p class="cartaz__chama">Marque seu horário pelo celular</p><h1>' + esc(p.nome || nomeNegocio()) + "</h1>" +
         '<div class="cartaz__qr">' + qrSVG(url) + '</div><p class="cartaz__passo">Aponte a câmera do celular para o código<br>e escolha o serviço e o horário.</p>' +
@@ -824,7 +824,7 @@
     if (p.slug) {
       ligarQR(url, p);
       $("#copiar").onclick = function () {
-        if (!(S.perfil || {}).linkDivulgado) Nuvem.salvarPerfil({ linkDivulgado: true });
+        Nuvem.rastro("copiou o link", ""); if (!(S.perfil || {}).linkDivulgado) Nuvem.salvarPerfil({ linkDivulgado: true });
         (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { aviso("Link copiado."); }, function () {
           var r = document.createRange(); r.selectNodeContents($("#urlLink")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); aviso("Selecione e copie o link.", "erro");
         });
@@ -1367,7 +1367,7 @@
     };
     function copiar(t, b) { if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { aviso("Copiado!"); }); }
     if ($("#copiarVagos", el)) $("#copiarVagos", el).onclick = function () { copiar($("#msgVagos", el).value); };
-    if ($("#copiarLinkT", el)) $("#copiarLinkT", el).onclick = function () { copiar(link); if (!(S.perfil || {}).linkDivulgado) Nuvem.salvarPerfil({ linkDivulgado: true }); };
+    if ($("#copiarLinkT", el)) $("#copiarLinkT", el).onclick = function () { copiar(link); Nuvem.rastro("copiou o link", ""); if (!(S.perfil || {}).linkDivulgado) Nuvem.salvarPerfil({ linkDivulgado: true }); };
   };
 
   /* ---------- Comissões e acerto (A2) ---------- */
@@ -1680,6 +1680,7 @@
     var soDono = { equipe: 1, servicos: 1, link: 1, trazer: 1, salao: 1 };
     if (!TELAS[nome] || (soDono[nome] && !dono())) nome = "agenda";
     telaAtual = nome;
+    Nuvem.rastro("abriu tela", nome);
     var marcado = dono() && TELAS_SALAO[nome] ? "salao" : nome;
     $$("[data-tela]").forEach(function (a) { if (a.dataset.tela === marcado) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
     var el = $("#conteudo");
@@ -1713,7 +1714,7 @@
   }
 
   /* ---------- Início ---------- */
-  function mostrar(id) { ["telaCarregando", "telaAtivacao", "telaSemLicenca", "telaBoasVindas", "app"].forEach(function (t) { $("#" + t).hidden = t !== id; }); }
+  function mostrar(id) { ["telaCarregando", "telaAtivacao", "telaSemLicenca", "telaBoasVindas", "telaConfirmar", "app"].forEach(function (t) { $("#" + t).hidden = t !== id; }); }
 
   var params = new URLSearchParams(location.search);
   var CONVITE = params.get("convite") || "";
@@ -1760,6 +1761,37 @@
       fluxo();
     };
     atualizar();
+  }
+
+  // Antes do teste grátis: a pessoa confirma que o e-mail é dela (evita e-mail falso e teste repetido)
+  var esperaConfirmar = null;
+  function telaConfirmar() {
+    mostrar("telaConfirmar");
+    var u = Nuvem.Conta.usuario(), mail = (u && u.email) || "";
+    $("#cfEmail").textContent = mail; $("#cfErro").textContent = ""; $("#cfOk").textContent = "";
+    function enviar(manual) {
+      return Nuvem.Conta.enviarConfirmacao().then(function () {
+        try { sessionStorage.setItem("bs-cf-" + u.uid, "1"); } catch (e) {}
+        $("#cfErro").textContent = ""; $("#cfOk").textContent = manual ? "Enviamos de novo. Confira a caixa de entrada e o spam." : "";
+      }, function (err) {
+        $("#cfOk").textContent = "";
+        $("#cfErro").textContent = err && err.code === "auth/too-many-requests" ? "Já enviamos agora há pouco. Espere alguns minutos antes de pedir de novo." : Nuvem.traduzir(err);
+      });
+    }
+    var jaEnviou = false; try { jaEnviou = !!sessionStorage.getItem("bs-cf-" + u.uid); } catch (e) {}
+    if (!jaEnviou) enviar(false);
+    async function conferir(manual) {
+      try {
+        if (await Nuvem.Conta.conferirConfirmacao()) { clearInterval(esperaConfirmar); esperaConfirmar = null; aviso("E-mail confirmado!"); fluxo(); return; }
+        if (manual) { $("#cfOk").textContent = ""; $("#cfErro").textContent = "Ainda não aparece como confirmado. Toque no link do e-mail e depois aqui de novo."; }
+      } catch (e) { if (manual) $("#cfErro").textContent = Nuvem.traduzir(e); }
+    }
+    $("#cfPronto").onclick = function () { conferir(true); };
+    $("#cfReenviar").onclick = function () { enviar(true); };
+    $("#cfSair").onclick = async function () { clearInterval(esperaConfirmar); await Nuvem.Conta.sair(); location.href = location.pathname; };
+    clearInterval(esperaConfirmar);
+    var voltas = 0;
+    esperaConfirmar = setInterval(function () { if (++voltas > 150) return clearInterval(esperaConfirmar); if (!document.hidden && !$("#telaConfirmar").hidden) conferir(false); }, 4000);
   }
 
   function telaCriarSalao() {
@@ -1810,7 +1842,10 @@
           location.href = location.pathname;
           return;
         }
-      } else return telaCriarSalao();
+      } else {
+        if (!Nuvem.Conta.verificado() && !(Nuvem.ehDemo && await Nuvem.ehDemo())) return telaConfirmar();
+        return telaCriarSalao();
+      }
     }
 
     await Nuvem.iniciar();
@@ -1828,7 +1863,7 @@
     if (a.bloqueado) return { nivel: "erro", texto: "O acesso deste salão foi <strong>suspenso pela Sitebooster</strong>. Você ainda vê a agenda, mas não consegue marcar nem alterar. Fale com o suporte: " + esc(APP.suporte || "") + "." };
     var dd = function (n) { return n <= 0 ? "hoje" : n === 1 ? "amanhã" : "em " + n + " dias"; };
     if (a.status === "teste") {
-      if (!a.emDia) return { nivel: "erro", texto: "Seu teste grátis <strong>terminou</strong>. Assine para continuar marcando horários." + (a.avisoApagar ? " <strong>Atenção: os dados do salão serão apagados em " + new Date(a.avisoApagar).toLocaleDateString("pt-BR") + "</strong> (6 meses sem assinatura)." : "") };
+      if (!a.emDia) return { nivel: "erro", texto: "Seu teste grátis <strong>terminou</strong>. Assine para continuar marcando horários." + (a.avisoApagar ? " <strong>Atenção: os dados do salão serão apagados em " + new Date(a.avisoApagar).toLocaleDateString("pt-BR") + "</strong>. Para manter, é só assinar." : "") };
       return { nivel: a.dias <= 7 ? "aviso" : "info", texto: "Teste grátis com <strong>tudo liberado</strong> (até " + a.limite + " profissionais): " + (a.dias === 1 ? "falta <strong>1 dia</strong>" : "faltam <strong>" + a.dias + " dias</strong>") + (a.fim ? " (até " + d(a.fim) + ")." : ".") };
     }
     if (a.status === "ativa" && a.emDia) {
@@ -1838,7 +1873,7 @@
       if (a.proxima) return { nivel: a.diasRenova <= 3 ? "aviso" : "info", texto: "Assinatura <strong>ativa</strong>. Sua assinatura renova <strong>" + dd(a.diasRenova) + "</strong> (" + d(a.proxima) + "), automaticamente pela Kiwify." };
       return { nivel: "info", texto: "Assinatura <strong>ativa</strong>, com renovação automática pela Kiwify. Acesso garantido até " + d(a.fim) + "." };
     }
-    var apagar = a.avisoApagar ? " <strong>Atenção: os dados do salão serão apagados em " + d(a.avisoApagar) + "</strong> (6 meses sem assinatura). Assine para manter ou baixe um backup." : "";
+    var apagar = a.avisoApagar ? " <strong>Atenção: os dados do salão serão apagados em " + d(a.avisoApagar) + "</strong>. Assine para manter ou baixe um backup." : "";
     if (a.status === "teste" && apagar) return { nivel: "erro", texto: "Seu teste grátis <strong>terminou</strong>." + apagar };
     if (a.status === "cancelada") return { nivel: "erro", texto: "Sua assinatura foi <strong>encerrada</strong>. Você ainda vê a agenda, mas não consegue marcar nem alterar." + apagar };
     if (apagar) return { nivel: "erro", texto: "Sua assinatura está <strong>pendente</strong>." + apagar };
@@ -1923,10 +1958,13 @@
       aviso(a.clienteNome + (a.status === "cancelado" ? " desmarcou" : " confirmou") + " pelo link: " + U.quandoTexto(a.data) + " às " + a.inicio + (a.profNome && equipeVisivel() ? " com " + a.profNome : "") + "." + (a.status === "cancelado" && a.motivoCliente ? " Motivo: " + a.motivoCliente + "." : ""), a.status === "cancelado" ? "erro" : "info");
     });
     document.addEventListener("novo-online", function (e) {
-      var a = e.detail; Som.tocar("novo");
+      var a = e.detail; Som.tocar("novo"); Nuvem.rastro("cliente marcou pelo link", "");
       aviso("Novo agendamento pelo link: " + a.clienteNome + ", " + U.quandoTexto(a.data) + " às " + a.inicio + (a.profNome && equipeVisivel() ? " com " + a.profNome : "") + ".", "info");
     });
     if (dono()) Backup.iniciar();
+    Nuvem.rastro("entrou no app", dono() ? "dono" : "profissional");
+    // Botões de assinatura (Kiwify): conta como "clicou em assinar" no rastro
+    document.addEventListener("click", function (e) { var l = e.target.closest && e.target.closest('a[href*="kiwify"]'); if (l) Nuvem.rastro("clicou em assinar", (l.closest(".plano") && l.closest(".plano").querySelector("b") || {}).textContent || ""); }, true);
     irPara();
     // Profissional: avisa se a comissão vai mudar e ele ainda não confirmou
     if (!dono()) setTimeout(function () {

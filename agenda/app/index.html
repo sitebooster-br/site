@@ -86,6 +86,20 @@
  </form>
 </section>
 
+<section class="ativacao" id="telaConfirmar" hidden aria-labelledby="tCF">
+ <div class="ativacao__box">
+  <div class="marca marca--grande" data-marca></div>
+  <h1 id="tCF">Confirme o seu e-mail</h1>
+  <p>Enviamos um link para <strong id="cfEmail"></strong>. Abra o e-mail, toque em <b>confirmar</b> e volte aqui.</p>
+  <p class="sub">Não chegou em 2 minutos? Olhe a caixa de <b>spam</b> ou <b>promoções</b>.</p>
+  <p class="ok-msg" id="cfOk" role="status"></p>
+  <p class="erro" id="cfErro" role="alert"></p>
+  <button class="btn btn--pri btn--bloco" type="button" id="cfPronto">Já confirmei</button>
+  <button class="btn btn--sec btn--bloco" type="button" id="cfReenviar" style="margin-top:10px">Enviar o e-mail de novo</button>
+  <button class="link-btn" type="button" id="cfSair" style="margin-top:12px">Digitei o e-mail errado. Sair e usar outro</button>
+ </div>
+</section>
+
 <!-- ============ APLICATIVO ============ -->
 <div class="faixa-assinatura" id="faixaAssinatura" hidden></div>
 <div class="comunicados-central" id="faixaComunicado" hidden></div>

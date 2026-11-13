@@ -134,6 +134,9 @@
  .ajuda-c b { display: block; margin-bottom: 4px; }
  .ajuda-c p { margin: 0; color: var(--txt-2); font-size: .92rem; }
  @media (max-width: 640px) { .linha-fin { grid-template-columns: 1fr 1fr; } .linha-fin > div:first-child { grid-column: 1 / -1; } .linha-fin__num { text-align: left; } }
+ .rastro-dia { border-top: 1px solid var(--linha); padding: 8px 0; } .rastro-dia summary { cursor: pointer; list-style: none; display: flex; gap: 8px; align-items: center; }
+ .rastro-dia summary::before { content: "▸"; color: var(--txt-2); } .rastro-dia[open] summary::before { content: "▾"; } .rastro-dia .feed { margin-top: 6px; }
+ .tag--cinza { background: rgba(var(--suave-rgb), .08); color: var(--txt-2); }
 </style>
 </head>
 <body>

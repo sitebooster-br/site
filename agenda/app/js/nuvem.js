@@ -96,6 +96,16 @@ window.Nuvem = (function () {
     entrar: function (e, s) { return FB.signInWithEmailAndPassword(auth, e.trim(), s).then(function (r) { return r.user; }); },
     criar: function (e, s) { return FB.createUserWithEmailAndPassword(auth, e.trim(), s).then(function (r) { return r.user; }); },
     recuperar: function (e) { auth.languageCode = "pt-BR"; return FB.sendPasswordResetEmail(auth, e.trim()); },
+    // Confirmação do e-mail (obrigatória para começar o teste grátis)
+    verificado: function () { return !!(auth.currentUser && auth.currentUser.emailVerified); },
+    enviarConfirmacao: function () { auth.languageCode = "pt-BR"; return FB.sendEmailVerification(auth.currentUser); },
+    // Pergunta de novo ao Google se o e-mail já foi confirmado (e renova o crachá de acesso)
+    conferirConfirmacao: async function () {
+      var u = auth.currentUser; if (!u) return false;
+      await FB.reload(u);
+      if (u.emailVerified) await u.getIdToken(true);
+      return !!u.emailVerified;
+    },
     sair: function () { desligar.forEach(function (f) { f(); }); desligar = []; return FB.signOut(auth); },
     traduzir: traduzir
   };
@@ -154,6 +164,46 @@ window.Nuvem = (function () {
     try { localStorage.clear(); } catch (e) {}
     return true;
   }
+  /* ---------------- Rastro de uso ----------------
+     Guarda o que cada salão faz no app (telas abertas e ações principais), para a Central ver quem usa de verdade.
+     Um documento por dia (saloes/{id}/rastro/{AAAA-MM-DD}) com a lista do dia. Conta de demonstração não grava.
+     Marcos (primeira vez que fez algo importante) ficam no próprio salão, em "uso". */
+  var MARCOS = { "cadastrou serviço": "servico", "marcou horário": "horario", "cliente marcou pelo link": "clienteLink", "concluiu atendimento": "concluiu", "convidou profissional": "equipe", "copiou o link": "link", "clicou em assinar": "assinar", "cadastrou cliente": "cliente" };
+  var rastroVisto = {}, rastroN = 0, ultimoUso = 0;
+  function rastro(acao, detalhe) {
+    if (!sid || !uid) return;
+    ehDemo().then(function (demo) { if (!demo) gravarRastro(acao, detalhe); });
+  }
+  function gravarRastro(acao, detalhe) {
+    try {
+      if (!navigator.onLine) return;
+      var ag = Date.now(), chave = acao + "|" + (detalhe || "");
+      if (rastroVisto[chave] && ag - rastroVisto[chave] < 10 * 60e3) return;   // não repete a mesma coisa em 10 minutos
+      if (++rastroN > 120) return;                                              // limite por sessão (protege a cota grátis)
+      rastroVisto[chave] = ag;
+      var d = new Date(), dia = U.hojeISO(), hora = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+      FB.setDoc(ref("rastro", dia), {
+        dia: dia, apagarEm: vence(dia, 90),
+        ev: FB.arrayUnion({ h: hora, a: String(acao).slice(0, 40), d: String(detalhe || "").slice(0, 80), p: ehDono() ? "dono" : "prof", n: String((st.eu && st.eu.nome) || "").slice(0, 40), r: rastroN + "-" + (ag % 100000) })
+      }, { merge: true }).catch(function () {});
+      if (!ehDono()) return;
+      var uso = (st.perfil && st.perfil.uso) || {}, marcos = uso.marcos || {}, upd = {}, m = MARCOS[acao];
+      if (m && !marcos[m]) { upd["uso.marcos." + m] = agora(); marcos[m] = agora(); uso.marcos = marcos; if (st.perfil) st.perfil.uso = uso; }
+      try { var chaveDia = "bs-uso-" + sid; if (localStorage.getItem(chaveDia) !== dia) { localStorage.setItem(chaveDia, dia); upd["uso.dias"] = FB.increment(1); } } catch (e) {}
+      if (Object.keys(upd).length || ag - ultimoUso > 30 * 60e3) {
+        ultimoUso = ag; upd["uso.ultimo"] = agora();
+        FB.updateDoc(refSalao(), upd).catch(function () {});
+      }
+    } catch (e) {}
+  }
+  // Apaga o rastro com mais de 90 dias (só o dono; roda junto com a limpeza normal)
+  async function limparRastro() {
+    if (!ehDono()) return;
+    var s = await FB.getDocs(FB.query(col("rastro"), FB.where("apagarEm", "<", FB.Timestamp.now()), FB.limit(100)));
+    if (!s.size) return;
+    var b = FB.writeBatch(db); s.docs.forEach(function (x) { b.delete(x.ref); }); await b.commit();
+  }
+
   // Profissional entrou pela tela normal (sem o link): procura um convite feito para o e-mail dele
   async function conviteParaMim() {
     var mail = ((auth.currentUser && auth.currentUser.email) || "").toLowerCase(); if (!mail) return null;
@@ -312,6 +362,7 @@ window.Nuvem = (function () {
     if (tabela === "clientes" && !o.apagarEm) o.apagarEm = vence(o.ultimaVisita > U.hojeISO() ? o.ultimaVisita : U.hojeISO(), GUARDA_DIAS);
     if (tabela === "bloqueios" && o.data) o.apagarEm = vence(o.data, 30);
     var p = FB.setDoc(ref(tabela, id), o).catch(falhou);
+    if (!obj.id && (tabela === "servicos" || tabela === "clientes")) rastro(tabela === "servicos" ? "cadastrou serviço" : "cadastrou cliente", tabela === "servicos" ? (o.nome || "") : "");
     emitir("dados-alterados", { tabela: tabela });
     if (tabela === "servicos" || tabela === "bloqueios") publicarPagina();
     return Promise.resolve(Object.assign({ id: id, _envio: p }, o));
@@ -375,6 +426,7 @@ window.Nuvem = (function () {
   }
 
   async function convidarProfissional(d) {
+    rastro("convidou profissional", "");
     var n = vagaLivre();
     if (!n) throw new Error("Seu plano " + assinatura().planoNome + " permite até " + assinatura().limite + " profissionais. Para adicionar mais, troque de plano.");
     var mail = String(d.email || "").trim().toLowerCase();
@@ -579,6 +631,8 @@ window.Nuvem = (function () {
 
   function salvarAg(novo, antigo) {
     var a = limpar(Object.assign({}, novo));
+    if (!a.id && a.status !== "cancelado") rastro("marcou horário", a.data || "");
+    else if (a.status === "concluido" && (!antigo || antigo.status !== "concluido")) rastro("concluiu atendimento", "");
     var id = a.id || novoId("agendamentos");
     delete a.id;
     if (!ehDono()) {
@@ -793,6 +847,7 @@ window.Nuvem = (function () {
       ops.slice(i, i + 400).forEach(function (o) { b.update(o[0], o[1]); });
       await b.commit();
     }
+    limparRastro().catch(function () {});
   }
 
   /* ---------------- Backup (só o dono) ---------------- */
@@ -864,7 +919,7 @@ window.Nuvem = (function () {
   return {
     Conta: Conta, estado: st, PLANOS: PLANOS, CORES: CORES, OCUPA: OCUPA,
     carregarSessao: carregarSessao, criarSalao: criarSalao, aceitarConvite: aceitarConvite,
-    ehDono: ehDono, meuProfId: meuProfId, assinatura: assinatura, conviteParaMim: conviteParaMim, ehDemo: ehDemo, recomecarDemo: recomecarDemo,
+    ehDono: ehDono, meuProfId: meuProfId, assinatura: assinatura, conviteParaMim: conviteParaMim, ehDemo: ehDemo, recomecarDemo: recomecarDemo, rastro: rastro,
     comunicados: comunicados, iniciar: iniciar, agsEntre: agsEntre, agsDoCliente: agsDoCliente,
     salvar: salvar, apagar: apagar, salvarBloqueio: salvarBloqueio, apagarBloqueio: apagarBloqueio,
     enviarSugestao: enviarSugestao, salvarPerfil: salvarPerfil, definirEndereco: definirEndereco, publicarAgora: publicarAgora, reconstruirOcupados: reconstruirOcupados,

@@ -34,6 +34,14 @@
     return { k: "encerrado", t: "Encerrado", cor: "erro" };
   }
   function tag(st) { return '<span class="tag tag--' + st.cor + '">' + esc(st.t) + "</span>"; }
+  // Quanto o salão usa de verdade (vem do rastro que o app grava em "uso")
+  var NOMES_MARCOS = { servico: "Cadastrou o primeiro serviço", cliente: "Cadastrou o primeiro cliente", equipe: "Convidou um profissional", link: "Copiou o link de agendamento", horario: "Marcou o primeiro horário", clienteLink: "Recebeu o primeiro horário pelo link", concluiu: "Concluiu o primeiro atendimento", assinar: "Clicou em assinar" };
+  function usoDe(s) {
+    var u = s.uso || {}, m = u.marcos || {};
+    var k = (m.horario || m.clienteLink || m.concluiu) ? "usando" : (m.servico || m.cliente || m.equipe || m.link) ? "configurou" : "olhou";
+    var nomes = { usando: ["Usando", "ok"], configurou: ["Configurou", "alerta"], olhou: ["Só olhou", "cinza"] };
+    return { k: k, t: nomes[k][0], cor: nomes[k][1], marcos: m, ultimo: u.ultimo, dias: u.dias || 0 };
+  }
   function barra(rotulo, valor, limite, sufixo) {
     var p = limite ? Math.min(100, valor / limite * 100) : 0, cor = p >= 90 ? "var(--erro)" : p >= 70 ? "var(--alerta)" : "var(--ok)";
     return '<div class="barra-uso"><div class="barra-uso__topo"><b>' + esc(rotulo) + "</b><span>" + esc(sufixo || (num(valor) + " de " + num(limite))) + " · <b>" + p.toFixed(1).replace(".", ",") + '%</b></span></div><div class="barra-uso__trilho"><i style="width:' + p + "%;background:" + cor + '"></i></div></div>';
@@ -236,7 +244,7 @@
     C.innerHTML = painelPendentes() +
       '<details class="painel painel--rec" id="avisosCel"><summary><h2>' + Icone("sino") + 'Avisos no celular <span class="sub" id="avisosCelResumo">verificando...</span></h2></summary><div id="avisosCelCorpo"></div></details>' +
       '<section class="painel"><h2>' + Icone("nuvem") + "Saúde do sistema</h2>" + saudeHTML() + "</section>" +
-      resumoHoje();
+      resumoHoje() + funilHTML();
     ligarNotifs($("#painelPend"), function () { telaGeral(); avisosCel().catch(function () {}); });
     var lg = $("#lerTudoGeral"); if (lg) lg.onclick = function () { marcarNotif(pendentes().map(function (n) { return n.id; }), "lida").then(function () { telaGeral(); avisosCel().catch(function () {}); }); };
   }
@@ -246,6 +254,19 @@
       '<div class="kpis">' + kpi(brl(n.mrr), "receita mensal (assinaturas ativas)") + kpi(n.ativos, "assinantes") + kpi(n.testes, "em teste grátis") + kpi(brl(somaPagos(mes.de, mes.ate)), "recebido neste mês") + "</div>" +
       '<div class="atalhos"><a class="btn btn--sec btn--peq" href="#financeiro">' + Icone("grafico") + "Ver o financeiro completo</a></div></section>";
   }
+  // Funil: dos salões em teste, quantos só olharam, configuraram ou estão usando de verdade
+  function funilHTML() {
+    var c = { olhou: 0, configurou: 0, usando: 0 }, assinar = 0, testes = DADOS.saloes.filter(function (s) { return statusDe(s).k === "teste"; });
+    testes.forEach(function (s) { var u = usoDe(s); c[u.k]++; if (u.marcos.assinar) assinar++; });
+    var link = function (k, txt) { return '<a class="btn btn--sec btn--peq" href="#saloes" data-uso="' + k + '">' + txt + "</a>"; };
+    return '<section class="painel"><h2>' + Icone("usuarios") + "Quem está testando</h2>" +
+      '<p class="sub">Dos ' + testes.length + " salões em teste grátis. <b>Usando</b> = já marcou horário ou recebeu pelo link. <b>Configurou</b> = cadastrou serviço, cliente ou equipe, mas ainda não marcou. <b>Só olhou</b> = entrou e não fez nada.</p>" +
+      '<div class="kpis">' + kpi(c.usando, "usando de verdade") + kpi(c.configurou, "configuraram") + kpi(c.olhou, "só olharam") + kpi(assinar, "clicaram em assinar") + "</div>" +
+      '<div class="atalhos">' + link("usando", "Ver quem está usando") + link("configurou", "Ver quem configurou") + link("olhou", "Ver quem só olhou") + "</div>" +
+      '<p class="sub">Quem só olhou e não assina é apagado sozinho 30 dias depois do fim do teste (com aviso no app 7 dias antes).</p></section>';
+  }
+  document.addEventListener("click", function (e) { var a = e.target.closest && e.target.closest("a[data-uso]"); if (a) { filtro.uso = a.dataset.uso; filtro.status = "teste"; } });
+
   function telaFinanceiro() {
     C.innerHTML = painelReceita() + painelPlanos() + painelMovimento() + painelPagamentos();
     ligarPer("perRec", PER, function () { var y = window.scrollY; telaFinanceiro(); window.scrollTo(0, y); });
@@ -320,13 +341,14 @@
     C.innerHTML = html + '<p class="sub" style="margin-top:12px">' + Icone("info") + ' O que é leitura, gravação, exclusão e espaço, e quantos salões cabem: veja a aba <a href="#ajuda">Ajuda</a>.</p>';
   }
 
-  var filtro = { status: "", plano: "", busca: "" };
+  var filtro = { status: "", plano: "", busca: "", uso: "" };
   function telaSaloes() {
     var linhas = DADOS.saloes.map(function (s) { return { s: s, st: statusDe(s), dono: donoDe(s.id) }; })
       .filter(function (x) {
         var a = x.s.assinatura || {}, t = filtro.busca.toLowerCase();
         if (filtro.status && x.st.k !== filtro.status) return false;
         if (filtro.plano && a.plano !== filtro.plano) return false;
+        if (filtro.uso && usoDe(x.s).k !== filtro.uso) return false;
         if (t && ((x.s.nome || "") + " " + (x.dono.email || "") + " " + (x.s.slug || "") + " " + (x.s.whatsapp || "")).toLowerCase().indexOf(t) < 0) return false;
         return true;
       }).sort(function (a, b) { return ms(b.s.criadoEm) - ms(a.s.criadoEm); });
@@ -335,14 +357,16 @@
       '<div class="filtros"><label>Buscar<input id="fBusca" value="' + esc(filtro.busca) + '" placeholder="nome, e-mail, link ou WhatsApp"></label>' +
       '<label>Situação<select id="fStatus">' + opt("", "Todas", filtro.status) + opt("ativo", "Assinantes", filtro.status) + opt("teste", "Teste grátis", filtro.status) + opt("cancelando", "Cancelaram", filtro.status) + opt("encerrado", "Encerrados", filtro.status) + opt("bloqueado", "Bloqueados", filtro.status) + opt("excluindo", "Exclusão pedida", filtro.status) + "</select></label>" +
       '<label>Plano<select id="fPlano">' + opt("", "Todos", filtro.plano) + Object.keys(PLANOS).map(function (k) { return opt(k, PLANOS[k].nome, filtro.plano); }).join("") + "</select></label>" +
+      '<label>Uso<select id="fUso">' + opt("", "Todos", filtro.uso) + opt("usando", "Usando", filtro.uso) + opt("configurou", "Configurou", filtro.uso) + opt("olhou", "Só olhou", filtro.uso) + "</select></label>" +
       '<button class="btn btn--sec btn--peq" id="fCsv">' + Icone("baixar") + "Baixar planilha</button></div>" +
       '<p class="sub">Toque num salão para abrir a ficha completa.</p>' +
-      '<div class="rolar"><table class="tab tab--click"><tr><th>Salão</th><th>Dono</th><th>Situação</th><th>Plano</th><th>Acesso até</th><th>Criado</th></tr>' +
-      (linhas.length ? linhas.map(function (x) { var a = x.s.assinatura || {}; return '<tr data-id="' + esc(x.s.id) + '" tabindex="0"><td><b>' + esc(x.s.nome || "(sem nome)") + '</b><br><span class="sub">/' + esc(x.s.slug || "sem link") + "</span></td><td data-l=\"Dono\">" + esc(x.dono.email || "-") + "</td><td>" + tag(x.st) + "</td><td data-l=\"Plano\">" + esc((PLANOS[a.plano] || {}).nome || "-") + "</td><td data-l=\"Acesso até\">" + data(a.status === "ativa" ? a.pagoAte : a.testeAte) + "</td><td data-l=\"Criado\">" + data(x.s.criadoEm) + "</td></tr>"; }).join("") : '<tr><td colspan="6" class="sub">Nenhum salão com esse filtro.</td></tr>') +
+      '<div class="rolar"><table class="tab tab--click"><tr><th>Salão</th><th>Dono</th><th>Situação</th><th>Uso</th><th>Plano</th><th>Acesso até</th><th>Criado</th></tr>' +
+      (linhas.length ? linhas.map(function (x) { var a = x.s.assinatura || {}; return '<tr data-id="' + esc(x.s.id) + '" tabindex="0"><td><b>' + esc(x.s.nome || "(sem nome)") + '</b><br><span class="sub">/' + esc(x.s.slug || "sem link") + "</span></td><td data-l=\"Dono\">" + esc(x.dono.email || "-") + "</td><td>" + tag(x.st) + "</td><td data-l=\"Uso\">" + tag(usoDe(x.s)) + '<br><span class="sub">entrou ' + ha(usoDe(x.s).ultimo) + "</span></td><td data-l=\"Plano\">" + esc((PLANOS[a.plano] || {}).nome || "-") + "</td><td data-l=\"Acesso até\">" + data(a.status === "ativa" ? a.pagoAte : a.testeAte) + "</td><td data-l=\"Criado\">" + data(x.s.criadoEm) + "</td></tr>"; }).join("") : '<tr><td colspan="7" class="sub">Nenhum salão com esse filtro.</td></tr>') +
       "</table></div></section>";
     $("#fBusca").oninput = function (e) { filtro.busca = e.target.value; var pos = e.target.selectionStart; telaSaloes(); var b = $("#fBusca"); b.focus(); b.setSelectionRange(pos, pos); };
     $("#fStatus").onchange = function (e) { filtro.status = e.target.value; telaSaloes(); };
     $("#fPlano").onchange = function (e) { filtro.plano = e.target.value; telaSaloes(); };
+    $("#fUso").onchange = function (e) { filtro.uso = e.target.value; telaSaloes(); };
     $$("tr[data-id]").forEach(function (tr) { tr.onclick = tr.onkeydown = function (e) { if (e.type === "keydown" && e.key !== "Enter") return; location.hash = "#salao/" + encodeURIComponent(tr.dataset.id); }; });
     montarDemos().catch(function () {});
     $("#fCsv").onclick = function () {
@@ -361,7 +385,8 @@
     var r = await Promise.all([
       pega(lista(col("saloes", sid, "profissionais"))), pega(lista(col("saloes", sid, "servicos"))), pega(lista(col("saloes", sid, "clientes"))),
       pega(lista(FB.query(col("saloes", sid, "agendamentos"), FB.where("data", ">=", mes + "-01"), FB.where("data", "<=", mes + "-31")))), pega(lista(col("saloes", sid, "resumos"))),
-      pega(lista(FB.query(col("central", "dados", "auditoria"), FB.where("salaoId", "==", sid))))
+      pega(lista(FB.query(col("central", "dados", "auditoria"), FB.where("salaoId", "==", sid)))),
+      pega(lista(FB.query(col("saloes", sid, "rastro"), FB.orderBy("dia", "desc"), FB.limit(14))))
     ]);
     if (rota().tela !== "salao" || rota().id !== sid) return;   // a pessoa já saiu da ficha
     var profs = r[0], servs = r[1], clientes = r[2], agsMes = r[3], resumos = r[4].sort(function (a, b) { return a.id < b.id ? -1 : 1; }), aud = r[5].sort(function (a, b) { return ms(b.quando) - ms(a.quando); });
@@ -386,7 +411,7 @@
       "<tr><th>Plano</th><td>" + esc(p.nome) + " · " + brl(p.preco) + " por mês · até " + (a.limiteProf || p.limite) + " profissionais</td></tr>" +
       "<tr><th>Teste grátis até</th><td>" + data(a.testeAte) + "</td></tr><tr><th>Pago até</th><td>" + data(a.pagoAte) + "</td></tr>" +
       "<tr><th>Próxima cobrança</th><td>" + data(a.proximaCobranca) + "</td></tr>" +
-      (a.avisoApagar ? "<tr><th>Dados apagados em</th><td><b>" + data(a.avisoApagar) + "</b> (6 meses sem assinatura)</td></tr>" : "") +
+      (a.avisoApagar ? "<tr><th>Dados apagados em</th><td><b>" + data(a.avisoApagar) + "</b> (sem assinatura" + (usoDe(s).k === "usando" ? ", 6 meses" : ", só olhou") + ")</td></tr>" : "") +
       "<tr><th>Cortesias</th><td>" + ((a.cortesias || []).map(function (c) { return c.dias + " dias em " + data(c.em) + " por " + esc(c.por || ""); }).join("<br>") || "nenhuma") + "</td></tr></table>" +
       '<h3 class="cen-h3">Ações</h3><div class="atalhos">' +
       '<button class="btn btn--sec btn--peq" id="aCortesia">Dar ou tirar dias</button>' +
@@ -402,6 +427,7 @@
       (profs.length ? '<table class="tab">' + profs.map(function (x) { return "<tr><td><b>" + esc(x.nome || "") + "</b>" + (x.ehDono ? " (dono)" : "") + "</td><td>" + (x.removido ? "removido" : x.ativo ? (x.uid ? "ativo" : "convite pendente") : "desativado") + "</td></tr>"; }).join("") + "</table>" : '<p class="sub">Nenhum profissional.</p>') +
       '<h3 class="cen-h3">Serviços</h3>' + (servs.length ? '<p class="sub">' + servs.map(function (x) { return esc(x.nome) + " (" + brl(x.preco) + ", " + (x.duracao || "?") + " min)"; }).join(" · ") + "</p>" : '<p class="sub">Nenhum serviço.</p>') + "</section>" +
       '<section class="painel"><h2>' + Icone("estrela") + "Dados do salão</h2>" + (s.endereco ? "<p>" + esc(s.endereco) + "</p>" : "") + '<p class="sub">Cidade, tipo de negócio e outros dados entram na próxima etapa.</p></section></div>' +
+      rastroHTML(s, r[6]) +
       '<section class="painel" id="fatSalao"></section>' +
 
       '<div class="cen-duas"><section class="painel"><h2>' + Icone("estrela") + "Sugestões deste salão</h2>" +
@@ -410,6 +436,23 @@
       (aud.length ? '<ul class="feed">' + aud.map(function (x) { return "<li><span>" + esc(x.acao) + (x.detalhe ? ": " + esc(x.detalhe) : "") + '</span><span class="sub">' + dataHora(x.quando) + " · " + esc(x.por) + "</span></li>"; }).join("") + "</ul>" : '<p class="sub">Nenhuma ação ainda.</p>') + "</section></div>";
     ligarFicha(s);
     montarFaturamento(sid, profs, resumos);
+  }
+
+  // Rastro: marcos (primeira vez que fez algo) + o que fez nos últimos 14 dias de uso
+  function rastroHTML(s, dias) {
+    var u = usoDe(s), m = u.marcos;
+    var marcos = Object.keys(NOMES_MARCOS).filter(function (k) { return m[k]; }).sort(function (a, b) { return ms(m[a]) - ms(m[b]); });
+    var NOME_TELA = { agenda: "Agenda", clientes: "Clientes", servicos: "Serviços", equipe: "Equipe", relatorio: "Relatório", comissoes: "Comissões", trazer: "Trazer clientes", salao: "Meu salão", conta: "Conta", horarios: "Horários", link: "Link de agendamento" };
+    var linhas = (dias || []).map(function (d) {
+      var ev = (d.ev || []).slice().sort(function (a, b) { return a.h < b.h ? 1 : -1; });
+      return '<details class="rastro-dia"><summary><b>' + esc(d.dia.split("-").reverse().join("/")) + '</b> <span class="sub">' + ev.length + " ação(ões)</span></summary><ul class=\"feed\">" +
+        ev.map(function (e) { var det = e.a === "abriu tela" ? (NOME_TELA[e.d] || e.d) : e.d; return "<li><span>" + esc(e.a) + (det ? ": " + esc(det) : "") + '</span><span class="sub">' + esc(e.h) + " · " + esc(e.p === "dono" ? "dono" : "profissional") + (e.n ? " (" + esc(e.n) + ")" : "") + "</span></li>"; }).join("") + "</ul></details>";
+    }).join("");
+    return '<section class="painel"><h2>' + Icone("lista") + "Rastro de uso " + tag(u) + "</h2>" +
+      '<p class="sub">Entrou em ' + u.dias + " dia(s) diferente(s) · última vez " + ha(u.ultimo) + ".</p>" +
+      '<h3 class="cen-h3">Marcos</h3>' + (marcos.length ? '<ul class="feed">' + marcos.map(function (k) { return "<li><span>" + esc(NOMES_MARCOS[k]) + '</span><span class="sub">' + dataHora(m[k]) + "</span></li>"; }).join("") + "</ul>" : '<p class="sub">Ainda não fez nada importante no app.</p>') +
+      '<h3 class="cen-h3">O que fez (últimos 14 dias com uso)</h3>' + (linhas || '<p class="sub">Nada registrado ainda.</p>') +
+      '<p class="sub">O rastro guarda telas abertas e ações principais por 90 dias. Não guarda dados de clientes.</p></section>';
   }
 
   async function salvarAssinatura(s, mud, acao, detalhe) {
