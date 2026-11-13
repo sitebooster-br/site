@@ -376,12 +376,14 @@
     if (modo === "dia") {
       var h = horarioDo(dia);
       var euP = dono() ? null : prof(Nuvem.meuProfId());
+      var regraEu = euP ? regraEm(euP, dia) : null;
+      if (euP && (!regraEu || regraEu.tipo === "nenhuma")) euP = null;   // sem comissão definida: mostra o faturamento
       var previsto = ags.filter(function (a) { return a.status !== "faltou"; }).reduce(function (t, a) { return t + (euP ? ganhoDoAg(euP, a) : (Number(a.preco) || 0)); }, 0);
       var html = '<div class="cards cards--mini">' +
         '<div class="card"><span class="card__rot">Atendimentos</span><strong class="card__num">' + ags.length + "</strong></div>" +
-        '<div class="card"><span class="card__rot">' + (euP ? "Você recebe no dia" : "Previsto no dia") + '</span><strong class="card__num card__num--p">' + brl(previsto) + "</strong>" + (euP ? '<span class="sub">pela sua comissão</span>' : "") + "</div>" +
+        '<div class="card"><span class="card__rot">' + (euP ? "Valor a receber" : dono() ? "Previsto no dia" : "Faturamento do dia") + '</span><strong class="card__num card__num--p">' + brl(previsto) + "</strong>" + (euP ? '<span class="sub">deste dia, pela sua comissão</span>' : "") + "</div>" +
         '<div class="card"><span class="card__rot">Funcionamento</span><strong class="card__num card__num--p">' + (h.ativo ? h.abre + " às " + h.fecha : "Fechado") + "</strong>" + (h.ativo && h.pausaIni ? '<span class="sub">Intervalo ' + h.pausaIni + " às " + h.pausaFim + "</span>" : "") + "</div></div>";
-      if (euP && dia === U.hojeISO()) html += painelMarcadosHTML(euP);
+      if (!dono() && dia === U.hojeISO() && prof(Nuvem.meuProfId())) html += painelMarcadosHTML(prof(Nuvem.meuProfId()));
       if (vista.prof === "todos" && equipe.length > 1) {
         html += '<div class="colunas-prof" style="--n:' + equipe.length + '">' + equipe.map(function (p) {
           var meus = ags.filter(function (a) { return a.profId === p.id; });
@@ -1085,6 +1087,13 @@
       '<p style="margin:0 0 8px">Cores do app neste aparelho:</p><div class="alternar tema-op" role="group" aria-label="Aparência">' +
       op("auto", "Automático", "relogio") + op("claro", "Claro", "estrela") + op("escuro", "Escuro", "olho") + "</div>" +
       '<p class="sub" style="margin-top:6px">Automático segue o modo do celular ou do computador.</p>' +
+      '<h3 style="margin:16px 0 6px;font-size:1rem">Estilo de cor do salão</h3>' +
+      (dono() ? '<div class="alternar cor-op" role="group" aria-label="Estilo de cor">' +
+        [["dourado", "Dourado", "#f0a500"], ["rose", "Rosé", "#e0607e"], ["lilas", "Lilás", "#8b5cf6"]].map(function (c) {
+          return '<button type="button" data-cor="' + c[0] + '" aria-pressed="' + (((S.perfil || {}).cor || "dourado") === c[0]) + '"><i style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + c[2] + ';margin-right:6px;vertical-align:-2px"></i>' + c[1] + "</button>";
+        }).join("") + "</div>" +
+        '<p class="sub" style="margin-top:6px">Vale para o app de toda a equipe e para a página onde o cliente marca horário.</p>'
+        : '<p class="sub">Quem escolhe a cor do salão é o dono.</p>') +
       '<h3 style="margin:16px 0 6px;font-size:1rem">Sons de aviso</h3>' +
       '<div class="alternar som-op" role="group" aria-label="Sons de aviso"><button type="button" data-som="1" aria-pressed="' + Som.ligado() + '">' + Icone("check") + 'Ligados</button><button type="button" data-som="0" aria-pressed="' + !Som.ligado() + '">' + Icone("x") + "Desligados</button></div>" +
       '<p class="sub" style="margin-top:6px">Toca um som quando um cliente marca, confirma ou desmarca pelo link (com o app aberto). <button type="button" class="link-btn" id="testarSom">Ouvir os sons</button></p>' +
@@ -1096,6 +1105,9 @@
     });
     $$(".som-op button").forEach(function (b) {
       b.onclick = function () { Som.definir(b.dataset.som === "1"); $$(".som-op button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); if (b.dataset.som === "1") Som.tocar("novo"); };
+    });
+    $$(".cor-op button").forEach(function (b) {
+      b.onclick = function () { Tema.cor(b.dataset.cor); Nuvem.salvarPerfil({ cor: b.dataset.cor }); $$(".cor-op button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); }); };
     });
     var ts = $("#testarSom"); if (ts) ts.onclick = function () { Som.tocar("novo", true); setTimeout(function () { Som.tocar("desmarcou", true); }, 900); };
     var bi = $("#btnInstalar"); if (bi) bi.onclick = async function () {
@@ -1972,7 +1984,8 @@
     if (aberto) return irPara();
     aberto = true;
     window.addEventListener("hashchange", irPara);
-    document.addEventListener("nuvem", function (e) { setTimeout(conferirPassos, 50); if (e.detail && e.detail.tabela === "perfil") faixaAssinatura(); if (e.detail && e.detail.tabela === "profissionais") atualizarMenu(); redesenhar(); });
+    if (window.Tema) Tema.cor((S.perfil || {}).cor || "dourado");
+    document.addEventListener("nuvem", function (e) { setTimeout(conferirPassos, 50); if (e.detail && e.detail.tabela === "perfil") { faixaAssinatura(); if (window.Tema) Tema.cor((S.perfil || {}).cor || "dourado"); } if (e.detail && e.detail.tabela === "profissionais") atualizarMenu(); redesenhar(); });
     document.addEventListener("nuvem-erro", function (e) { aviso(e.detail, "erro"); });
     document.addEventListener("resposta-cliente", function (e) {
       var a = e.detail; Som.tocar(a.status === "cancelado" ? "desmarcou" : "ok");

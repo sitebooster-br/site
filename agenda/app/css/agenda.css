@@ -20,7 +20,7 @@
 .barra-agenda .busca { margin: 0; flex: 1 1 260px; }
 .alternar { display: inline-flex; background: rgba(var(--suave-rgb), .04); border: 1px solid var(--linha-2); border-radius: 12px; padding: 3px; }
 .alternar button { border: 0; background: transparent; color: var(--txt-2); padding: 8px 16px; border-radius: 9px; font: 600 .92rem "Inter", sans-serif; cursor: pointer; min-height: 36px; }
-.alternar button[aria-pressed="true"] { background: rgba(255,194,26,.16); color: var(--destaque); }
+.alternar button[aria-pressed="true"] { background: rgba(var(--tinta-rgb), .16); color: var(--destaque); }
 
 .cards--mini { margin-bottom: 18px; }
 .cards--mini .card { padding: 14px 18px; }
@@ -58,7 +58,7 @@
 
 /* Status */
 .st-marcado { background: rgba(90,169,255,.15); color: #8cc4ff; }
-.st-confirmado { background: rgba(255,194,26,.16); color: var(--destaque); }
+.st-confirmado { background: rgba(var(--tinta-rgb), .16); color: var(--destaque); }
 .st-concluido { background: rgba(61,220,151,.14); color: var(--ok); }
 .st-faltou { background: rgba(255,122,107,.15); color: var(--erro); }
 .st-cancelado { background: rgba(var(--suave-rgb), .07); color: var(--txt-3); }
@@ -68,11 +68,11 @@
 /* Semana */
 .semana { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
 .semana__dia { background: var(--bg-2); border: 1px solid var(--linha); border-radius: var(--raio); padding: 8px; min-height: 180px; display: flex; flex-direction: column; gap: 6px; }
-.semana__dia--hoje { border-color: rgba(255,194,26,.55); }
+.semana__dia--hoje { border-color: rgba(var(--tinta-rgb), .55); }
 .semana__cab { display: flex; align-items: baseline; gap: 6px; background: none; border: 0; color: var(--txt); padding: 4px 4px 8px; cursor: pointer; border-bottom: 1px solid var(--linha); font: 500 .9rem "Inter", sans-serif; }
 .semana__cab span { text-transform: capitalize; color: var(--txt-2); }
 .semana__cab b { font-family: "Poppins", sans-serif; }
-.semana__cab small { margin-left: auto; background: rgba(255,194,26,.16); color: var(--destaque); border-radius: 99px; padding: 0 8px; font-weight: 700; }
+.semana__cab small { margin-left: auto; background: rgba(var(--tinta-rgb), .16); color: var(--destaque); border-radius: 99px; padding: 0 8px; font-weight: 700; }
 .semana__fechado, .semana__bloq { margin: 0; font-size: .8rem; color: var(--txt-3); display: flex; align-items: center; gap: 4px; }
 .semana__bloq { color: var(--erro-txt); }
 .semana__bloq .i { width: 14px; height: 14px; }
@@ -109,7 +109,7 @@
 textarea { resize: vertical; line-height: 1.5; }
 
 /* Meu link */
-.painel--link { border-color: rgba(255,194,26,.35); }
+.painel--link { border-color: rgba(var(--tinta-rgb), .35); }
 .link-box { margin-top: 12px; padding: 14px 16px; border-radius: 12px; background: var(--campo); border: 1px solid var(--linha-2); overflow-x: auto; }
 .link-box code { background: none; padding: 0; font-size: 1rem; color: var(--destaque); white-space: nowrap; }
 
@@ -159,7 +159,7 @@ textarea { resize: vertical; line-height: 1.5; }
 .filtro-prof { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
 .filtro-prof button { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px; border-radius: 99px; border: 1px solid var(--linha-2); background: rgba(var(--suave-rgb), .04); color: var(--txt-2); font: 600 .9rem "Inter", sans-serif; cursor: pointer; }
 .filtro-prof button i { width: 10px; height: 10px; border-radius: 50%; background: var(--pc); }
-.filtro-prof button[aria-pressed="true"] { border-color: var(--destaque); color: var(--destaque); background: rgba(255,194,26,.1); }
+.filtro-prof button[aria-pressed="true"] { border-color: var(--destaque); color: var(--destaque); background: rgba(var(--tinta-rgb), .1); }
 .colunas-prof { display: grid; grid-template-columns: repeat(var(--n), minmax(260px, 1fr)); gap: 14px; overflow-x: auto; padding-bottom: 6px; }
 .coluna-prof { min-width: 0; }
 .coluna-prof__cab { display: flex; align-items: center; gap: 8px; font-size: 1rem; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid var(--pc); }
@@ -174,7 +174,7 @@ textarea { resize: vertical; line-height: 1.5; }
 .checks legend { font-weight: 600; font-size: .92rem; margin-bottom: 8px; }
 .checks .check { margin: 0; font-weight: 500; font-size: .95rem; }
 .btn--zap { background: #25d366; color: #052e14; }
-.faixa-assinatura { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 9px 16px; background: rgba(255,194,26,.12); color: var(--txt); font-size: .92rem; text-align: center; border-bottom: 1px solid rgba(255,194,26,.3); }
+.faixa-assinatura { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 9px 16px; background: rgba(var(--tinta-rgb), .12); color: var(--txt); font-size: .92rem; text-align: center; border-bottom: 1px solid rgba(var(--tinta-rgb), .3); }
 .faixa-assinatura .i { color: var(--destaque); }
 .faixa-assinatura--erro { background: rgba(255,122,107,.14); border-color: rgba(255,122,107,.35); }
 .faixa-assinatura--erro .i { color: var(--erro); }
@@ -231,7 +231,7 @@ input[readonly] { opacity: .8; cursor: not-allowed; }
 .acerto-status { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0; }
 .acerto-status .tag { display: inline-flex; align-items: center; gap: 6px; font-size: .85rem; padding: 6px 12px; }
 .acerto-status .tag svg { width: 16px; height: 16px; }
-.card--destaque { border-color: var(--destaque); background: rgba(255,194,26,.08); }
+.card--destaque { border-color: var(--destaque); background: rgba(var(--tinta-rgb), .08); }
 .btn-link { background: none; border: 0; padding: 0; color: var(--destaque); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; min-height: 0; }
 .nota-com { margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
 .nota-com span { flex: 1 1 240px; }
@@ -253,7 +253,7 @@ input[readonly] { opacity: .8; cursor: not-allowed; }
 /* Planos (A4) */
 .planos { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 10px; margin: 14px 0 10px; }
 .plano { display: grid; gap: 6px; align-content: start; padding: 14px; border: 1px solid var(--linha); border-radius: 12px; }
-.plano--atual { border-color: var(--destaque); background: rgba(255,194,26,.06); }
+.plano--atual { border-color: var(--destaque); background: rgba(var(--tinta-rgb), .06); }
 .plano__preco { font: 700 1.3rem "Poppins", sans-serif; }
 .plano__preco small { font-size: .8rem; color: var(--txt-3); font-weight: 500; }
 .plano .btn, .plano .tag { justify-self: start; }

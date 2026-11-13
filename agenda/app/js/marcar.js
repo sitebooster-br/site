@@ -298,6 +298,7 @@
       return erroTela("Sem conexão", "Não foi possível abrir a agenda. Confira a internet e recarregue a página.");
     }
     document.title = "Agendar com " + pag.nome;
+    if (window.Tema && Tema.cor) Tema.cor(pag.cor || "dourado", false);
     if (!pag.ativo) return erroTela("Agendamento online pausado", "No momento os horários estão sendo marcados direto pelo WhatsApp.", true);
     var tkR = new URLSearchParams(location.search).get("r");
     if (tkR) return telaReserva(tkR);

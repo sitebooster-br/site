@@ -531,6 +531,7 @@ window.Nuvem = (function () {
       whatsapp: p.whatsapp || "",
       endereco: p.endereco || "",
       recado: p.recado || "",
+      cor: p.cor || "dourado",
       horarios: p.horarios || {},
       antecedenciaHoras: Number(p.antecedenciaHoras) || 0,
       intervalo: Number(p.intervalo) || 0,
