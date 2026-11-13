@@ -1721,7 +1721,7 @@
   var EMAIL_CONVITE = (params.get("email") || "").toLowerCase();
   function emailValido(e) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(String(e || "").trim()); }
 
-  var modoCriar = !!CONVITE;
+  var modoCriar = !!CONVITE || params.get("criar") === "1";   // ?criar=1 (vindo da página de vendas) já abre em "Criar a sua conta"
   function prepararLogin() {
     var f = $("#formAtivacao");
     if (CONVITE) {
