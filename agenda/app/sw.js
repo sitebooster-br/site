@@ -1,6 +1,6 @@
 /* Service worker: deixa o app abrindo sem internet.
    IMPORTANTE: a cada versão nova publicada, aumente o número em VERSAO. */
-var VERSAO = "booster-agenda-v1.1.0-a17";
+var VERSAO = "booster-agenda-v1.1.0-a19";
 var ARQUIVOS = [
   "./",
   "index.html",
@@ -24,7 +24,10 @@ var ARQUIVOS = [
   "icone.svg",
   "icone-192.png",
   "icone-512.png",
-  "manifest.webmanifest"
+  "manifest.webmanifest",
+  "central.html",
+  "js/central.js",
+  "manifest-central.webmanifest"
 ];
 
 self.addEventListener("install", function (e) {

@@ -25,9 +25,9 @@ window.Nuvem = (function () {
 
   var OCUPA = { marcado: 1, confirmado: 1, concluido: 1 };
   var PLANOS = {
-    essencial: { nome: "Essencial", limite: 2, preco: 37.90, cheio: 47.90 },
-    equipe: { nome: "Equipe", limite: 5, preco: 64.90, cheio: 79.90 },
-    salao: { nome: "Salão", limite: 10, preco: 99.90, cheio: 129.90 }
+    essencial: { nome: "Essencial", limite: 2, preco: 37.90 },
+    equipe: { nome: "Equipe", limite: 5, preco: 64.90 },
+    salao: { nome: "Salão", limite: 10, preco: 99.90 }
   };
   var CORES = ["#f0a500", "#5aa9ff", "#3ddc97", "#c084fc", "#ff7a6b", "#2dd4bf", "#f472b6", "#a3e635", "#fb923c", "#93c5fd"];
 

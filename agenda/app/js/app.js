@@ -1032,7 +1032,7 @@
           : link ? '<a class="btn btn--pri btn--peq" href="' + esc(link) + (link.indexOf("?") === -1 ? "?" : "&") + "email=" + mail + '" target="_blank" rel="noopener">' + (a.status === "ativa" && !a.cancelada ? "Trocar para este" : "Assinar") + "</a>"
           : '<span class="sub">Assinatura em breve</span>') + "</div>";
     }).join("") + "</div>" +
-      '<p class="nota nota--ok"><b>Preço de fundador:</b> quem assina agora mantém este valor enquanto continuar assinando.</p>' +
+      '<p class="nota nota--ok">Sem fidelidade: você pode cancelar quando quiser.</p>' +
       '<div class="nota" style="margin-top:12px;display:block"><p style="margin:0 0 8px"><b>Importante:</b> na tela de pagamento, use este e-mail:</p>' +
       '<p style="margin:0 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center"><strong style="font-size:1.05rem;word-break:break-all">' + esc(Nuvem.Conta.email() || "") + '</strong>' +
       '<button type="button" class="btn btn--sec btn--peq" id="btnCopiarEmail">' + Icone("copiar") + 'Copiar e-mail</button></p>' +

@@ -167,7 +167,6 @@
     var T = { geral: telaGeral, notificacoes: telaNotificacoes, financeiro: telaFinanceiro, saloes: telaSaloes, salao: telaSalao, uso: telaUso, comunicados: telaComunicados, ajuda: telaAjuda }[r.tela] || telaGeral;
     T(r.id);
     if (T === telaGeral) avisosCel().catch(function () {});
-    if (T === telaSaloes) montarDemos().catch(function () {});
     atualizarBadge();
   }
 
@@ -345,6 +344,7 @@
     $("#fStatus").onchange = function (e) { filtro.status = e.target.value; telaSaloes(); };
     $("#fPlano").onchange = function (e) { filtro.plano = e.target.value; telaSaloes(); };
     $$("tr[data-id]").forEach(function (tr) { tr.onclick = tr.onkeydown = function (e) { if (e.type === "keydown" && e.key !== "Enter") return; location.hash = "#salao/" + encodeURIComponent(tr.dataset.id); }; });
+    montarDemos().catch(function () {});
     $("#fCsv").onclick = function () {
       var cab = ["salao", "link", "dono_email", "whatsapp", "situacao", "plano", "acesso_ate", "criado"];
       var csv = [cab.join(";")].concat(linhas.map(function (x) { var a = x.s.assinatura || {}; return [x.s.nome, x.s.slug, x.dono.email, x.s.whatsapp, x.st.t, (PLANOS[a.plano] || {}).nome || "", data(a.status === "ativa" ? a.pagoAte : a.testeAte), data(x.s.criadoEm)].map(function (v) { return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; }).join(";"); })).join("\n");
@@ -842,6 +842,8 @@
       (mails.length ? '<ul class="lanc">' + mails.map(function (m) { return '<li><div><b>' + esc(m) + '</b></div><button class="btn btn--sec btn--peq" data-tira-demo="' + esc(m) + '">Tirar</button></li>'; }).join("") + "</ul>" : '<p class="sub">Nenhum e-mail marcado.</p>') +
       '<form id="fDemo" class="filtros"><label>Marcar e-mail como demonstração<input name="email" type="email" required placeholder="ex.: demo@sitebooster.com.br"></label><button class="btn btn--sec" type="submit">Marcar</button></form>' +
       '<p class="sub">Marque o e-mail <b>antes</b> de criar a conta no app. Depois é só entrar no app com esse e-mail e criar a senha.</p>';
+    if (rota().tela !== "saloes") return;
+    var velho = $("#painelDemos"); if (velho) velho.remove();
     C.appendChild(box);
     $("#fDemo").onsubmit = async function (e) {
       e.preventDefault(); var m = e.target.email.value.trim().toLowerCase(); if (!m) return;
