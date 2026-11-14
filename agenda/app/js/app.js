@@ -1922,6 +1922,31 @@
     esperaConfirmar = setInterval(function () { if (++voltas > 150) return clearInterval(esperaConfirmar); if (!document.hidden && !$("#telaConfirmar").hidden) conferir(false); }, 4000);
   }
 
+  // De onde veio o salão (anúncio, site, Instagram...): vem do link "Testar grátis" ou do que a página de vendas guardou
+  function origemCadastro() {
+    var o = {}; try { o = JSON.parse(localStorage.getItem("sb_origem") || "{}"); } catch (e) {}
+    var fonte = params.get("utm_source") || o.utm_source || params.get("origem") || "";
+    var partes = [fonte, params.get("utm_medium") || o.utm_medium, params.get("utm_campaign") || o.utm_campaign, params.get("utm_term") || o.utm_term];
+    if (params.get("gclid") || o.gclid) partes.push("gclid");
+    return partes.filter(Boolean).join(" | ").slice(0, 200);
+  }
+  // Avisa o Google Ads que um salão criou a conta (conversão "Cadastro teste grátis")
+  function conversaoCadastro() {
+    try {
+      var ADS = "AW-18574402849", ROTULO = "AW-18574402849/8yrICN7clrgdEKHK-5hF";
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = window.gtag || function () { dataLayer.push(arguments); };
+      if (!document.querySelector('script[src*="googletagmanager.com/gtag/js"]')) {
+        var s = document.createElement("script"); s.async = true; s.src = "https://www.googletagmanager.com/gtag/js?id=" + ADS; document.head.appendChild(s);
+        gtag("js", new Date()); gtag("config", ADS, { send_page_view: false });
+      }
+      var mail = (Nuvem.Conta && Nuvem.Conta.email()) || "";
+      if (mail) gtag("set", "user_data", { email: mail });
+      gtag("event", "conversion", { send_to: ROTULO, value: 1.0, currency: "BRL" });
+      gtag("event", "sign_up", { method: "teste_gratis" });
+    } catch (e) {}
+  }
+
   function telaCriarSalao() {
     mostrar("telaBoasVindas");
     $("#formBoasVindas").onsubmit = async function (e) {
@@ -1934,12 +1959,13 @@
       $("#bvErro").textContent = "";
       var btn = e.submitter || $("#formBoasVindas button[type=submit]"); btn.disabled = true;
       try {
-        await Nuvem.criarSalao({ nome: nome, nomePessoa: pessoa, whatsapp: zap, atende: $("#bvAtende").checked, horarios: HORARIOS_PADRAO, msgLembrete: MSG_LEMBRETE, origem: params.get("utm_source") || params.get("origem") || "" });
+        await Nuvem.criarSalao({ nome: nome, nomePessoa: pessoa, whatsapp: zap, atende: $("#bvAtende").checked, horarios: HORARIOS_PADRAO, msgLembrete: MSG_LEMBRETE, origem: origemCadastro() });
       } catch (err) {
         btn.disabled = false;
         $("#bvErro").textContent = err.code === "permission-denied" ? "Este e-mail já usou o teste grátis. Fale com a Sitebooster para assinar." : Nuvem.traduzir(err);
         return;
       }
+      conversaoCadastro();
       await Nuvem.iniciar();
       abrirApp();
       aviso("Tudo pronto! Seu teste grátis de 30 dias começou. Siga os Primeiros passos na sua agenda.");
