@@ -303,7 +303,10 @@
     var tkR = new URLSearchParams(location.search).get("r");
     if (tkR) return telaReserva(tkR);
     if (!(pag.servicos || []).length || !(pag.profissionais || []).length) return erroTela("Agenda em preparação", "Esta agenda ainda está sendo montada. Chame no WhatsApp para marcar.", true);
-    desenhar();
+    // Salão que ainda não confirmou o e-mail: o link mostra o recado e libera sozinho quando confirmar
+    var travado = pag.emailOk === false;
+    var aviso = function () { erroTela("Agendamento online quase pronto", "Este negócio está terminando de configurar o agendamento online. Por enquanto, marque pelo WhatsApp.", true); };
+    if (travado) aviso(); else desenhar();
     // Tempo real: se o salão mudar algo (novo profissional, serviço, horário), a página se atualiza sozinha
     var primeira = true;
     if (FB.onSnapshot) FB.onSnapshot(FB.doc(db, "paginas", slug), function (d) {
@@ -311,6 +314,8 @@
       if (!d.exists()) return;
       pag = d.data();
       if (window.Tema && Tema.cor) Tema.cor(pag.cor || "dourado", false);
+      if (pag.emailOk === false) { travado = true; return aviso(); }
+      if (travado) { travado = false; return desenhar(); }   // acabou de liberar
       if (naPrincipal && !esc_.servico) desenhar();   // ainda não escolheu nada: redesenha tudo
       // se já está escolhendo, as listas usam os dados novos no próximo toque
     }, function () {});

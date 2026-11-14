@@ -76,6 +76,14 @@ window.Nuvem = (function () {
       "auth/weak-password": "A senha precisa ter pelo menos 6 caracteres.",
       "auth/too-many-requests": "Muitas tentativas. Espere alguns minutos e tente de novo.",
       "auth/network-request-failed": "Sem internet. Conecte-se para entrar.",
+      "auth/popup-blocked": "O navegador bloqueou a janela do Google. Toque de novo em \"Entrar com Google\" ou use e-mail e senha.",
+      "auth/popup-closed-by-user": "A janela do Google foi fechada antes de terminar. Toque de novo para entrar.",
+      "auth/cancelled-popup-request": "A janela do Google foi fechada antes de terminar. Toque de novo para entrar.",
+      "auth/operation-not-supported-in-this-environment": "Este navegador não permite entrar com Google. Abra o link no Chrome ou no Safari, ou use e-mail e senha.",
+      "auth/web-storage-unsupported": "Este navegador não permite entrar com Google. Abra o link no Chrome ou no Safari, ou use e-mail e senha.",
+      "auth/unauthorized-domain": "O login com Google ainda não foi liberado para este endereço. Use e-mail e senha por enquanto.",
+      "auth/operation-not-allowed": "O login com Google ainda não foi ativado. Use e-mail e senha por enquanto.",
+      "auth/account-exists-with-different-credential": "Este e-mail já tem conta com senha. Entre com e-mail e senha.",
       "permission-denied": "Sem permissão para esta ação. Confira se a assinatura está em dia.",
       "unavailable": "Sem conexão com a nuvem. Tente de novo em instantes.",
       "failed-precondition": "O banco ainda está preparando um índice. Tente de novo em alguns minutos."
@@ -95,6 +103,14 @@ window.Nuvem = (function () {
     esperar: function () { return primeiraResposta; },
     entrar: function (e, s) { return FB.signInWithEmailAndPassword(auth, e.trim(), s).then(function (r) { return r.user; }); },
     criar: function (e, s) { return FB.createUserWithEmailAndPassword(auth, e.trim(), s).then(function (r) { return r.user; }); },
+    // Entrar com a conta do Google (o e-mail já vem confirmado pelo Google)
+    google: function () {
+      var prov = new FB.GoogleAuthProvider();
+      prov.setCustomParameters({ prompt: "select_account" });
+      auth.languageCode = "pt-BR";
+      return FB.signInWithPopup(auth, prov).then(function (r) { return r.user; });
+    },
+    viaGoogle: function () { var u = auth.currentUser; return !!(u && (u.providerData || []).some(function (p) { return p.providerId === "google.com"; })); },
     recuperar: function (e) { auth.languageCode = "pt-BR"; return FB.sendPasswordResetEmail(auth, e.trim()); },
     // Confirmação do e-mail (obrigatória para começar o teste grátis)
     verificado: function () { return !!(auth.currentUser && auth.currentUser.emailVerified); },
@@ -135,6 +151,8 @@ window.Nuvem = (function () {
       nome: d.nome, whatsapp: d.whatsapp, donoUid: uid, donoNome: d.nomePessoa || "",
       horarios: d.horarios, antecedenciaHoras: 2, diasAFrente: 30, publico: true, msgLembrete: d.msgLembrete,
       compartilharNumeros: true, origem: d.origem || "", criadoEm: agora(),
+      // E-mail confirmado? Sem isso o link do cliente ainda não aceita agendamentos (o resto do app funciona)
+      emailOk: !!(user.emailVerified || demo),
       assinatura: { status: "teste", plano: "teste", limiteProf: 10, testeAte: testeAte }
     }));
     b.set(FB.doc(db, "usuarios", uid), { papel: "dono", salaoId: uid, email: email, nome: d.nomePessoa || "", criadoEm: agora() });
@@ -147,6 +165,17 @@ window.Nuvem = (function () {
     // Avisa a Central da Sitebooster (celular do dono do sistema). Se falhar, não atrapalha nada.
     try { if (APP.robo) auth.currentUser.getIdToken().then(function (tk) { return fetch(APP.robo + "/aviso/novo-salao", { method: "POST", headers: { Authorization: "Bearer " + tk } }); }).catch(function () {}); } catch (e) {}
     return st.eu;
+  }
+
+  // Depois que o dono confirma o e-mail: libera o link do cliente para receber agendamentos
+  async function liberarLink() {
+    if (!st.perfil || st.perfil.emailOk !== false) return false;
+    if (!(auth.currentUser && auth.currentUser.emailVerified)) return false;
+    await auth.currentUser.getIdToken(true);
+    await FB.updateDoc(refSalao(), { emailOk: true });
+    st.perfil.emailOk = true;
+    publicarPagina();
+    return true;
   }
 
   // Conta de demonstração (o dono do sistema mostra o app para clientes; botão para recomeçar do zero)
@@ -534,6 +563,7 @@ window.Nuvem = (function () {
       endereco: p.endereco || "",
       recado: p.recado || "",
       cor: p.cor || "dourado",
+      emailOk: p.emailOk !== false,
       horarios: p.horarios || {},
       antecedenciaHoras: Number(p.antecedenciaHoras) || 0,
       intervalo: Number(p.intervalo) || 0,
@@ -927,7 +957,7 @@ window.Nuvem = (function () {
   return {
     Conta: Conta, estado: st, PLANOS: PLANOS, CORES: CORES, OCUPA: OCUPA,
     carregarSessao: carregarSessao, criarSalao: criarSalao, aceitarConvite: aceitarConvite,
-    ehDono: ehDono, meuProfId: meuProfId, assinatura: assinatura, conviteParaMim: conviteParaMim, ehDemo: ehDemo, recomecarDemo: recomecarDemo, rastro: rastro,
+    ehDono: ehDono, meuProfId: meuProfId, assinatura: assinatura, conviteParaMim: conviteParaMim, ehDemo: ehDemo, liberarLink: liberarLink, recomecarDemo: recomecarDemo, rastro: rastro,
     comunicados: comunicados, iniciar: iniciar, agsEntre: agsEntre, agsDoCliente: agsDoCliente,
     salvar: salvar, apagar: apagar, salvarBloqueio: salvarBloqueio, apagarBloqueio: apagarBloqueio,
     enviarSugestao: enviarSugestao, salvarPerfil: salvarPerfil, definirEndereco: definirEndereco, publicarAgora: publicarAgora, reconstruirOcupados: reconstruirOcupados,

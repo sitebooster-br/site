@@ -828,6 +828,7 @@
         '<div class="atalhos"><button class="btn btn--pri" id="copiar">' + Icone("copiar") + 'Copiar link</button><a class="btn btn--sec" href="' + esc(url) + '" target="_blank" rel="noopener">' + Icone("olho") + "Ver como o cliente vê</a>" +
         '<a class="btn btn--sec" href="https://wa.me/?text=' + encodeURIComponent("Agende seu horário comigo por aqui: " + url) + '" target="_blank" rel="noopener">' + Icone("whatsapp") + "Enviar no WhatsApp</a></div>" +
         '<label class="check check--grande"><input type="checkbox" id="linkAtivo"' + (p.publico !== false ? " checked" : "") + "> Link ligado: clientes podem marcar sozinhos</label>" +
+        (p.emailOk === false ? '<p class="nota nota--alerta">' + Icone("alerta") + '<span><strong>Falta confirmar o seu e-mail.</strong> Até lá, o link mostra seus serviços, mas ainda não aceita agendamentos. Use os botões da faixa no topo da tela.</span></p>' : "") +
         (!S.servicos.some(function (s) { return s.publico !== false; }) ? '<p class="nota nota--alerta">' + Icone("alerta") + '<span>Nenhum serviço aparece no link. <a href="#servicos">Cadastre um serviço</a>.</span></p>' : "") +
         "</section>" +
         '<section class="painel"><h2>' + Icone("link") + "QR Code para o balcão</h2>" +
@@ -1167,6 +1168,8 @@
     ["Clientes", "d", "O que é cliente \"Sumido\"?", "Quem não volta há mais de 60 dias. Em Clientes → Sumidos ou em Trazer clientes você chama de volta pelo WhatsApp com mensagem pronta."],
     ["Plano e conta", "d", "Como funciona o teste grátis?", "30 dias com tudo liberado, para até 10 profissionais, sem cartão. Antes de acabar, escolha o plano em Conta → Plano. Se assinar antes, os dias grátis que sobraram continuam valendo."],
     ["Plano e conta", "d", "Como troco a cor do app?", "Conta → Aparência → Estilo de cor do salão: Dourado, Rosé ou Lilás. Vale para a equipe e para a página do cliente. Claro/escuro é escolhido em cada aparelho."],
+    ["Plano e conta", "", "Posso entrar com a minha conta do Google?", "Pode. Na tela de entrar, toque em \"Entrar com Google\": não precisa de senha nem de confirmar e-mail. Se o botão não aparecer, você abriu o link de dentro do Instagram ou do Facebook: abra a página no navegador do celular (Chrome ou Safari). Funcionário: use a conta Google do mesmo e-mail que o dono cadastrou na Equipe."],
+    ["Link do cliente", "d", "Meu link diz \"quase pronto\" e não deixa marcar. Por quê?", "Falta confirmar o seu e-mail. Enviamos um link de confirmação para o e-mail da conta (olhe também o spam). Depois de tocar nele, toque em \"Já confirmei\" na faixa do topo: o link libera na hora. Quem entra com o Google já fica confirmado."],
     ["Plano e conta", "", "Esqueci a senha. E agora?", "Na tela de entrar, digite o seu e-mail e toque em \"Esqueci minha senha\". Chega um link no e-mail para criar uma senha nova."],
     ["Plano e conta", "", "Como instalo o app no celular?", "Conta → Aparência → Instalar o app. No iPhone: no Safari, Compartilhar → Adicionar à Tela de Início."],
     ["Problemas", "", "A internet caiu. Perco alguma coisa?", "Não. Você continua vendo a agenda e o que fizer é enviado quando a conexão voltar. O ponto no menu mostra se está Online."],
@@ -1258,7 +1261,7 @@
       catch (e) { aviso(Nuvem.traduzir(e), "erro"); }
     };
     $("#sair").onclick = async function () {
-      if (await confirmar("Sair deste aparelho?", "Para voltar, entre de novo com o seu e-mail e senha. Seus dados continuam guardados na nuvem.", "Sair", false)) { await Nuvem.Conta.sair(); location.href = location.pathname; }
+      if (await confirmar("Sair deste aparelho?", "Para voltar, entre de novo (com o Google ou com e-mail e senha). Seus dados continuam guardados na nuvem.", "Sair", false)) { await Nuvem.Conta.sair(); location.href = location.pathname; }
     };
   }
 
@@ -1854,12 +1857,14 @@
     var f = $("#formAtivacao");
     if (CONVITE) {
       $("#ativConvite").hidden = false;
-      $("#ativConvite").innerHTML = Icone("usuarios") + "<span>Você recebeu um convite para entrar na agenda de um salão. Crie sua senha com o e-mail <strong>" + esc(EMAIL_CONVITE) + "</strong>. Se já tem conta, clique em \"Já tenho conta\".</span>";
+      $("#ativConvite").innerHTML = Icone("usuarios") + "<span>Você recebeu um convite para entrar na agenda de um salão. Entre com o Google desse e-mail ou crie sua senha com <strong>" + esc(EMAIL_CONVITE) + "</strong>. Se já tem conta, clique em \"Já tenho conta\".</span>";
       if (EMAIL_CONVITE) $("#ativEmail").value = EMAIL_CONVITE;
     }
     function atualizar() {
       $("#tAtiv").textContent = modoCriar ? "Criar a sua conta" : "Entrar na sua agenda";
-      $("#ativTexto").textContent = modoCriar ? "Crie uma senha com pelo menos 6 caracteres." : "Use o seu e-mail e a sua senha. Funciona no celular e no computador.";
+      $("#ativTexto").textContent = modoCriar ? "Comece o teste grátis de 30 dias. Sem cartão." : "Funciona no celular e no computador.";
+      $("#ativGoogleTxt").textContent = modoCriar ? "Criar conta com Google" : "Entrar com Google";
+      $("#ativOuTxt").textContent = modoCriar ? "ou crie com e-mail e senha" : "ou use e-mail e senha";
       $("#ativConfirma").hidden = !modoCriar;
       $("#ativSenha").autocomplete = modoCriar ? "new-password" : "current-password";
       $("#ativBotao").textContent = modoCriar ? "Criar conta e entrar" : "Entrar";
@@ -1868,6 +1873,33 @@
       $("#ativErro").textContent = ""; $("#ativOk").textContent = "";
     }
     $("#ativTrocar").onclick = function () { modoCriar = !modoCriar; atualizar(); };
+    // Entrar com Google. Navegadores de dentro do Instagram/Facebook/TikTok não deixam: mostramos como abrir fora.
+    var ua = navigator.userAgent || "";
+    var embutido = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|Line\/|TikTok|musical_ly|Bytedance|Snapchat|Pinterest|LinkedInApp/i.test(ua) || (/Android/i.test(ua) && /; wv\)/.test(ua));
+    if (embutido) {
+      $("#ativGoogle").hidden = true; $("#ativGoogleDica").hidden = true;
+      var android = /Android/i.test(ua);
+      var chrome = "intent://" + location.host + location.pathname + location.search + "#Intent;scheme=https;package=com.android.chrome;end";
+      $("#ativApp").hidden = false;
+      $("#ativApp").innerHTML = Icone("alerta") + "<span><b>Para entrar com Google</b>, abra esta página no navegador do celular. " +
+        (android ? '<a href="' + esc(chrome) + '">Abrir no Chrome</a>.' : "Toque nos <b>três pontinhos</b> (ou no ícone de compartilhar) e escolha <b>\"Abrir no navegador\"</b>.") +
+        " Ou crie a conta com e-mail e senha logo abaixo.</span>";
+      $("#ativOuTxt").textContent = "ou use e-mail e senha";
+    }
+    $("#ativGoogle").onclick = async function () {
+      var b = this; b.disabled = true; $("#ativErro").textContent = ""; $("#ativOk").textContent = "Abrindo o Google...";
+      try { await Nuvem.Conta.google(); }
+      catch (err) { b.disabled = false; $("#ativOk").textContent = ""; $("#ativErro").textContent = Nuvem.traduzir(err); return; }
+      b.disabled = false; $("#ativOk").textContent = "";
+      // Convite de funcionário: precisa ser a conta Google do mesmo e-mail que o dono cadastrou
+      var mail = (Nuvem.Conta.email() || "").toLowerCase();
+      if (CONVITE && EMAIL_CONVITE && mail !== EMAIL_CONVITE) {
+        await Nuvem.Conta.sair();
+        $("#ativErro").textContent = "Você entrou com " + mail + ", mas o convite é para " + EMAIL_CONVITE + ". Escolha a conta Google desse e-mail ou crie a senha com ele abaixo.";
+        return;
+      }
+      fluxo();
+    };
     $("#ativEsqueci").onclick = async function () {
       var em = $("#ativEmail").value;
       if (!emailValido(em)) { $("#ativErro").textContent = "Digite o seu e-mail no campo acima."; return; }
@@ -1891,7 +1923,7 @@
     atualizar();
   }
 
-  // Antes do teste grátis: a pessoa confirma que o e-mail é dela (evita e-mail falso e teste repetido)
+  // Tela antiga de confirmar e-mail antes de entrar (não é mais usada no fluxo: a confirmação agora fica na faixa do topo)
   var esperaConfirmar = null;
   function telaConfirmar() {
     mostrar("telaConfirmar");
@@ -1997,7 +2029,7 @@
           return;
         }
       } else {
-        if (!Nuvem.Conta.verificado() && !(Nuvem.ehDemo && await Nuvem.ehDemo())) return telaConfirmar();
+        // A confirmação do e-mail agora vem depois (antes de o link aceitar agendamentos): ver faixaEmail()
         return telaCriarSalao();
       }
     }
@@ -2059,6 +2091,38 @@
     } else f.hidden = true;
   }
 
+  // Confirmação do e-mail (depois de entrar): sem ela, o link do cliente ainda não aceita agendamentos
+  var esperaEmail = null;
+  function faixaEmail() {
+    var f = $("#faixaEmail");
+    if (!f) { var a = $("#faixaAssinatura"); if (!a) return; f = document.createElement("div"); f.id = "faixaEmail"; a.parentNode.insertBefore(f, a.nextSibling); }
+    var falta = dono() && S.perfil && S.perfil.emailOk === false && !window.__demo;
+    if (!falta) { f.hidden = true; clearInterval(esperaEmail); esperaEmail = null; return; }
+    // Já confirmou (por exemplo, em outro aparelho)? Libera sozinho, sem a pessoa fazer nada
+    if (Nuvem.Conta.verificado()) { Nuvem.liberarLink().then(function (ok) { if (ok) { aviso("E-mail confirmado! Seu link já aceita agendamentos."); faixaEmail(); redesenhar(); } }, function () {}); }
+    f.hidden = false; f.className = "faixa-assinatura faixa-assinatura--erro faixa-email";
+    f.innerHTML = Icone("alerta") + '<span><strong>Confirme o seu e-mail</strong> para o seu link começar a receber agendamentos de clientes. Enviamos um link para <strong>' + esc(Nuvem.Conta.email() || "") + '</strong>. ' +
+      '<button type="button" class="link-btn" id="feJa">Já confirmei</button> · <button type="button" class="link-btn" id="feEnviar">Enviar de novo</button></span>';
+    var conferir = async function (manual) {
+      try {
+        if (await Nuvem.Conta.conferirConfirmacao()) { await Nuvem.liberarLink(); clearInterval(esperaEmail); esperaEmail = null; aviso("E-mail confirmado! Seu link já aceita agendamentos."); faixaEmail(); redesenhar(); return; }
+        if (manual) aviso("Ainda não aparece como confirmado. Abra o e-mail, toque no link e depois em \"Já confirmei\". Olhe também o spam.", "erro");
+      } catch (e) { if (manual) aviso(Nuvem.traduzir(e), "erro"); }
+    };
+    var enviar = function (manual) {
+      return Nuvem.Conta.enviarConfirmacao().then(function () {
+        try { localStorage.setItem("bs-cf-" + Nuvem.Conta.usuario().uid, String(Date.now())); } catch (e) {}
+        if (manual) aviso("Enviamos de novo. Confira a caixa de entrada e o spam.");
+      }, function (err) { if (manual) aviso(err && err.code === "auth/too-many-requests" ? "Já enviamos agora há pouco. Espere alguns minutos antes de pedir de novo." : Nuvem.traduzir(err), "erro"); });
+    };
+    $("#feJa").onclick = function () { conferir(true); };
+    $("#feEnviar").onclick = function () { enviar(true); };
+    // Manda o e-mail de confirmação sozinho na primeira vez (e no máximo 1 vez por dia)
+    var ult = 0; try { ult = Number(localStorage.getItem("bs-cf-" + Nuvem.Conta.usuario().uid)) || 0; } catch (e) {}
+    if (Date.now() - ult > 864e5) enviar(false);
+    if (!esperaEmail) { var voltas = 0; esperaEmail = setInterval(function () { if (++voltas > 120) { clearInterval(esperaEmail); esperaEmail = null; return; } if (!document.hidden) conferir(false); }, 15000); }
+  }
+
   var aberto = false;
   // Menu: Comissões só aparece quando há equipe; no celular, barra embaixo com o principal + "Mais"
   function temEquipe() { return S.profissionais.some(function (p) { return !p.ehDono && !p.removido; }); }
@@ -2105,12 +2169,12 @@
     mostrar("app");
     atualizarMenu();
     $$("[data-rotulo-comissoes]").forEach(function (s) { s.textContent = dono() ? "Comissões" : "Meus ganhos"; });
-    faixaAssinatura(); mostrarComunicado();
+    faixaAssinatura(); faixaEmail(); mostrarComunicado();
     if (aberto) return irPara();
     aberto = true;
     window.addEventListener("hashchange", irPara);
     if (window.Tema) Tema.cor((S.perfil || {}).cor || "dourado");
-    document.addEventListener("nuvem", function (e) { setTimeout(conferirPassos, 50); if (e.detail && e.detail.tabela === "perfil") { faixaAssinatura(); if (window.Tema) Tema.cor((S.perfil || {}).cor || "dourado"); } if (e.detail && e.detail.tabela === "profissionais") atualizarMenu(); redesenhar(); });
+    document.addEventListener("nuvem", function (e) { setTimeout(conferirPassos, 50); if (e.detail && e.detail.tabela === "perfil") { faixaAssinatura(); faixaEmail(); if (window.Tema) Tema.cor((S.perfil || {}).cor || "dourado"); } if (e.detail && e.detail.tabela === "profissionais") atualizarMenu(); redesenhar(); });
     document.addEventListener("nuvem-erro", function (e) { aviso(e.detail, "erro"); });
     document.addEventListener("resposta-cliente", function (e) {
       var a = e.detail; Som.tocar(a.status === "cancelado" ? "desmarcou" : "ok");

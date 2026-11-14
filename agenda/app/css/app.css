@@ -297,3 +297,15 @@ input::-webkit-date-and-time-value { text-align: left; min-height: 1.4em; }
 .legenda li { display: grid; grid-template-columns: 130px 1fr; gap: 10px; align-items: center; font-size: .92rem; }
 .legenda .tag { justify-self: start; display: inline-flex; align-items: center; gap: 4px; }
 .legenda .tag .i { width: 14px; height: 14px; }
+
+/* Entrar com Google */
+.btn--google { background: #fff; color: #1f1f1f; border: 1px solid #dadce0; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; margin-top: 14px; }
+.btn--google:hover { background: #f6f8fc; }
+.btn--google:focus-visible { outline: 3px solid var(--destaque); outline-offset: 2px; }
+.ativ-google-dica { text-align: center; margin: 6px 0 0; font-size: .85rem; }
+#ativApp { display: flex; gap: 8px; align-items: flex-start; margin-top: 12px; text-align: left; }
+#ativApp a { color: var(--destaque); font-weight: 600; }
+.ou { display: flex; align-items: center; gap: 10px; margin: 16px 0 4px; color: var(--txt-2); font-size: .85rem; }
+.ou::before, .ou::after { content: ""; flex: 1; height: 1px; background: var(--linha-2); }
+/* Faixa "confirme o seu e-mail" */
+.faixa-email .link-btn { display: inline; padding: 0; font-size: inherit; text-decoration: underline; }
