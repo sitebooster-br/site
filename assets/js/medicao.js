@@ -8,7 +8,7 @@
   var CFG = window.SB_MEDICAO = window.SB_MEDICAO || {
     ads: "AW-18574402849",   // Google Ads (conta 312-239-3256)
     ga4: "",                 // Google Analytics 4: cole aqui o ID "G-XXXXXXX" quando criar
-    clarity: ""              // Microsoft Clarity: cole aqui o ID do projeto quando criar
+    clarity: "zdubvl3sph"    // Microsoft Clarity (projeto "Sitebooster - site e BoosterAgenda", conta antolinjunior071)
   };
 
   /* ---------- 1. Origem da visita (utm / gclid) ---------- */
