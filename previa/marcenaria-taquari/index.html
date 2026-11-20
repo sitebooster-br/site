@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Marcenaria Taquari · Móveis planejados</title>
+<meta name="description" content="Prévia do site da Marcenaria Taquari, criada pela Sitebooster.">
+<meta property="og:title" content="Marcenaria Taquari · prévia do site">
+<meta property="og:description" content="Veja como ficaria o site da Marcenaria Taquari, com as 83 avaliações do Google e o botão do WhatsApp.">
+<meta property="og:image" content="https://images.unsplash.com/photo-1771888703722-ee7ad9143a67?w=1200&q=75&auto=format&fit=crop">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Modelo "Móveis planejados": fotos grandes, papel e madeira, um acento por marca */
+  --fundo:#f4f1ec; --fundo2:#e9e3da; --tinta:#1c1a17; --suave:#6b645b; --acento:#9a6b3f; --escuro:#221d18; --acento-claro:#e8c99c;
+  --display:"Fraunces",Georgia,serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --gutter:clamp(18px,5vw,56px); --raio:clamp(18px,2.4vw,28px);
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{background:var(--fundo);color:var(--tinta);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased;padding-bottom:88px}
+@supports not (overflow:clip){html,body{overflow-x:hidden}}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.02;letter-spacing:-.015em;text-wrap:balance}
+:focus-visible{outline:2px solid var(--acento);outline-offset:3px;border-radius:6px}
+.wrap{width:100%;max-width:1240px;margin-inline:auto;padding-inline:var(--gutter)}
+
+.previa{background:var(--escuro);color:#f3efe8;font-size:12.5px;text-align:center;padding:7px var(--gutter);line-height:1.4}
+.previa b{color:#fff}
+
+.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--fundo) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid color-mix(in srgb,var(--tinta) 10%,transparent)}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:62px}
+.marca{font-family:var(--display);font-size:19px;font-weight:600;text-decoration:none;line-height:1.15}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font:600 15px var(--body);padding:14px 22px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .2s}
+.btn:hover{transform:translateY(-2px)}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-zap{background:#1fa855;color:#fff}
+.btn-escuro{background:var(--tinta);color:var(--fundo)}
+.btn-claro{background:#fff;color:var(--tinta)}
+.nav .btn{padding:10px 16px;font-size:14px}
+
+/* Topo com foto */
+.topo{padding:clamp(14px,2vw,22px) 0 0}
+.foto-topo{position:relative;border-radius:var(--raio);overflow:hidden;min-height:clamp(520px,78svh,760px);display:flex;align-items:flex-end;isolation:isolate}
+.foto-topo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transform:scale(1.08);animation:aproxima 14s ease-out forwards}
+@keyframes aproxima{to{transform:scale(1)}}
+.foto-topo::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(10,8,6,.78))}
+.topo-txt{padding:clamp(22px,4vw,56px);color:#fff;max-width:780px}
+.selo-google{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:7px 14px;border-radius:999px;font-size:14px;margin-bottom:18px}
+.selo-google .estrelas{color:#ffd36b;letter-spacing:1px}
+.topo h1{font-size:clamp(38px,6.4vw,82px)}
+.topo p{font-size:clamp(16px,1.6vw,19px);opacity:.9;margin:16px 0 24px;max-width:46ch}
+.topo .acoes{display:flex;gap:10px;flex-wrap:wrap}
+
+/* Faixa de garantias */
+.garantias{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.garantias div{background:var(--fundo2);border-radius:16px;padding:16px 18px;font-size:14px;color:var(--suave)}
+.garantias b{display:block;color:var(--tinta);font-size:16px;margin-bottom:2px}
+
+section{padding:clamp(70px,9vw,120px) 0}
+.rotulo{display:block;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--acento);margin-bottom:12px}
+.titulo{font-size:clamp(32px,4.6vw,58px);max-width:18ch}
+.intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,4vw,60px);align-items:end;margin-bottom:clamp(28px,4vw,48px)}
+.intro p{color:var(--suave);max-width:46ch}
+
+/* Antes e depois */
+.comparar{position:relative;border-radius:var(--raio);overflow:hidden;aspect-ratio:16/9;background:#ccc;touch-action:pan-y}
+.comparar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.comparar .depois{clip-path:inset(0 0 0 var(--corte,50%))}
+.comparar .linha{position:absolute;top:0;bottom:0;left:var(--corte,50%);width:2px;background:#fff;transform:translateX(-1px);pointer-events:none}
+.comparar .puxador{position:absolute;top:50%;left:var(--corte,50%);width:46px;height:46px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;font-weight:700;color:var(--tinta)}
+.comparar input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.etq{position:absolute;bottom:14px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:13px;pointer-events:none}
+.etq.a{left:14px}.etq.d{right:14px}
+.legenda-ilustrativa{font-size:13px;color:var(--suave);margin-top:10px}
+
+/* Serviços */
+.servicos{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.serv{position:relative;border-radius:var(--raio);overflow:hidden;min-height:340px;display:flex;align-items:flex-end;color:#fff;isolation:isolate;padding:24px}
+.serv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .8s}
+.serv:hover img{transform:scale(1.04)}
+.serv::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 40%,rgba(8,6,4,.75))}
+.serv h3{font-size:clamp(26px,2.6vw,34px)}
+.serv p{font-size:15px;opacity:.88;max-width:34ch;margin-top:4px}
+.s1{grid-column:span 7;min-height:440px}.s2{grid-column:span 5}.s3{grid-column:span 5}
+.serv.texto{grid-column:span 7;background:var(--escuro);color:#f3efe8;align-items:stretch;flex-direction:column;justify-content:space-between;gap:20px}
+.serv.texto::after{display:none}
+.serv.texto ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:15px}
+.serv.texto li{border-top:1px solid rgba(255,255,255,.15);padding-top:10px}
+
+/* Passos */
+.passos{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;counter-reset:p}
+.passo{background:var(--fundo2);border-radius:var(--raio);padding:24px;display:grid;gap:8px;align-content:start}
+.passo b{font-family:var(--display);font-size:40px;color:var(--acento);line-height:1}
+.passo h3{font-family:var(--body);font-size:19px;font-weight:700}
+.passo p{color:var(--suave);font-size:15px}
+
+/* Avaliações e contato */
+.duas{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.cartao{border-radius:var(--raio);padding:clamp(24px,3vw,40px)}
+.cartao.nota{background:var(--escuro);color:#f3efe8;display:grid;gap:12px;align-content:center}
+.cartao.nota .grande{font-family:var(--display);font-size:clamp(64px,9vw,110px);line-height:.9}
+.cartao.nota .estrelas{color:#ffd36b;font-size:22px;letter-spacing:3px}
+.cartao.contato{background:var(--fundo2);display:grid;gap:18px;align-content:start}
+.cartao.contato dl{display:grid;gap:14px}
+.cartao.contato dt{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--suave)}
+.cartao.contato dd{font-size:17px}
+
+footer{padding:30px 0 40px;font-size:14px;color:var(--suave)}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+/* Barra da prévia (só existe na prévia) */
+.barra-previa{position:fixed;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:40;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--escuro);color:#f3efe8;border-radius:20px;padding:12px 12px 12px 18px;box-shadow:0 18px 40px -12px rgba(0,0,0,.45);max-width:720px;margin-inline:auto}
+.barra-previa span{font-size:14px;line-height:1.35}
+.barra-previa b{display:block;font-size:15px;color:#fff}
+
+@media (max-width:900px){
+  .garantias{grid-template-columns:1fr 1fr}
+  .intro,.duas{grid-template-columns:1fr}
+  .s1,.s2,.s3,.serv.texto{grid-column:span 12}
+  .s1{min-height:360px}
+  .passos{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  .nav .btn span{display:none}
+  .nav .btn{padding:10px 12px}
+  .foto-topo{min-height:540px}
+  .topo .acoes .btn{flex:1 1 100%}
+  .garantias div{padding:14px}
+  .comparar{aspect-ratio:4/3}
+  .serv{min-height:280px}
+  .serv.texto ul{grid-template-columns:1fr}
+  .passos{grid-template-columns:1fr}
+  .barra-previa span{font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="previa">Prévia criada pela <b>Sitebooster</b> para <b>Marcenaria Taquari</b> · não é o site oficial · disponível até 04/12/2026</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="marca" href="#">Marcenaria Taquari</a>
+    <a class="btn btn-zap" href="https://wa.me/5511991211642">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg>
+      <span>Orçamento</span></a>
+  </div>
+</header>
+
+<main>
+  <div class="topo">
+    <div class="wrap">
+      <div class="foto-topo">
+        <img src="https://images.unsplash.com/photo-1771888703722-ee7ad9143a67?w=1600&q=75&auto=format&fit=crop" alt="Cozinha planejada com ilha em madeira clara" fetchpriority="high">
+        <div class="topo-txt">
+          <span class="selo-google"><span class="estrelas">★★★★★</span> 5,0 no Google · 83 avaliações</span>
+          <h1>Móveis planejados sob medida na Mooca</h1>
+          <p>Cozinhas, closets e ambientes completos, projetados para a sua planta e montados pela nossa equipe.</p>
+          <div class="acoes">
+            <a class="btn btn-zap" href="https://wa.me/5511991211642">Pedir orçamento no WhatsApp</a>
+            <a class="btn btn-claro" href="#servicos">Ver ambientes</a>
+          </div>
+        </div>
+      </div>
+      <div class="garantias">
+        <div><b>Sob medida</b>para a sua planta</div>
+        <div><b>Projeto</b>antes de produzir</div>
+        <div><b>Orçamento</b>sem compromisso</div>
+        <div><b>Montagem</b>pela própria equipe</div>
+      </div>
+    </div>
+  </div>
+
+  <section id="servicos" style="padding-top:0">
+    <div class="wrap">
+      <div class="intro">
+        <div><span class="rotulo">Ambientes</span><h2 class="titulo">Cada canto da casa, aproveitado.</h2></div>
+        <p>Do projeto à montagem, você fala com a mesma equipe do começo ao fim.</p>
+      </div>
+      <div class="servicos">
+        <article class="serv s1"><img src="https://images.unsplash.com/photo-1772567732989-1ddce59230e4?w=1200&q=75&auto=format&fit=crop" alt="Cozinha planejada com bancada de pedra" loading="lazy"><div><h3>Cozinhas</h3><p>Gavetões, torre quente e aproveitamento total da parede.</p></div></article>
+        <article class="serv s2"><img src="https://images.unsplash.com/photo-1788296817269-8df0458ab799?w=900&q=75&auto=format&fit=crop" alt="Ferramentas de marcenaria na bancada" loading="lazy"><div><h3>Produção própria</h3><p>Móveis feitos na nossa marcenaria, com ferragens de qualidade.</p></div></article>
+        <article class="serv s3"><img src="https://images.unsplash.com/photo-1659930087003-2d64e33181f7?w=900&q=75&auto=format&fit=crop" alt="Marceneiro medindo uma peça de madeira" loading="lazy"><div><h3>Acabamento</h3><p>Cuidado em cada detalhe, do corte à montagem.</p></div></article>
+        <article class="serv texto">
+          <div><span class="rotulo" style="color:var(--acento-claro)">Também fazemos</span><h3>Projetos para a casa inteira</h3></div>
+          <ul><li>Closets</li><li>Dormitórios</li><li>Home office</li><li>Banheiros</li><li>Painéis de TV</li><li>Ambientes comerciais</li></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="intro"><div><span class="rotulo">Como funciona</span><h2 class="titulo">Simples, do primeiro contato à entrega.</h2></div></div>
+      <div class="passos">
+        <div class="passo"><b>1</b><h3>Conversa</h3><p>Você manda fotos e medidas pelo WhatsApp.</p></div>
+        <div class="passo"><b>2</b><h3>Medição</h3><p>Visitamos o local para medir cada detalhe.</p></div>
+        <div class="passo"><b>3</b><h3>Projeto</h3><p>Você aprova o projeto e o orçamento antes de começar.</p></div>
+        <div class="passo"><b>4</b><h3>Montagem</h3><p>Produção e montagem pela nossa equipe.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0" id="contato">
+    <div class="wrap duas">
+      <div class="cartao nota">
+        <span class="rotulo" style="color:var(--acento-claro)">Avaliações no Google</span>
+        <div class="grande">5,0</div>
+        <div class="estrelas">★★★★★</div>
+        <p>83 clientes avaliaram a Marcenaria Taquari no Google.</p>
+      </div>
+      <div class="cartao contato">
+        <span class="rotulo">Atendimento</span>
+        <dl>
+          <div><dt>Endereço</dt><dd>R. Serra de Jairé, 428 · Mooca, São Paulo</dd></div>
+          <div><dt>Atendimento</dt><dd>Mooca e Zona Leste</dd></div>
+        </dl>
+        <a class="btn btn-zap" href="https://wa.me/5511991211642">Falar no WhatsApp</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap"><span>Marcenaria Taquari · Mooca e Zona Leste</span><span>Site feito pela Sitebooster</span></div></footer>
+
+<div class="barra-previa" role="region" aria-label="Sobre esta prévia">
+  <span><b>Gostou? Este site pode ser seu.</b>No ar em 48 horas.</span>
+  <a class="btn btn-claro" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20Marcenaria%20Taquari%20e%20quero%20o%20site.">Quero este site</a>
+</div>
+
+</body>
+</html>

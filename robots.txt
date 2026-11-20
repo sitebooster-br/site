@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /agenda/app/
+Disallow: /previa/
 
 Sitemap: https://www.sitebooster.com.br/sitemap.xml
