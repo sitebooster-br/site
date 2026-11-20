@@ -84,6 +84,9 @@ window.Nuvem = (function () {
       "auth/unauthorized-domain": "O login com Google ainda não foi liberado para este endereço. Use e-mail e senha por enquanto.",
       "auth/operation-not-allowed": "O login com Google ainda não foi ativado. Use e-mail e senha por enquanto.",
       "auth/account-exists-with-different-credential": "Este e-mail já tem conta com senha. Entre com e-mail e senha.",
+      "auth/credential-already-in-use": "Esta conta Google já tem uma agenda no BoosterAgenda. Para usar a agenda que você acabou de montar, salve com outra conta Google ou com e-mail.",
+      "auth/provider-already-linked": "Sua agenda já está salva.",
+      "auth/admin-restricted-operation": "O teste sem cadastro ainda não foi ativado. Crie sua conta com o Google por enquanto.",
       "permission-denied": "Sem permissão para esta ação. Confira se a assinatura está em dia.",
       "unavailable": "Sem conexão com a nuvem. Tente de novo em instantes.",
       "failed-precondition": "O banco ainda está preparando um índice. Tente de novo em alguns minutos."
@@ -102,6 +105,29 @@ window.Nuvem = (function () {
     email: function () { return email || (auth.currentUser && (auth.currentUser.email || "").toLowerCase()); },
     esperar: function () { return primeiraResposta; },
     entrar: function (e, s) { return FB.signInWithEmailAndPassword(auth, e.trim(), s).then(function (r) { return r.user; }); },
+    // Teste sem cadastro: entra com uma conta provisória (anônima). Depois ela vira a conta de verdade sem perder nada.
+    semCadastro: function () { return FB.signInAnonymously(auth).then(function (r) { return r.user; }); },
+    provisoria: function () { return !!(auth.currentUser && auth.currentUser.isAnonymous); },
+    // Salvar a agenda: liga a conta provisória ao Google (mesmo usuário, mesmos dados)
+    salvarGoogle: async function () {
+      var prov = new FB.GoogleAuthProvider();
+      prov.setCustomParameters({ prompt: "select_account" });
+      auth.languageCode = "pt-BR";
+      var r = await FB.linkWithPopup(auth.currentUser, prov);
+      await r.user.getIdToken(true);
+      email = (r.user.email || "").toLowerCase();
+      return contaSalva();
+    },
+    // Salvar com e-mail e senha (o e-mail precisa ser confirmado para liberar o link do cliente)
+    salvarEmail: async function (e, s) {
+      var cred = FB.EmailAuthProvider.credential(e.trim(), s);
+      var r = await FB.linkWithCredential(auth.currentUser, cred);
+      await r.user.getIdToken(true);
+      email = (r.user.email || "").toLowerCase();
+      auth.languageCode = "pt-BR";
+      try { await FB.sendEmailVerification(r.user); } catch (er) {}
+      return contaSalva();
+    },
     criar: function (e, s) { return FB.createUserWithEmailAndPassword(auth, e.trim(), s).then(function (r) { return r.user; }); },
     // Entrar com a conta do Google (o e-mail já vem confirmado pelo Google)
     google: function () {
@@ -138,21 +164,25 @@ window.Nuvem = (function () {
     return st.eu;
   }
 
-  // Dono: cria o salão e começa o teste grátis de 30 dias
+  // Dono: cria o salão e começa o teste grátis de 14 dias
+  var DIAS_TESTE = 14;
   async function criarSalao(d) {
     var user = auth.currentUser;
     uid = user.uid; email = (user.email || "").toLowerCase(); sid = uid;
-    var testeAte = FB.Timestamp.fromMillis(Date.now() + 30 * 864e5);
+    var semConta = !!user.isAnonymous && !email;
+    var testeAte = FB.Timestamp.fromMillis(Date.now() + DIAS_TESTE * 864e5);
     var b = FB.writeBatch(db);
-    b.set(FB.doc(db, "testes", email), { criadoEm: agora() });
-    var demo = await ehDemo();
+    // Teste sem cadastro: o "um teste por e-mail" é conferido quando a pessoa salvar a conta
+    if (!semConta) b.set(FB.doc(db, "testes", email), { criadoEm: agora() });
+    var demo = semConta ? false : await ehDemo();
     b.set(refSalao(), limpar({
+      anon: semConta || undefined,
       demo: demo || undefined,
       nome: d.nome, whatsapp: d.whatsapp, donoUid: uid, donoNome: d.nomePessoa || "",
       horarios: d.horarios, antecedenciaHoras: 2, diasAFrente: 30, publico: true, msgLembrete: d.msgLembrete,
       compartilharNumeros: true, origem: d.origem || "", criadoEm: agora(),
       // E-mail confirmado? Sem isso o link do cliente ainda não aceita agendamentos (o resto do app funciona)
-      emailOk: !!(user.emailVerified || demo),
+      emailOk: semConta ? false : !!(user.emailVerified || demo),
       assinatura: { status: "teste", plano: "teste", limiteProf: 10, testeAte: testeAte }
     }));
     b.set(FB.doc(db, "usuarios", uid), { papel: "dono", salaoId: uid, email: email, nome: d.nomePessoa || "", criadoEm: agora() });
@@ -170,12 +200,42 @@ window.Nuvem = (function () {
   // Depois que o dono confirma o e-mail: libera o link do cliente para receber agendamentos
   async function liberarLink() {
     if (!st.perfil || st.perfil.emailOk !== false) return false;
-    if (!(auth.currentUser && auth.currentUser.emailVerified)) return false;
+    if (!(auth.currentUser && auth.currentUser.emailVerified && !auth.currentUser.isAnonymous)) return false;
     await auth.currentUser.getIdToken(true);
-    await FB.updateDoc(refSalao(), { emailOk: true });
+    var mail = (auth.currentUser.email || "").toLowerCase();
+    if (st.perfil.anon && mail) {
+      // Salão do teste sem cadastro: o e-mail ganha o "teste usado" no mesmo lote (um teste grátis por e-mail)
+      var b = FB.writeBatch(db);
+      var a = st.perfil.assinatura || {};
+      if (a.status !== "ativa") b.set(FB.doc(db, "testes", mail), { criadoEm: agora() });
+      b.update(refSalao(), { emailOk: true });
+      try { await b.commit(); }
+      catch (e) {
+        if (e && e.code === "permission-denied") { st.perfil.testeUsado = true; emitir("teste-ja-usado", mail); return false; }
+        throw e;
+      }
+    } else {
+      await FB.updateDoc(refSalao(), { emailOk: true });
+    }
     st.perfil.emailOk = true;
     publicarPagina();
     return true;
+  }
+
+  // A conta provisória acabou de virar conta de verdade (Google ou e-mail): grava o e-mail e libera o link
+  async function contaSalva() {
+    var u = auth.currentUser, mail = (u.email || "").toLowerCase();
+    if (!mail) return { ok: false };
+    try { await FB.updateDoc(FB.doc(db, "usuarios", uid), { email: mail }); } catch (e) { console.warn("e-mail do usuário:", e); }
+    try {
+      var p = st.profissionais.find(function (x) { return x.uid === uid; });
+      if (p && !p.email) await FB.updateDoc(ref("profissionais", p.id), { email: mail });
+    } catch (e) {}
+    var liberou = false;
+    if (u.emailVerified) liberou = await liberarLink().catch(function (e) { console.warn(e); return false; });
+    try { rastro("salvou a conta", u.providerData && u.providerData[0] ? u.providerData[0].providerId : ""); } catch (e) {}
+    emitir("conta-salva", mail);
+    return { ok: true, email: mail, liberou: liberou, confirmar: !u.emailVerified, testeUsado: !!(st.perfil && st.perfil.testeUsado) };
   }
 
   // Conta de demonstração (o dono do sistema mostra o app para clientes; botão para recomeçar do zero)

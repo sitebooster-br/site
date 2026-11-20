@@ -309,3 +309,10 @@ input::-webkit-date-and-time-value { text-align: left; min-height: 1.4em; }
 .ou::before, .ou::after { content: ""; flex: 1; height: 1px; background: var(--linha-2); }
 /* Faixa "confirme o seu e-mail" */
 .faixa-email .link-btn { display: inline; padding: 0; font-size: inherit; text-decoration: underline; }
+
+/* Tela de entrada limpa (Google na frente, e-mail escondido, teste sem cadastro) */
+.ativ-usar-email { display: block; margin: 14px auto 0; }
+.ativ-testar { margin-top: 22px; padding-top: 16px; border-top: 1px solid rgba(127,127,127,.25); text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.ativ-testar .link-btn { font-weight: 700; }
+#janelaForm details summary { cursor: pointer; margin: 6px 0 10px; list-style: none; }
+#janelaForm details summary::-webkit-details-marker { display: none; }

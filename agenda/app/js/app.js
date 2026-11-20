@@ -606,6 +606,7 @@
     };
 
     $("#convidar").onclick = async function () {
+      if (Nuvem.Conta.provisoria()) { salvarConta("Para convidar alguém da equipe, salve sua agenda primeiro."); return; }
       if (ativos.length >= a.limite) { aviso("Todas as vagas do plano " + a.planoNome + " estão ocupadas.", "erro"); return; }
       if (!navigator.onLine) { aviso("Conecte-se à internet para convidar.", "erro"); return; }
       var r = await janela("Convidar profissional",
@@ -828,7 +829,9 @@
         '<div class="atalhos"><button class="btn btn--pri" id="copiar">' + Icone("copiar") + 'Copiar link</button><a class="btn btn--sec" href="' + esc(url) + '" target="_blank" rel="noopener">' + Icone("olho") + "Ver como o cliente vê</a>" +
         '<a class="btn btn--sec" href="https://wa.me/?text=' + encodeURIComponent("Agende seu horário comigo por aqui: " + url) + '" target="_blank" rel="noopener">' + Icone("whatsapp") + "Enviar no WhatsApp</a></div>" +
         '<label class="check check--grande"><input type="checkbox" id="linkAtivo"' + (p.publico !== false ? " checked" : "") + "> Link ligado: clientes podem marcar sozinhos</label>" +
-        (p.emailOk === false ? '<p class="nota nota--alerta">' + Icone("alerta") + '<span><strong>Falta confirmar o seu e-mail.</strong> Até lá, o link mostra seus serviços, mas ainda não aceita agendamentos. Use os botões da faixa no topo da tela.</span></p>' : "") +
+        (p.emailOk === false ? (Nuvem.Conta.provisoria()
+          ? '<p class="nota nota--alerta">' + Icone("alerta") + '<span><strong>Salve sua agenda para liberar o link.</strong> Até lá, o link mostra seus serviços, mas ainda não aceita agendamentos. <button type="button" class="link-btn" data-salvar-conta>Salvar com Google (1 toque)</button></span></p>'
+          : '<p class="nota nota--alerta">' + Icone("alerta") + '<span><strong>Falta confirmar o seu e-mail.</strong> Até lá, o link mostra seus serviços, mas ainda não aceita agendamentos. Use os botões da faixa no topo da tela.</span></p>') : "") +
         (!S.servicos.some(function (s) { return s.publico !== false; }) ? '<p class="nota nota--alerta">' + Icone("alerta") + '<span>Nenhum serviço aparece no link. <a href="#servicos">Cadastre um serviço</a>.</span></p>' : "") +
         "</section>" +
         '<section class="painel"><h2>' + Icone("link") + "QR Code para o balcão</h2>" +
@@ -1051,6 +1054,8 @@
   // Planos e botões de assinar (pagamento pela Kiwify; o robô libera o acesso sozinho)
   function planosHTML(a) {
     if (!dono()) return "";
+    if (Nuvem.Conta.provisoria()) return '<div class="nota nota--alerta" style="display:block"><p style="margin:0 0 10px"><b>Salve sua agenda antes de assinar.</b> É pela sua conta (Google ou e-mail) que o pagamento chega até o seu salão.</p>' +
+      '<button type="button" class="btn btn--pri" data-salvar-conta>Salvar minha agenda</button></div>';
     var mail = encodeURIComponent(Nuvem.Conta.email() || "");
     var nAtivos = S.profissionais.filter(function (p) { return p.ativo; }).length;
     return '<div class="planos">' + Object.keys(Nuvem.PLANOS).map(function (k) {
@@ -1166,7 +1171,7 @@
     ["Equipe e comissões", "f", "Como marco minhas folgas?", "Em Minhas folgas: escolha o dia (ou o horário) e salve. O link do cliente deixa de mostrar esse horário."],
     ["Clientes", "", "Onde vejo o histórico de um cliente?", "Em Clientes, toque no nome: aparecem as visitas, os serviços, as faltas e quanto gastou (só atendimentos concluídos)."],
     ["Clientes", "d", "O que é cliente \"Sumido\"?", "Quem não volta há mais de 60 dias. Em Clientes → Sumidos ou em Trazer clientes você chama de volta pelo WhatsApp com mensagem pronta."],
-    ["Plano e conta", "d", "Como funciona o teste grátis?", "30 dias com tudo liberado, para até 10 profissionais, sem cartão. Antes de acabar, escolha o plano em Conta → Plano. Se assinar antes, os dias grátis que sobraram continuam valendo."],
+    ["Plano e conta", "d", "Como funciona o teste grátis?", "14 dias com tudo liberado, para até 10 profissionais, sem cartão. Antes de acabar, escolha o plano em Conta → Plano. Se assinar antes, os dias grátis que sobraram continuam valendo."],
     ["Plano e conta", "d", "Como troco a cor do app?", "Conta → Aparência → Estilo de cor do salão: Dourado, Rosé ou Lilás. Vale para a equipe e para a página do cliente. Claro/escuro é escolhido em cada aparelho."],
     ["Plano e conta", "", "Posso entrar com a minha conta do Google?", "Pode. Na tela de entrar, toque em \"Entrar com Google\": não precisa de senha nem de confirmar e-mail. Se o botão não aparecer, você abriu o link de dentro do Instagram ou do Facebook: abra a página no navegador do celular (Chrome ou Safari). Funcionário: use a conta Google do mesmo e-mail que o dono cadastrou na Equipe."],
     ["Link do cliente", "d", "Meu link diz \"quase pronto\" e não deixa marcar. Por quê?", "Falta confirmar o seu e-mail. Enviamos um link de confirmação para o e-mail da conta (olhe também o spam). Depois de tocar nele, toque em \"Já confirmei\" na faixa do topo: o link libera na hora. Quem entra com o Google já fica confirmado."],
@@ -1261,6 +1266,10 @@
       catch (e) { aviso(Nuvem.traduzir(e), "erro"); }
     };
     $("#sair").onclick = async function () {
+      if (Nuvem.Conta.provisoria()) {
+        if (await confirmar("Sair sem salvar?", "Sua agenda ainda não está salva em uma conta. Se sair agora, você perde tudo o que montou. Salve com o Google em 1 toque antes de sair.", "Sair e perder a agenda", true)) { await Nuvem.Conta.sair(); location.href = location.pathname; }
+        return;
+      }
       if (await confirmar("Sair deste aparelho?", "Para voltar, entre de novo (com o Google ou com e-mail e senha). Seus dados continuam guardados na nuvem.", "Sair", false)) { await Nuvem.Conta.sair(); location.href = location.pathname; }
     };
   }
@@ -1862,7 +1871,7 @@
     }
     function atualizar() {
       $("#tAtiv").textContent = modoCriar ? "Criar a sua conta" : "Entrar na sua agenda";
-      $("#ativTexto").textContent = modoCriar ? "Comece o teste grátis de 30 dias. Sem cartão." : "Funciona no celular e no computador.";
+      $("#ativTexto").textContent = modoCriar ? "Crie a sua senha para entrar." : "Funciona no celular e no computador.";
       $("#ativGoogleTxt").textContent = modoCriar ? "Criar conta com Google" : "Entrar com Google";
       $("#ativOuTxt").textContent = modoCriar ? "ou crie com e-mail e senha" : "ou use e-mail e senha";
       $("#ativConfirma").hidden = !modoCriar;
@@ -1873,6 +1882,12 @@
       $("#ativErro").textContent = ""; $("#ativOk").textContent = "";
     }
     $("#ativTrocar").onclick = function () { modoCriar = !modoCriar; atualizar(); };
+    // E-mail e senha ficam escondidos (só Google na frente). Convite de funcionário já abre com o e-mail.
+    function mostrarEmail(sim) { $("#ativEmailBox").hidden = !sim; $("#ativUsarEmail").hidden = sim; if (sim) setTimeout(function () { $(EMAIL_CONVITE ? "#ativSenha" : "#ativEmail").focus(); }, 50); }
+    $("#ativUsarEmail").onclick = function () { mostrarEmail(true); };
+    mostrarEmail(!!CONVITE);
+    $("#ativTestarBox").hidden = !!CONVITE;
+    $("#ativTestar").onclick = function () { comecarSemCadastro(); };
     // Entrar com Google. Navegadores de dentro do Instagram/Facebook/TikTok não deixam: mostramos como abrir fora.
     var ua = navigator.userAgent || "";
     var embutido = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|Line\/|TikTok|musical_ly|Bytedance|Snapchat|Pinterest|LinkedInApp/i.test(ua) || (/Android/i.test(ua) && /; wv\)/.test(ua));
@@ -1883,8 +1898,9 @@
       $("#ativApp").hidden = false;
       $("#ativApp").innerHTML = Icone("alerta") + "<span><b>Para entrar com Google</b>, abra esta página no navegador do celular. " +
         (android ? '<a href="' + esc(chrome) + '">Abrir no Chrome</a>.' : "Toque nos <b>três pontinhos</b> (ou no ícone de compartilhar) e escolha <b>\"Abrir no navegador\"</b>.") +
-        " Ou crie a conta com e-mail e senha logo abaixo.</span>";
+        " Ou entre com e-mail e senha.</span>";
       $("#ativOuTxt").textContent = "ou use e-mail e senha";
+      mostrarEmail(true);
     }
     $("#ativGoogle").onclick = async function () {
       var b = this; b.disabled = true; $("#ativErro").textContent = ""; $("#ativOk").textContent = "Abrindo o Google...";
@@ -2000,17 +2016,75 @@
       conversaoCadastro();
       await Nuvem.iniciar();
       abrirApp();
-      aviso("Tudo pronto! Seu teste grátis de 30 dias começou. Siga os Primeiros passos na sua agenda.");
+      aviso("Tudo pronto! Seu teste grátis de 14 dias começou. Siga os Primeiros passos na sua agenda.");
       if (location.hash === "#agenda") irPara(); else location.hash = "#agenda";
     };
   }
+
+  var tentouSemCadastro = false;
+  async function comecarSemCadastro() {
+    tentouSemCadastro = true;
+    mostrar("telaCarregando");
+    try { await Nuvem.Conta.semCadastro(); }
+    catch (err) {
+      prepararLogin(); mostrar("telaAtivacao");
+      $("#ativErro").textContent = Nuvem.traduzir(err);
+      return;
+    }
+    return fluxo();
+  }
+
+  // Salvar a agenda (conta provisória vira conta de verdade, sem perder nada)
+  async function salvarConta(motivo) {
+    if (!Nuvem.Conta.provisoria()) return true;
+    var embutido = /Instagram|FBAN|FBAV|FB_IAB|FBIOS|Line\/|TikTok|musical_ly|Bytedance|Snapchat|Pinterest|LinkedInApp/i.test(navigator.userAgent || "") || (/Android/i.test(navigator.userAgent || "") && /; wv\)/.test(navigator.userAgent || ""));
+    var j = janelaAbrir("Salvar minha agenda",
+      (motivo ? '<p><b>' + esc(motivo) + '</b></p>' : "") +
+      "<p>Salve para não perder seus clientes e horários se trocar de celular, e para o seu link começar a receber agendamentos.</p>" +
+      (embutido ? '<p class="nota nota--alerta">' + Icone("alerta") + "<span>Este navegador (Instagram/WhatsApp/Facebook) não deixa entrar com o Google. Abra o BoosterAgenda no Chrome ou no Safari, ou salve com e-mail e senha abaixo.</span></p>"
+        : '<button type="button" class="btn btn--google btn--bloco" id="svGoogle">' + $("#ativGoogle").innerHTML.replace(/<span[^>]*>.*<\/span>/, "<span>Salvar com Google (1 toque)</span>") + "</button>" +
+          '<p class="sub" style="text-align:center;margin:6px 0 14px">Sem senha. Só o seu nome e e-mail são usados.</p>') +
+      '<details' + (embutido ? " open" : "") + '><summary class="link-btn">Prefiro usar e-mail e senha</summary>' +
+      '<label>E-mail<input name="email" type="email" autocomplete="email"></label>' +
+      '<label>Crie uma senha<input name="senha" type="password" autocomplete="new-password" minlength="6"></label>' +
+      '<button type="button" class="btn btn--sec btn--bloco" id="svEmail">Salvar com e-mail</button>' +
+      '<p class="sub">Vamos mandar um link para confirmar o e-mail.</p></details>' +
+      '<p class="erro" id="svErro" role="alert"></p>', "", false, true);
+    function terminou(r) {
+      var dlg = $("#janela"); if (dlg && dlg.open) dlg.close();
+      if (r && r.testeUsado) aviso("Agenda salva! Este e-mail já tinha usado o teste grátis antes, então o link dos clientes só libera depois de assinar o plano.", "erro");
+      else if (r && r.confirmar) aviso("Agenda salva! Confirme o e-mail (enviamos um link) para o seu link começar a receber agendamentos.");
+      else aviso("Agenda salva! Seu link já aceita agendamentos.");
+      faixaEmail(); redesenhar();
+    }
+    var g = document.getElementById("svGoogle");
+    if (g) g.onclick = async function () {
+      g.disabled = true; $("#svErro").textContent = "";
+      try { terminou(await Nuvem.Conta.salvarGoogle()); }
+      catch (err) { g.disabled = false; $("#svErro").textContent = Nuvem.traduzir(err); }
+    };
+    document.getElementById("svEmail").onclick = async function () {
+      var box = this.closest("details"), em = box.querySelector("[name=email]").value.trim(), se = box.querySelector("[name=senha]").value;
+      if (!emailValido(em)) { $("#svErro").textContent = "Digite um e-mail válido."; return; }
+      if (!se || se.length < 6) { $("#svErro").textContent = "A senha precisa ter pelo menos 6 caracteres."; return; }
+      this.disabled = true; $("#svErro").textContent = "";
+      try { terminou(await Nuvem.Conta.salvarEmail(em, se)); }
+      catch (err) { this.disabled = false; $("#svErro").textContent = Nuvem.traduzir(err); }
+    };
+    return false;
+  }
+  document.addEventListener("click", function (e) { var b = e.target.closest && e.target.closest("[data-salvar-conta]"); if (b) { e.preventDefault(); salvarConta(); } });
 
   async function fluxo() {
     mostrar("telaCarregando");
     var sessao;
     try { sessao = await Nuvem.carregarSessao(); }
     catch (e) { aviso(Nuvem.traduzir(e), "erro"); sessao = null; }
-    if (!sessao) { prepararLogin(); mostrar("telaAtivacao"); $(EMAIL_CONVITE ? "#ativSenha" : "#ativEmail").focus(); return; }
+    if (!sessao) {
+      // Veio do "Testar grátis": entra direto, sem cadastro (a conta é salva depois, com o Google em 1 toque)
+      if (params.get("criar") === "1" && !CONVITE && !tentouSemCadastro) return comecarSemCadastro();
+      prepararLogin(); mostrar("telaAtivacao"); return;
+    }
 
     if (Nuvem.ehDemo) Nuvem.ehDemo().then(function (v) { window.__demo = v; if (v) try { atualizarMenu(); } catch (e) {} });
     if (sessao.semSalao) {
@@ -2098,6 +2172,17 @@
     if (!f) { var a = $("#faixaAssinatura"); if (!a) return; f = document.createElement("div"); f.id = "faixaEmail"; a.parentNode.insertBefore(f, a.nextSibling); }
     var falta = dono() && S.perfil && S.perfil.emailOk === false && !window.__demo;
     if (!falta) { f.hidden = true; clearInterval(esperaEmail); esperaEmail = null; return; }
+    if (Nuvem.Conta.provisoria()) {
+      f.hidden = false; f.className = "faixa-assinatura faixa-assinatura--erro faixa-email";
+      f.innerHTML = Icone("alerta") + '<span><strong>Sua agenda ainda não está salva.</strong> Salve para não perder seus dados e para o seu link começar a receber agendamentos. ' +
+        '<button type="button" class="link-btn" data-salvar-conta>Salvar com Google (1 toque)</button></span>';
+      return;
+    }
+    if (S.perfil.testeUsado) {
+      f.hidden = false; f.className = "faixa-assinatura faixa-assinatura--erro faixa-email";
+      f.innerHTML = Icone("alerta") + '<span><strong>Este e-mail já usou o teste grátis antes.</strong> Para o seu link receber agendamentos, assine um plano. <a href="#conta">Ver planos</a></span>';
+      return;
+    }
     // Já confirmou (por exemplo, em outro aparelho)? Libera sozinho, sem a pessoa fazer nada
     if (Nuvem.Conta.verificado()) { Nuvem.liberarLink().then(function (ok) { if (ok) { aviso("E-mail confirmado! Seu link já aceita agendamentos."); faixaEmail(); redesenhar(); } }, function () {}); }
     f.hidden = false; f.className = "faixa-assinatura faixa-assinatura--erro faixa-email";
