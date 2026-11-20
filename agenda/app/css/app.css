@@ -316,3 +316,14 @@ input::-webkit-date-and-time-value { text-align: left; min-height: 1.4em; }
 .ativ-testar .link-btn { font-weight: 700; }
 #janelaForm details summary { cursor: pointer; margin: 6px 0 10px; list-style: none; }
 #janelaForm details summary::-webkit-details-marker { display: none; }
+
+/* Escolha do ramo no "Vamos montar a sua agenda" */
+.ramos { border: 0; padding: 0; margin: 14px 0 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ramos legend { font-weight: 700; margin-bottom: 8px; padding: 0; }
+.ramo { position: relative; display: block; cursor: pointer; margin: 0; }
+.ramo input { position: absolute; opacity: 0; inset: 0; }
+.ramo span { display: flex; flex-direction: column; gap: 2px; padding: 12px; border: 2px solid rgba(127,127,127,.3); border-radius: 12px; min-height: 64px; justify-content: center; }
+.ramo b { font-size: .98rem; }
+.ramo small { opacity: .75; font-size: .8rem; }
+.ramo input:checked + span { border-color: var(--destaque, #f0a500); background: rgba(240,165,0,.12); }
+.ramo input:focus-visible + span { outline: 3px solid var(--destaque, #f0a500); outline-offset: 2px; }

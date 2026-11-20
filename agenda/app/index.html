@@ -90,6 +90,14 @@
   <input id="bvPessoa" required maxlength="60" autocomplete="name" placeholder="Ex.: Ana Souza">
   <label for="bvZap">Seu WhatsApp (com DDD)</label>
   <input id="bvZap" type="tel" inputmode="tel" required placeholder="(11) 98765-4321">
+  <fieldset class="ramos" id="bvRamo">
+   <legend>O que você faz?</legend>
+   <label class="ramo"><input type="radio" name="ramo" value="barbearia"><span><b>💈 Barbearia</b><small>corte, barba</small></span></label>
+   <label class="ramo"><input type="radio" name="ramo" value="unhas"><span><b>💅 Unhas</b><small>manicure, nail</small></span></label>
+   <label class="ramo"><input type="radio" name="ramo" value="salao"><span><b>💇‍♀️ Salão</b><small>cabelo, escova</small></span></label>
+   <label class="ramo"><input type="radio" name="ramo" value="cilios"><span><b>👁️ Cílios e sobrancelha</b><small>design, lash</small></span></label>
+  </fieldset>
+  <p class="sub" style="margin:-4px 0 12px">Já colocamos os serviços mais comuns com preço e tempo. Depois é só ajustar.</p>
   <label class="check check--grande"><input type="checkbox" id="bvAtende" checked> Eu também atendo clientes</label>
   <p class="sub" style="margin-top:6px">Se você só administra e não atende, desmarque. Quem atende ocupa uma vaga do plano (o Essencial tem 2).</p>
   <p class="nota nota--ok" style="margin-top:14px">14 dias grátis, sem cartão e sem cadastro. Depois, a partir de R$ 37,90 por mês.</p>
@@ -122,6 +130,7 @@
   <div class="marca" data-marca></div>
   <nav class="menu" aria-label="Menu principal">
    <a href="#agenda" data-tela="agenda" data-principal><span data-icone="calendario"></span>Agenda<small class="menu__sub" data-sub-dono="Horários do dia e da semana" data-sub-prof="Seus horários do dia e da semana"></small></a>
+   <a href="#link" data-tela="link" data-so-dono data-principal><span data-icone="link"></span>Meu link<small class="menu__sub" data-sub-dono="Onde o cliente marca sozinho" data-sub-prof=""></small></a>
    <a href="#clientes" data-tela="clientes" data-principal><span data-icone="usuarios"></span>Clientes<small class="menu__sub" data-sub-dono="Cadastro, histórico e contato" data-sub-prof="Quem você atendeu e vai atender"></small></a>
    <a href="#trazer" data-tela="trazer" data-so-dono><span data-icone="estrela"></span>Trazer clientes<small class="menu__sub" data-sub-dono="Chamar quem sumiu e divulgar" data-sub-prof=""></small></a>
    <a href="#comissoes" data-tela="comissoes" data-so-equipe><span data-icone="dinheiro"></span><span data-rotulo-comissoes>Comissões</span><small class="menu__sub" data-sub-dono="Quanto cada um tem a receber" data-sub-prof="Quanto você tem a receber"></small></a>

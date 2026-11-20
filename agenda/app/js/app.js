@@ -658,6 +658,7 @@
   };
 
   TELAS.servicos = async function (el) {
+    if (dono() && S.perfil && S.perfil.ramo && !S.perfil.servicosConferidos) Nuvem.salvarPerfil({ servicosConferidos: true });
     var todos = S.servicos.slice().sort(function (a, b) { return a.nome.localeCompare(b.nome, "pt-BR"); });
     el.innerHTML =
       '<header class="topo"><div><h1>Serviços</h1><p class="sub">O que você faz, quanto tempo leva e quanto custa. Aparecem no seu link de agendamento.</p></div>' +
@@ -1723,16 +1724,12 @@
   function passosItens() {
     var p = S.perfil || {}, pul = p.passosPulados || [];
     var lista = [
-      { id: "servicos", ok: S.servicos.length > 0, titulo: "Cadastre seus serviços", href: "#servicos", botao: "Cadastrar serviços",
-        txt: "Coloque o que você faz (corte, escova, unha...), com <b>preço</b> e <b>tempo</b> de cada um. É a lista que o cliente vê na hora de marcar." },
+      { id: "servicos", ok: S.servicos.length > 0 && (!!p.servicosConferidos || !p.ramo), titulo: "Confira seus serviços e preços", href: "#servicos", botao: "Conferir serviços",
+        txt: "Já deixamos os serviços mais comuns prontos. Ajuste o <b>preço</b> e o <b>tempo</b> do seu jeito, apague o que você não faz e acrescente o que faltar." },
       { id: "horarios", ok: !!p.horariosConferidos, titulo: "Confira seus dias e horários", href: "#horarios", botao: "Conferir horários",
-        txt: "Diga em quais dias você atende, de que horas a que horas e o intervalo do almoço. Toque em <b>Salvar</b> no fim da tela. O cliente só consegue marcar dentro desses horários." },
-      { id: "equipe", ok: temEquipe() || !!p.soEuAtendo, titulo: "Monte sua equipe (ou diga que é só você)", href: "#equipe", botao: "Convidar profissional", extra: '<button type="button" class="btn btn--sec btn--peq" id="passoSoEu">Só eu atendo</button>',
-        txt: "Trabalha com outros profissionais? Mande um convite para cada um: eles entram com o próprio celular e veem a própria agenda. Se só você atende, toque em <b>Só eu atendo</b>." },
-      { id: "teste", ok: S.ags.size > 0 || !!p.fezTeste, titulo: "Marque um horário de teste", botao: "Marcar horário de teste", acao: "teste",
-        txt: "Marque um horário de mentirinha para ver como fica na agenda. Depois é só tocar nele e cancelar." },
-      { id: "link", ok: !!p.slug, titulo: "Crie seu link e divulgue", href: "#link", botao: "Criar meu link",
-        txt: "Seu salão ganha um endereço próprio. Mande no WhatsApp, coloque no Instagram e no Google, ou imprima o QR Code para o balcão: o cliente escolhe o serviço e o horário sozinho, e você recebe na agenda." }
+        txt: "Diga em quais dias e horários você atende. Toque em <b>Salvar</b> no fim da tela. O cliente só consegue marcar dentro desses horários." },
+      { id: "link", ok: !!p.linkDivulgado, titulo: "Mande seu link para um cliente", href: "#link", botao: "Ver meu link",
+        txt: "É aqui que a mágica acontece: o cliente abre o seu link, escolhe o serviço e o horário sozinho, e o horário cai na sua agenda. Mande no WhatsApp ou coloque no Instagram." }
     ];
     lista.forEach(function (i) { i.pulado = !i.ok && pul.indexOf(i.id) >= 0; });
     return lista;
@@ -1799,6 +1796,7 @@
       // volta sozinho para a agenda (tela de início), onde o guia já abre o próximo passo
       voltarAgendaDepois();
     }
+    if (passoAntes !== id) try { atualizarMenu(); } catch (e) {}
     passoAntes = id;
   }
   function redesenharJa() { if (TELAS[telaAtual]) TELAS[telaAtual]($("#conteudo")); }
@@ -1995,6 +1993,20 @@
     } catch (e) {}
   }
 
+  // Serviços prontos por ramo (preço e tempo médios; o dono ajusta depois)
+  var MODELOS = {
+    barbearia: [["Corte masculino", 30, 35], ["Barba", 30, 25], ["Corte e barba", 60, 55], ["Sobrancelha", 15, 15], ["Pezinho", 15, 15]],
+    unhas: [["Mão", 45, 30], ["Pé", 45, 35], ["Pé e mão", 90, 60], ["Esmaltação em gel", 60, 60], ["Alongamento em gel", 120, 130], ["Manutenção do alongamento", 90, 90]],
+    salao: [["Corte feminino", 60, 70], ["Escova", 45, 45], ["Hidratação", 60, 60], ["Coloração", 120, 150], ["Progressiva", 180, 200], ["Pé e mão", 90, 60]],
+    cilios: [["Design de sobrancelha", 30, 35], ["Design com henna", 45, 50], ["Extensão de cílios", 120, 150], ["Manutenção de cílios", 90, 90], ["Lash lifting", 60, 100]]
+  };
+  async function criarServicosModelo(ramo) {
+    var lista = MODELOS[ramo] || [];
+    for (var i = 0; i < lista.length; i++) {
+      await Nuvem.salvar("servicos", { nome: lista[i][0], duracao: lista[i][1], preco: lista[i][2], cor: CORES[i % CORES.length], publico: true, mostrarPreco: true });
+    }
+  }
+
   function telaCriarSalao() {
     mostrar("telaBoasVindas");
     $("#formBoasVindas").onsubmit = async function (e) {
@@ -2003,6 +2015,8 @@
       if (nome.length < 2) { $("#bvErro").textContent = "Digite o nome do seu negócio."; return; }
       if (pessoa.length < 2) { $("#bvErro").textContent = "Digite o seu nome."; return; }
       if (U.soDigitos(zap).length < 10) { $("#bvErro").textContent = "Digite o WhatsApp com DDD."; return; }
+      var ramoEl = document.querySelector("#bvRamo input:checked"), ramo = ramoEl ? ramoEl.value : "";
+      if (!ramo) { $("#bvErro").textContent = "Escolha o que você faz (Barbearia, Unhas, Salão ou Cílios)."; return; }
       if (!navigator.onLine) { $("#bvErro").textContent = "Conecte-se à internet para criar o salão."; return; }
       $("#bvErro").textContent = "";
       var btn = e.submitter || $("#formBoasVindas button[type=submit]"); btn.disabled = true;
@@ -2015,8 +2029,9 @@
       }
       conversaoCadastro();
       await Nuvem.iniciar();
+      try { await criarServicosModelo(ramo); Nuvem.salvarPerfil({ ramo: ramo }); } catch (e) { console.warn("serviços prontos:", e); }
       abrirApp();
-      aviso("Tudo pronto! Seu teste grátis de 14 dias começou. Siga os Primeiros passos na sua agenda.");
+      aviso("Pronto! Sua agenda já está montada. Faltam só 3 passos rápidos.");
       if (location.hash === "#agenda") irPara(); else location.hash = "#agenda";
     };
   }
@@ -2159,8 +2174,8 @@
     if (!a.emDia) {
       f.hidden = false; f.className = "faixa-assinatura faixa-assinatura--erro";
       f.innerHTML = Icone("alerta") + "<span>" + st.texto + (dono() ? ' <a href="#conta">Assinar agora</a>' : " Avise o dono do salão.") + "</span>";
-    } else if (dono()) {
-      f.hidden = false; f.className = "faixa-assinatura" + (st.nivel === "info" ? " faixa-assinatura--info" : "");
+    } else if (dono() && st.nivel !== "info") {
+      f.hidden = false; f.className = "faixa-assinatura";
       f.innerHTML = Icone(st.nivel === "info" ? "estrela" : "relogio") + "<span>" + st.texto + ' <a href="#conta">Ver plano</a></span>';
     } else f.hidden = true;
   }
@@ -2211,7 +2226,7 @@
   var aberto = false;
   // Menu: Comissões só aparece quando há equipe; no celular, barra embaixo com o principal + "Mais"
   function temEquipe() { return S.profissionais.some(function (p) { return !p.ehDono && !p.removido; }); }
-  var TELAS_SALAO = { salao: 1, servicos: 1, horarios: 1, link: 1, equipe: 1 };
+  var TELAS_SALAO = { salao: 1, servicos: 1, horarios: 1, equipe: 1 };
   function atualizarMenu() {
     // Faixa no topo deixando claro quem está usando: painel do dono (administração) ou agenda do colaborador
     var pf = $("#papelFaixa");
@@ -2239,6 +2254,9 @@
     $$("[data-so-dono]").forEach(function (a) { a.hidden = !dono(); });
     $$("[data-so-prof]").forEach(function (a) { a.hidden = dono(); });
     $$("[data-so-equipe]").forEach(function (a) { a.hidden = dono() && !temEquipe(); });
+    // Começo simples: enquanto o salão ainda está nos primeiros passos e sem horários marcados, esconde o que é para depois
+    var simples = dono() && guiaAtivo() && S.ags.size === 0;
+    $$('.menu a[data-tela="trazer"], .menu a[data-tela="relatorio"]').forEach(function (a) { if (simples) a.hidden = true; });
     var nb = $("#navBaixo"); if (!nb) return;
     var principais = $$(".menu a[data-principal]").filter(function (a) { return !a.hidden; });
     var semSub = function (a) { var c = a.cloneNode(true); $$(".menu__sub", c).forEach(function (x) { x.remove(); }); return c.innerHTML; };
