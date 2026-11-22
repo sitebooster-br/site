@@ -146,6 +146,32 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .barra span{font-size:13.5px;line-height:1.35}
 .barra b{display:block;font-size:15px}
 .barra .btn{background:#fff;color:#111;padding:13px 18px;font-size:14.5px}
+
+/* Planos e preços dentro da prévia */
+.planos-dlg{border:0;padding:0;margin:auto;width:min(720px,94vw);max-height:92svh;border-radius:28px;background:#fff;color:#16181b;font-family:var(--body);box-shadow:0 40px 100px -30px rgba(0,0,0,.6)}
+.planos-dlg::backdrop{background:rgba(8,10,12,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.planos-dlg .in{padding:clamp(22px,4vw,40px);display:grid;gap:22px}
+.planos-dlg h2{font-family:var(--body);font-weight:700;letter-spacing:-.02em;font-size:clamp(26px,4vw,36px);line-height:1.1;color:#16181b;max-width:none}
+.planos-dlg .fechar{position:sticky;top:12px;margin-left:auto;display:block;width:40px;height:40px;border-radius:50%;border:0;background:#f0f1f3;color:#16181b;font-size:22px;cursor:pointer;z-index:2;margin-bottom:-40px;margin-right:12px}
+.pl-grade{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pl{border:1.5px solid #e4e6ea;border-radius:20px;padding:20px;display:grid;gap:10px;align-content:start}
+.pl.dest{border-color:#1fa855;background:#f3fbf6}
+.pl small{font-size:13px;color:#5b6068}
+.pl .v{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.pl .v span{font-size:15px;font-weight:500;color:#5b6068}
+.pl .btn{width:100%;padding:14px 16px;font-size:15px}
+.pl .btn-pix{background:#16181b;color:#fff}
+.pl-inclui{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;list-style:none;font-size:15px}
+.pl-inclui li::before{content:"✓ ";color:#1fa855;font-weight:700}
+.pl-passos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;counter-reset:p}
+.pl-passos div{background:#f5f6f8;border-radius:16px;padding:14px;font-size:14.5px;line-height:1.4}
+.pl-passos b{display:block;font-size:15px;margin-bottom:2px}
+.pl-faq details{border-top:1px solid #eceef1;padding:12px 0}
+.pl-faq summary{cursor:pointer;font-weight:600;font-size:15.5px}
+.pl-faq p{font-size:15px;color:#4a4f57;margin-top:6px}
+.pl-rodape{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;font-size:14px;color:#5b6068}
+.pl-rodape a{color:#16181b}
+@media (max-width:620px){.pl-grade,.pl-inclui,.pl-passos{grid-template-columns:1fr}}
 @media (max-width:900px){
   .topo-secao,.local,.nota,.pedido,.sim{grid-template-columns:1fr}
   .nota{gap:12px}.cel{margin-inline:auto}
@@ -314,8 +340,31 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 <footer><div class="wrap"><span>LCS Vidros, Jardim Brasília e Zona Leste</span><span>Site feito pela Sitebooster</span></div></footer>
 <div class="barra" role="region" aria-label="Sobre esta prévia">
   <span><b>Gostou? Este site pode ser seu.</b>Pronto em até 48 horas, com as suas fotos.</span>
-  <a class="btn" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20LCS%20Vidros%20e%20quero%20o%20site.">Quero este site</a>
+  <a class="btn" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20LCS%20Vidros%20e%20quero%20o%20site." id="abrir-planos">Ver preços</a>
 </div>
+<dialog class="planos-dlg" id="planos" aria-labelledby="planos-tit">
+  <button class="fechar" type="button" aria-label="Fechar" id="fechar-planos">×</button>
+  <div class="in">
+    <div><h2 id="planos-tit">Este site pode ser da LCS Vidros.</h2><p style="color:#5b6068;margin-top:8px">Escolha como prefere pagar. Os dois planos têm tudo incluso.</p></div>
+    <div class="pl-grade">
+      <div class="pl dest"><small>Sem entrada</small><div class="v">12x R$ 89 <span>no cartão</span></div><small>ou R$ 89 por mês no Pix, podendo cancelar nos primeiros 30 dias sem multa</small>
+        <a class="btn btn-zap" href="https://pay.kiwify.com.br/ou41szk" target="_blank" rel="noopener">Assinar no cartão</a>
+        <a class="btn btn-pix" href="https://pay.kiwify.com.br/IrPcdUO" target="_blank" rel="noopener">Assinar no Pix</a></div>
+      <div class="pl"><small>Com entrada</small><div class="v">R$ 497 <span>+ R$ 49/mês</span></div><small>Menor mensalidade, que pode ser cancelada quando quiser</small>
+        <a class="btn btn-pix" href="https://pay.kiwify.com.br/S7d85EE" target="_blank" rel="noopener">Assinar com entrada</a></div>
+    </div>
+    <ul class="pl-inclui"><li>Site no ar em até 48 horas</li><li>Domínio no seu nome</li><li>Hospedagem inclusa</li><li>Pedido direto no WhatsApp</li><li>Perfil do Google revisado</li><li>Relatório mensal de visitas</li><li>Alterações sempre que precisar</li><li>Suas fotos e seu logo</li></ul>
+    <div><b style="font-size:16px">Depois de pagar</b>
+      <div class="pl-passos" style="margin-top:10px"><div><b>Te chamamos</b>no WhatsApp no mesmo dia.</div><div><b>Você manda</b>logo, fotos e o que quiser mudar.</div><div><b>Site no ar</b>em até 48 horas, no seu endereço.</div></div></div>
+    <div class="pl-faq">
+      <details><summary>Tem fidelidade?</summary><p>No cartão são 12 parcelas, com 7 dias para desistir e receber o dinheiro de volta. No Pix, o contrato é de 12 meses, mas nos primeiros 30 dias você cancela sem multa. No plano com entrada, a mensalidade pode ser cancelada quando quiser, com aviso de 30 dias.</p></details>
+      <details><summary>O domínio fica no meu nome?</summary><p>Sim. O endereço do site é registrado no seu CPF ou CNPJ. Nós cuidamos da hospedagem e da manutenção.</p></details>
+      <details><summary>Posso mudar o site depois?</summary><p>Sim. Telefone, horário, serviços, preços e fotos: é só pedir no WhatsApp. Está incluso.</p></details>
+      <details><summary>Como sei se está dando resultado?</summary><p>Todo mês você recebe no WhatsApp quantas pessoas visitaram o site e quantas clicaram para falar com você.</p></details>
+    </div>
+    <div class="pl-rodape"><a href="https://www.sitebooster.com.br/sites/termo/" target="_blank" rel="noopener">Ler o termo de adesão</a><a class="btn btn-linha" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20LCS%20Vidros%20e%20quero%20o%20site." style="padding:12px 18px;font-size:14.5px">Tirar dúvidas no WhatsApp</a></div>
+  </div>
+</dialog>
 <script>
 (function(){
   var form=document.getElementById('form-pedido'); if(!form) return;
@@ -358,6 +407,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     }
   }
   if('IntersectionObserver' in window){ new IntersectionObserver(function(es,o){ if(es[0].isIntersecting){ ciclo(); o.disconnect(); } },{threshold:.35}).observe(sim); } else ciclo();
+})();
+(function(){
+  var d=document.getElementById('planos'), a=document.getElementById('abrir-planos'), f=document.getElementById('fechar-planos');
+  if(!d||!a||typeof d.showModal!=='function') return;
+  a.addEventListener('click',function(e){ e.preventDefault(); d.showModal(); });
+  f.addEventListener('click',function(){ d.close(); });
+  d.addEventListener('click',function(e){ if(e.target===d) d.close(); });
 })();
 (function(){ var p=document.querySelector('.previa'); function t(){ if(p) document.documentElement.style.setProperty('--topo', p.offsetHeight+'px'); } t(); addEventListener('resize', t); })();
 (function(){ var b=document.body; function f(){ b.classList.toggle('rolou', window.scrollY>60); } addEventListener('scroll', f, {passive:true}); f(); })();
