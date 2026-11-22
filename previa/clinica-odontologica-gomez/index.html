@@ -2,204 +2,237 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Clínica Odontológica Gomez · Clínica odontológica</title>
 <meta name="description" content="Prévia do site da Clínica Odontológica Gomez, criada pela Sitebooster.">
 <meta property="og:title" content="Clínica Odontológica Gomez · prévia do site">
-<meta property="og:description" content="Veja como ficaria o site da Clínica Odontológica Gomez, com as 67 avaliações do Google e o botão do WhatsApp.">
+<meta property="og:description" content="Veja como ficaria o site da Clínica Odontológica Gomez, com a nota do Google e o botão do WhatsApp.">
 <meta property="og:image" content="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1200&q=75&auto=format&fit=crop">
 <meta property="og:type" content="website">
+<meta name="theme-color" content="#f2f7f7">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Modelo "Móveis planejados": fotos grandes, papel e madeira, um acento por marca */
-  --fundo:#f1f5f5; --fundo2:#e1ebeb; --tinta:#0f1d1f; --suave:#55696b; --acento:#1f8a86; --escuro:#0e2224; --acento-claro:#93dcd6;
-  --display:"Fraunces",Georgia,serif; --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --gutter:clamp(18px,5vw,56px); --raio:clamp(18px,2.4vw,28px);
-  color-scheme:light;
+  --fundo:#f2f7f7; --fundo2:#e0ecec; --tinta:#0f2a2c; --suave:#4f6a6c; --acento:#138f87; --escuro:#0d2426; --acento-claro:#8fe0d8;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --g:clamp(18px,5vw,64px);
+  --r-grande:clamp(22px,3vw,36px); --r-medio:18px;
+  --zap:#1fa855;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;overflow-x:clip}
-body{background:var(--fundo);color:var(--tinta);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased;padding-bottom:88px}
-@supports not (overflow:clip){html,body{overflow-x:hidden}}
-img{max-width:100%;display:block}
+html{scroll-behavior:smooth;overflow-x:clip;-webkit-text-size-adjust:100%}
+body{background:var(--fundo);color:var(--tinta);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased;padding-bottom:96px}
+img,iframe{display:block;max-width:100%}
 a{color:inherit}
-h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.02;letter-spacing:-.015em;text-wrap:balance}
-:focus-visible{outline:2px solid var(--acento);outline-offset:3px;border-radius:6px}
-.wrap{width:100%;max-width:1240px;margin-inline:auto;padding-inline:var(--gutter)}
+:focus-visible{outline:2px solid var(--acento);outline-offset:3px;border-radius:8px}
+.wrap{width:100%;max-width:1280px;margin-inline:auto;padding-inline:var(--g)}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:.98;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:clamp(34px,5.4vw,72px);font-variation-settings:"wdth" 85;max-width:16ch}
+.lead{color:var(--suave);font-size:clamp(16px,1.5vw,19px);max-width:44ch;text-wrap:pretty}
 
-.previa{background:var(--escuro);color:#f3efe8;font-size:12.5px;text-align:center;padding:7px var(--gutter);line-height:1.4}
-.previa b{color:#fff}
+/* Faixa da prévia */
+.previa{position:relative;z-index:30;background:var(--escuro);color:#fff;font-size:12.5px;text-align:center;padding:8px var(--g);line-height:1.4}
+.previa b{font-weight:600}
 
-.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--fundo) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid color-mix(in srgb,var(--tinta) 10%,transparent)}
-.nav .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:62px}
-.marca{font-family:var(--display);font-size:19px;font-weight:600;text-decoration:none;line-height:1.15}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font:600 15px var(--body);padding:14px 22px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .2s}
-.btn:hover{transform:translateY(-2px)}
+/* Navegação */
+.nav{position:fixed;top:42px;left:0;right:0;z-index:25;pointer-events:none;transition:top .3s}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.nav-nome{pointer-events:auto;font-family:var(--display);font-weight:700;font-size:16px;color:#fff;text-decoration:none;padding:9px 14px;border-radius:999px;background:rgba(10,12,14,.35);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rolou .nav{top:10px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:600 16px/1 var(--body);padding:17px 24px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.btn:active{transform:scale(.97)}
 .btn svg{width:20px;height:20px;flex:none}
-.btn-zap{background:#1fa855;color:#fff}
-.btn-escuro{background:var(--tinta);color:var(--fundo)}
-.btn-claro{background:#fff;color:var(--tinta)}
-.nav .btn{padding:10px 16px;font-size:14px}
+.btn-zap{background:var(--zap);color:#fff;box-shadow:0 10px 30px -10px rgba(31,168,85,.7)}
+.btn-zap:hover{transform:translateY(-2px)}
+.btn-vidro{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav .btn{pointer-events:auto;padding:12px 16px;font-size:14px}
 
-/* Topo com foto */
-.topo{padding:clamp(14px,2vw,22px) 0 0}
-.foto-topo{position:relative;border-radius:var(--raio);overflow:hidden;min-height:clamp(520px,78svh,760px);display:flex;align-items:flex-end;isolation:isolate}
-.foto-topo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transform:scale(1.08);animation:aproxima 14s ease-out forwards}
-@keyframes aproxima{to{transform:scale(1)}}
-.foto-topo::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(0,0,0,.05) 30%,rgba(10,8,6,.78))}
-.topo-txt{padding:clamp(22px,4vw,56px);color:#fff;max-width:780px}
-.selo-google{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:7px 14px;border-radius:999px;font-size:14px;margin-bottom:18px}
-.selo-google .estrelas{color:#ffd36b;letter-spacing:1px}
-.topo h1{font-size:clamp(38px,6.4vw,82px)}
-.topo p{font-size:clamp(16px,1.6vw,19px);opacity:.9;margin:16px 0 24px;max-width:46ch}
-.topo .acoes{display:flex;gap:10px;flex-wrap:wrap}
+/* Topo */
+.hero{position:relative;height:100svh;min-height:600px;max-height:1000px;color:#fff;isolation:isolate}
+.hero-midia{position:absolute;inset:0;z-index:-1;overflow:hidden;background:var(--escuro)}
+.hero-midia img{width:100%;height:100%;object-fit:cover;animation:revela 1.6s cubic-bezier(.2,.7,.2,1) both}
+.hero-midia::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.82) 100%)}
+@keyframes revela{from{filter:blur(18px) saturate(.6);transform:scale(1.12)}to{filter:none;transform:scale(1)}}
+.hero-txt{position:absolute;left:0;right:0;bottom:0;padding-bottom:clamp(28px,5vw,64px)}
+.selo{display:inline-flex;align-items:center;gap:10px;font-size:14.5px;padding:8px 14px 8px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin-bottom:18px;animation:sobe .9s .5s cubic-bezier(.2,.8,.2,1) both}
+.selo .g{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;font:700 13px var(--body);color:#4285f4}
+.estrelas{color:#ffcf5a;letter-spacing:1px}
+.nome{font-size:clamp(52px,12.5vw,176px);font-variation-settings:"wdth" 78,"opsz" 96;font-weight:800;line-height:.86;letter-spacing:-.035em;max-width:14ch;text-wrap:balance}
+.nome span{display:inline-block;animation:sobe 1s cubic-bezier(.2,.8,.2,1) both}
+.nome span:nth-child(2){animation-delay:.08s}.nome span:nth-child(3){animation-delay:.16s}.nome span:nth-child(4){animation-delay:.24s}.nome span:nth-child(5){animation-delay:.32s}.nome span:nth-child(n+6){animation-delay:.4s}
+@keyframes sobe{from{opacity:0;transform:translateY(40%)}to{opacity:1;transform:none}}
+.hero-sub{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px;margin-top:22px;animation:sobe .9s .55s cubic-bezier(.2,.8,.2,1) both}
+.hero-sub p{font-size:clamp(17px,1.7vw,21px);max-width:38ch;opacity:.92;line-height:1.45}
+.hero-sub .acoes{display:flex;gap:10px;flex-wrap:wrap}
 
-/* Faixa de garantias */
-.garantias{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
-.garantias div{background:var(--fundo2);border-radius:16px;padding:16px 18px;font-size:14px;color:var(--suave)}
-.garantias b{display:block;color:var(--tinta);font-size:16px;margin-bottom:2px}
+/* A foto do topo encolhe e vira cartão ao rolar (navegadores que suportam) */
+@supports (animation-timeline: scroll()){
+  .hero-midia{animation:encolhe linear both;animation-timeline:scroll(root);animation-range:0 90vh}
+  @keyframes encolhe{to{clip-path:inset(5% 4% 0 4% round 36px)}}
+}
 
-section{padding:clamp(70px,9vw,120px) 0}
-.rotulo{display:block;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--acento);margin-bottom:12px}
-.titulo{font-size:clamp(32px,4.6vw,58px);max-width:18ch}
-.intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,4vw,60px);align-items:end;margin-bottom:clamp(28px,4vw,48px)}
-.intro p{color:var(--suave);max-width:46ch}
+/* Diferenciais */
+.fatos{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:22px var(--g);margin-inline:auto;max-width:1280px;scrollbar-width:none}
+.fatos::-webkit-scrollbar{display:none}
+.fatos div{flex:1 0 200px;scroll-snap-align:start;background:var(--fundo2);border-radius:var(--r-medio);padding:18px 20px;color:var(--suave);font-size:14.5px;line-height:1.35}
+.fatos b{display:block;font-family:var(--display);font-variation-settings:"wdth" 85;font-size:22px;color:var(--tinta);margin-bottom:4px}
 
-/* Antes e depois */
-.comparar{position:relative;border-radius:var(--raio);overflow:hidden;aspect-ratio:16/9;background:#ccc;touch-action:pan-y}
-.comparar img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.comparar .depois{clip-path:inset(0 0 0 var(--corte,50%))}
-.comparar .linha{position:absolute;top:0;bottom:0;left:var(--corte,50%);width:2px;background:#fff;transform:translateX(-1px);pointer-events:none}
-.comparar .puxador{position:absolute;top:50%;left:var(--corte,50%);width:46px;height:46px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);display:grid;place-items:center;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;font-weight:700;color:var(--tinta)}
-.comparar input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
-.etq{position:absolute;bottom:14px;padding:6px 12px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:13px;pointer-events:none}
-.etq.a{left:14px}.etq.d{right:14px}
-.legenda-ilustrativa{font-size:13px;color:var(--suave);margin-top:10px}
+section{padding:clamp(72px,10vw,140px) 0 0}
+.topo-secao{display:grid;grid-template-columns:1.1fr .9fr;gap:24px 48px;align-items:end;margin-bottom:clamp(28px,4vw,48px)}
 
-/* Serviços */
-.servicos{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
-.serv{position:relative;border-radius:var(--raio);overflow:hidden;min-height:340px;display:flex;align-items:flex-end;color:#fff;isolation:isolate;padding:24px}
-.serv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .8s}
-.serv:hover img{transform:scale(1.04)}
-.serv::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 40%,rgba(8,6,4,.75))}
-.serv h3{font-size:clamp(26px,2.6vw,34px)}
-.serv p{font-size:15px;opacity:.88;max-width:34ch;margin-top:4px}
-.s1{grid-column:span 7;min-height:440px}.s2{grid-column:span 5}.s3{grid-column:span 5}
-.serv.texto{grid-column:span 7;background:var(--escuro);color:#f3efe8;align-items:stretch;flex-direction:column;justify-content:space-between;gap:20px}
-.serv.texto::after{display:none}
-.serv.texto ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;font-size:15px}
-.serv.texto li{border-top:1px solid rgba(255,255,255,.15);padding-top:10px}
+/* Serviços em carrossel */
+.trilho{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 var(--g) 8px;scroll-padding-inline:var(--g);scrollbar-width:none;max-width:1280px;margin-inline:auto}
+.trilho::-webkit-scrollbar{display:none}
+.card{position:relative;flex:0 0 min(78vw,400px);aspect-ratio:3/4;border-radius:var(--r-grande);overflow:hidden;scroll-snap-align:start;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;isolation:isolate}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
+.card:hover img{transform:scale(1.05)}
+.card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.78))}
+.card h3{font-size:clamp(28px,3vw,36px);font-variation-settings:"wdth" 82}
+.card p{font-size:15.5px;opacity:.88;margin-top:6px;max-width:30ch;line-height:1.45}
+.card.lista{background:var(--escuro);justify-content:space-between}
+.card.lista::after{display:none}
+.card.lista ul{list-style:none;display:grid;gap:0}
+.card.lista li{font-size:17px;padding:12px 0;border-top:1px solid rgba(255,255,255,.14)}
+.dica{font-size:13.5px;color:var(--suave);padding:12px var(--g) 0;max-width:1280px;margin-inline:auto}
 
-/* Passos */
-.passos{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;counter-reset:p}
-.passo{background:var(--fundo2);border-radius:var(--raio);padding:24px;display:grid;gap:8px;align-content:start}
-.passo b{font-family:var(--display);font-size:40px;color:var(--acento);line-height:1}
-.passo h3{font-family:var(--body);font-size:19px;font-weight:700}
-.passo p{color:var(--suave);font-size:15px}
+/* Nota do Google */
+.nota{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,5vw,80px);align-items:center;background:var(--fundo2);border-radius:var(--r-grande);padding:clamp(28px,5vw,64px)}
+.nota .num{font-family:var(--display);font-size:clamp(110px,18vw,240px);font-variation-settings:"wdth" 75,"opsz" 96;font-weight:800;line-height:.8;letter-spacing:-.05em;color:var(--acento)}
+.nota .est{font-size:clamp(22px,2.4vw,30px);letter-spacing:4px;color:#f2b53a;margin-bottom:10px}
+.nota p{font-size:clamp(18px,2vw,24px);font-family:var(--display);font-variation-settings:"wdth" 90;font-weight:600;line-height:1.2;max-width:22ch}
+.nota a{display:inline-block;margin-top:16px;font-weight:600;color:var(--acento);text-underline-offset:4px}
 
-/* Avaliações e contato */
-.duas{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.cartao{border-radius:var(--raio);padding:clamp(24px,3vw,40px)}
-.cartao.nota{background:var(--escuro);color:#f3efe8;display:grid;gap:12px;align-content:center}
-.cartao.nota .grande{font-family:var(--display);font-size:clamp(64px,9vw,110px);line-height:.9}
-.cartao.nota .estrelas{color:#ffd36b;font-size:22px;letter-spacing:3px}
-.cartao.contato{background:var(--fundo2);display:grid;gap:18px;align-content:start}
-.cartao.contato dl{display:grid;gap:14px}
-.cartao.contato dt{font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--suave)}
-.cartao.contato dd{font-size:17px}
+/* Como funciona: linha que preenche ao rolar */
+.passos{position:relative;display:grid;gap:clamp(26px,4vw,44px);padding-left:44px;max-width:760px}
+.passos::before,.passos::after{content:"";position:absolute;left:13px;top:8px;bottom:8px;width:2px;border-radius:2px;background:color-mix(in srgb,var(--tinta) 14%,transparent)}
+.passos::after{background:var(--acento);transform-origin:top;transform:scaleY(1)}
+@supports (animation-timeline: view()){
+  .passos::after{animation:preenche linear both;animation-timeline:view();animation-range:entry 30% cover 70%}
+  @keyframes preenche{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+}
+.passo{position:relative}
+.passo b{position:absolute;left:-44px;top:0;width:28px;height:28px;border-radius:50%;background:var(--acento);color:var(--fundo);display:grid;place-items:center;font:700 13px var(--body)}
+.passo h3{font-size:clamp(24px,2.6vw,32px);font-variation-settings:"wdth" 85}
+.passo p{color:var(--suave);margin-top:4px;max-width:46ch}
 
-footer{padding:30px 0 40px;font-size:14px;color:var(--suave)}
-footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+/* Onde estamos */
+.local{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+.mapa{border-radius:var(--r-grande);overflow:hidden;min-height:380px;background:var(--fundo2)}
+.mapa iframe{width:100%;height:100%;min-height:380px;border:0}
+.contato{background:var(--escuro);color:#fff;border-radius:var(--r-grande);padding:clamp(26px,4vw,44px);display:flex;flex-direction:column;justify-content:space-between;gap:28px}
+.contato h3{font-size:clamp(30px,3.4vw,44px);font-variation-settings:"wdth" 82}
+.contato dl{display:grid;gap:16px}
+.contato dt{font-size:13.5px;color:var(--acento-claro)}
+.contato dd{font-size:17px;line-height:1.45}
 
-/* Barra da prévia (só existe na prévia) */
-.barra-previa{position:fixed;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:40;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--escuro);color:#f3efe8;border-radius:20px;padding:12px 12px 12px 18px;box-shadow:0 18px 40px -12px rgba(0,0,0,.45);max-width:720px;margin-inline:auto}
-.barra-previa span{font-size:14px;line-height:1.35}
-.barra-previa b{display:block;font-size:15px;color:#fff}
+/* Chamada final */
+.final{position:relative;margin-top:clamp(72px,10vw,140px);border-radius:var(--r-grande);overflow:hidden;color:#fff;isolation:isolate;padding:clamp(40px,8vw,110px) clamp(24px,6vw,80px);min-height:440px;display:flex;flex-direction:column;justify-content:flex-end;gap:22px}
+.final img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.final::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.78),rgba(0,0,0,.25))}
+.final h2{color:#fff}
+
+footer{padding:40px 0 28px;font-size:14px;color:var(--suave)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+/* Barra da prévia */
+.barra{position:fixed;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:40;max-width:680px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 18px;border-radius:22px;color:#fff;background:rgba(14,16,18,.72);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
+.barra span{font-size:13.5px;line-height:1.35}
+.barra b{display:block;font-size:15px}
+.barra .btn{background:#fff;color:#111;padding:13px 18px;font-size:14.5px}
 
 @media (max-width:900px){
-  .garantias{grid-template-columns:1fr 1fr}
-  .intro,.duas{grid-template-columns:1fr}
-  .s1,.s2,.s3,.serv.texto{grid-column:span 12}
-  .s1{min-height:360px}
-  .passos{grid-template-columns:1fr 1fr}
+  .topo-secao,.local,.nota{grid-template-columns:1fr}
+  .nota{gap:12px}
 }
 @media (max-width:560px){
   body{font-size:16px}
   .nav .btn span{display:none}
-  .nav .btn{padding:10px 12px}
-  .foto-topo{min-height:540px}
-  .topo .acoes .btn{flex:1 1 100%}
-  .garantias div{padding:14px}
-  .comparar{aspect-ratio:4/3}
-  .serv{min-height:280px}
-  .serv.texto ul{grid-template-columns:1fr}
-  .passos{grid-template-columns:1fr}
-  .barra-previa span{font-size:13px}
+  .hero-sub .acoes{width:100%}
+  .hero-sub .acoes .btn{flex:1 1 100%}
+  .barra span{font-size:12.5px}
+  .barra b{font-size:14px}
 }
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
 </style>
 </head>
 <body>
-<div class="previa">Prévia criada pela <b>Sitebooster</b> para <b>Clínica Odontológica Gomez</b> · não é o site oficial · disponível até 04/12/2026</div>
+<div class="previa">Prévia criada pela <b>Sitebooster</b> para <b>Clínica Odontológica Gomez</b>. Não é o site oficial. Disponível até 05/12/2026.</div>
 
 <header class="nav">
   <div class="wrap">
-    <a class="marca" href="#">Clínica Odontológica Gomez</a>
+    <a class="nav-nome" href="#topo">Clínica Odontológica Gomez</a>
     <a class="btn btn-zap" href="https://wa.me/5511930189752">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg>
       <span>Agendar</span></a>
   </div>
 </header>
 
-<main>
-  <div class="topo">
-    <div class="wrap">
-      <div class="foto-topo">
-        <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1600&q=75&auto=format&fit=crop" alt="Consultório odontológico moderno" fetchpriority="high">
-        <div class="topo-txt">
-          <span class="selo-google"><span class="estrelas">★★★★★</span> 4,9 no Google · 67 avaliações</span>
-          <h1>Seu sorriso bem cuidado no Imirim</h1>
-          <p>Avaliação, limpeza, clareamento, implantes e ortodontia, com atendimento humano e sem pressa.</p>
+<main id="topo">
+  <div class="hero">
+    <div class="hero-midia"><img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=2000&q=75&auto=format&fit=crop" alt="Consultório odontológico moderno" fetchpriority="high"></div>
+    <div class="hero-txt">
+      <div class="wrap">
+        <span class="selo"><span class="g">G</span><span class="estrelas">★★★★★</span> 4,9 no Google, 67 avaliações</span>
+        <h1 class="nome"><span>Clínica</span> <span>Odontológica</span> <span>Gomez</span></h1>
+        <div class="hero-sub">
+          <p>Seu sorriso bem cuidado no Imirim. Avaliação, limpeza, clareamento, implantes e ortodontia, com atendimento humano e sem pressa.</p>
           <div class="acoes">
             <a class="btn btn-zap" href="https://wa.me/5511930189752">Agendar avaliação no WhatsApp</a>
-            <a class="btn btn-claro" href="#servicos">Ver tratamentos</a>
+            <a class="btn btn-vidro" href="#servicos">Ver tratamentos</a>
           </div>
         </div>
-      </div>
-      <div class="garantias">
-        <div><b>Avaliação</b>completa</div>
-        <div><b>Atendimento</b>humanizado</div>
-        <div><b>Tecnologia</b>moderna</div>
-        <div><b>Facilidade</b>no pagamento</div>
       </div>
     </div>
   </div>
 
-  <section id="servicos" style="padding-top:0">
+  <div class="fatos">
+        <div><b>Avaliação</b>completa</div>
+        <div><b>Atendimento</b>humanizado</div>
+        <div><b>Tecnologia</b>moderna</div>
+        <div><b>Facilidade</b>no pagamento</div>
+  </div>
+
+  <section id="servicos">
+    <div class="wrap topo-secao">
+      <h2>Cuidado completo para o seu sorriso.</h2>
+      <p class="lead">Do check-up ao tratamento completo, com explicação clara de cada etapa.</p>
+    </div>
+    <div class="trilho">
+      <article class="card"><img src="https://images.unsplash.com/photo-1777331903190-341a3dd0441b?w=1200&q=75&auto=format&fit=crop" alt="Dentista conversando com paciente" loading="lazy"><h3>Atendimento próximo</h3><p>Explicamos cada etapa antes de começar.</p></article>
+      <article class="card"><img src="https://images.unsplash.com/photo-1663755489920-5e09f66d011a?w=900&q=75&auto=format&fit=crop" alt="Paciente em atendimento odontológico" loading="lazy"><h3>Tratamento com conforto</h3><p>Procedimentos feitos com calma e cuidado.</p></article>
+      <article class="card"><img src="https://images.unsplash.com/photo-1704455306251-b4634215d98f?w=900&q=75&auto=format&fit=crop" alt="Sala de atendimento odontológico" loading="lazy"><h3>Consultório moderno</h3><p>Estrutura confortável e equipamentos atualizados.</p></article>
+      <article class="card lista"><h3>Tratamentos</h3><ul><li>Limpeza</li><li>Clareamento</li><li>Restaurações</li><li>Canal</li><li>Ortodontia</li><li>Lentes de contato dental</li></ul></article>
+    </div>
+    <p class="dica">Arraste para o lado para ver mais.</p>
+  </section>
+
+  <section>
     <div class="wrap">
-      <div class="intro">
-        <div><span class="rotulo">Tratamentos</span><h2 class="titulo">Cuidado completo para o seu sorriso.</h2></div>
-        <p>Do check-up ao tratamento completo, com explicação clara de cada etapa.</p>
-      </div>
-      <div class="servicos">
-        <article class="serv s1"><img src="https://images.unsplash.com/photo-1777331903190-341a3dd0441b?w=1200&q=75&auto=format&fit=crop" alt="Dentista conversando com paciente" loading="lazy"><div><h3>Atendimento próximo</h3><p>Explicamos cada etapa antes de começar.</p></div></article>
-        <article class="serv s2"><img src="https://images.unsplash.com/photo-1663755489920-5e09f66d011a?w=900&q=75&auto=format&fit=crop" alt="Paciente em atendimento odontológico" loading="lazy"><div><h3>Tratamento com conforto</h3><p>Procedimentos feitos com calma e cuidado.</p></div></article>
-        <article class="serv s3"><img src="https://images.unsplash.com/photo-1704455306251-b4634215d98f?w=900&q=75&auto=format&fit=crop" alt="Sala de atendimento odontológico" loading="lazy"><div><h3>Consultório moderno</h3><p>Estrutura confortável e equipamentos atualizados.</p></div></article>
-        <article class="serv texto">
-          <div><span class="rotulo" style="color:var(--acento-claro)">Também fazemos</span><h3>Tratamentos</h3></div>
-          <ul><li>Limpeza</li><li>Clareamento</li><li>Restaurações</li><li>Canal</li><li>Ortodontia</li><li>Lentes de contato dental</li></ul>
-        </article>
+      <div class="nota">
+        <div class="num">4,9</div>
+        <div>
+          <div class="est" aria-hidden="true">★★★★★</div>
+          <p>67 clientes avaliaram a Clínica Odontológica Gomez no Google.</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=Cl%C3%ADnica+Odontol%C3%B3gica+Gomez+Av.+Imirim%2C+2222" target="_blank" rel="noopener">Ler as avaliações no Google</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <section style="padding-top:0">
+  <section>
+    <div class="wrap topo-secao">
+      <h2>Do primeiro contato ao resultado.</h2>
+      <p class="lead">Tudo combinado pelo WhatsApp, sem surpresa no caminho.</p>
+    </div>
     <div class="wrap">
-      <div class="intro"><div><span class="rotulo">Como funciona</span><h2 class="titulo">Simples, do primeiro contato à entrega.</h2></div></div>
       <div class="passos">
         <div class="passo"><b>1</b><h3>Contato</h3><p>Você agenda pelo WhatsApp.</p></div>
         <div class="passo"><b>2</b><h3>Avaliação</h3><p>Fazemos a avaliação completa.</p></div>
@@ -209,32 +242,41 @@ footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
     </div>
   </section>
 
-  <section style="padding-top:0" id="contato">
-    <div class="wrap duas">
-      <div class="cartao nota">
-        <span class="rotulo" style="color:var(--acento-claro)">Avaliações no Google</span>
-        <div class="grande">4,9</div>
-        <div class="estrelas">★★★★★</div>
-        <p>67 clientes avaliaram a Clínica Odontológica Gomez no Google.</p>
-      </div>
-      <div class="cartao contato">
-        <span class="rotulo">Atendimento</span>
+  <section id="contato">
+    <div class="wrap local">
+      <div class="mapa"><iframe src="https://maps.google.com/maps?hl=pt-BR&output=embed&q=Cl%C3%ADnica%20Odontol%C3%B3gica%20Gomez%2C%20Av.%20Imirim%2C%202222%2C%20Imirim%2C%20S%C3%A3o%20Paulo" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa com a localização da Clínica Odontológica Gomez"></iframe></div>
+      <div class="contato">
+        <h3>Venha nos visitar ou chame no WhatsApp.</h3>
         <dl>
           <div><dt>Endereço</dt><dd>Av. Imirim, 2222 · Imirim, São Paulo</dd></div>
           <div><dt>Atendimento</dt><dd>Imirim e Zona Norte</dd></div>
         </dl>
-        <a class="btn btn-zap" href="https://wa.me/5511930189752">Falar no WhatsApp</a>
+        <a class="btn btn-zap" href="https://wa.me/5511930189752">Agendar avaliação no WhatsApp</a>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="final">
+        <img src="https://images.unsplash.com/photo-1593022356769-11f762e25ed9?w=1800&q=75&auto=format&fit=crop" alt="" loading="lazy">
+        <h2>Agende sua avaliação sem compromisso.</h2>
+        <div><a class="btn btn-zap" href="https://wa.me/5511930189752">Agendar avaliação no WhatsApp</a></div>
       </div>
     </div>
   </section>
 </main>
 
-<footer><div class="wrap"><span>Clínica Odontológica Gomez · Imirim e Zona Norte</span><span>Site feito pela Sitebooster</span></div></footer>
+<footer><div class="wrap"><span>Clínica Odontológica Gomez, Imirim e Zona Norte</span><span>Site feito pela Sitebooster</span></div></footer>
 
-<div class="barra-previa" role="region" aria-label="Sobre esta prévia">
+<div class="barra" role="region" aria-label="Sobre esta prévia">
   <span><b>Gostou? Este site pode ser seu.</b>O site oficial fica pronto em até 48 horas.</span>
-  <a class="btn btn-claro" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20Cl%C3%ADnica%20Odontol%C3%B3gica%20Gomez%20e%20quero%20o%20site.">Quero este site</a>
+  <a class="btn" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20Cl%C3%ADnica%20Odontol%C3%B3gica%20Gomez%20e%20quero%20o%20site.">Quero este site</a>
 </div>
 
+<script>
+(function(){
+  var b=document.body;
+  function f(){ b.classList.toggle('rolou', window.scrollY>30); }
+  addEventListener('scroll', f, {passive:true}); f();
+})();
+</script>
 </body>
 </html>
