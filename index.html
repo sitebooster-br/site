@@ -1,278 +1,342 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="no-js">
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sitebooster | Sistemas simples para pequenos negócios</title>
-<meta name="description" content="Sistemas que rodam no navegador e são fáceis de usar: o BoosterPDV, caixa com pagamento único, e o BoosterAgenda, agenda online com 30 dias grátis.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sitebooster | Sites e sistemas para negócios locais</title>
+<meta name="description" content="Sites profissionais com pedido direto no WhatsApp e sistemas simples de caixa e agenda para o pequeno negócio vender mais. Prévia do seu site grátis.">
 <link rel="canonical" href="https://www.sitebooster.com.br/">
-<meta name="theme-color" content="#06142b">
+<meta name="theme-color" content="#070d2b">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="pt_BR">
 <meta property="og:site_name" content="Sitebooster">
-<meta property="og:title" content="Sitebooster | Sistemas simples para pequenos negócios">
-<meta property="og:description" content="Sistemas que rodam no navegador e são fáceis de usar: o BoosterPDV, caixa com pagamento único, e o BoosterAgenda, agenda online com 30 dias grátis.">
+<meta property="og:title" content="Sitebooster | Sites e sistemas para negócios locais">
+<meta property="og:description" content="Sites profissionais com pedido direto no WhatsApp e sistemas simples de caixa e agenda. Prévia do seu site grátis.">
 <meta property="og:url" content="https://www.sitebooster.com.br/">
 <meta property="og:image" content="https://www.sitebooster.com.br/assets/img/og-sitebooster.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Sitebooster | Sistemas simples para pequenos negócios">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Sitebooster | Sistemas simples para pequenos negócios">
-<meta name="twitter:description" content="Sistemas que rodam no navegador e são fáceis de usar: o BoosterPDV, caixa com pagamento único, e o BoosterAgenda, agenda online com 30 dias grátis.">
-<meta name="twitter:image" content="https://www.sitebooster.com.br/assets/img/og-sitebooster.png">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml"><link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png"><link rel="apple-touch-icon" href="assets/img/favicon-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Poppins:wght@600;700;800&amp;display=swap">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script type="application/ld+json">{
  "@context": "https://schema.org",
  "@graph": [
-  {
-   "@type": "Organization",
-   "@id": "https://www.sitebooster.com.br/#org",
-   "name": "Sitebooster",
-   "url": "https://www.sitebooster.com.br/",
-   "logo": "https://www.sitebooster.com.br/assets/img/logo-sitebooster.png",
-   "description": "Ecossistema de sistemas simples e com preço justo para pequenos negócios brasileiros.",
-   "sameAs": [
-    "https://instagram.com/boosterpdv"
-   ]
-  },
-  {
-   "@type": "WebSite",
-   "@id": "https://www.sitebooster.com.br/#site",
-   "url": "https://www.sitebooster.com.br/",
-   "name": "Sitebooster",
-   "inLanguage": "pt-BR",
-   "publisher": {
-    "@id": "https://www.sitebooster.com.br/#org"
-   }
-  }
+  {"@type": "Organization","@id": "https://www.sitebooster.com.br/#org","name": "Sitebooster","url": "https://www.sitebooster.com.br/","logo": "https://www.sitebooster.com.br/assets/img/logo-sitebooster.png","description": "Sites profissionais e sistemas simples para negócios locais brasileiros.","sameAs": ["https://instagram.com/boosterpdv"]},
+  {"@type": "WebSite","@id": "https://www.sitebooster.com.br/#site","url": "https://www.sitebooster.com.br/","name": "Sitebooster","inLanguage": "pt-BR","publisher": {"@id": "https://www.sitebooster.com.br/#org"}}
  ]
 }</script>
+<style>
+:root{
+  --noite:#070d2b;--noite-2:#0d1846;--azul:#2f55ff;--amarelo:#ffc23a;--amarelo-2:#f5a31c;
+  --texto:#eef2ff;--suave:#9fb0e8;--linha:rgba(160,180,255,.16);--vidro:rgba(20,34,96,.55);
+  --display:"Sora",system-ui,sans-serif;--body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --g:clamp(18px,5vw,56px);--raio:clamp(18px,2.4vw,28px);color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{background:var(--noite);color:var(--texto);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased}
+img,svg,canvas{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--amarelo);outline-offset:3px;border-radius:8px}
+.wrap{width:100%;max-width:1220px;margin-inline:auto;padding-inline:var(--g)}
+h1,h2,h3{font-family:var(--display);line-height:1.05;letter-spacing:-.025em;text-wrap:balance}
+h2{font-size:clamp(32px,4.6vw,56px);font-weight:800;max-width:18ch}
+.lead{color:var(--suave);font-size:clamp(16px,1.6vw,19px);max-width:52ch}
+#fundo{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(60% 50% at 80% 0%,rgba(47,85,255,.35),transparent 70%),radial-gradient(40% 40% at 0% 30%,rgba(255,194,58,.10),transparent 70%)}
+.btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;font:800 16px var(--body);padding:16px 26px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.btn:hover{transform:translateY(-2px)}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-amarelo{background:linear-gradient(180deg,#ffd15c,var(--amarelo) 50%,var(--amarelo-2));color:#1a1300;box-shadow:0 0 0 1px rgba(255,210,90,.6) inset,0 12px 40px -10px rgba(255,194,58,.75)}
+.btn-vidro{background:rgba(255,255,255,.06);border:1px solid var(--linha);color:var(--texto);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.btn-vidro:hover{border-color:rgba(255,255,255,.4)}
 
-<!-- META PIXEL / GOOGLE ANALYTICS: cole o código de rastreamento aqui, se for usar. -->
+.nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);background:rgba(7,13,43,.6);border-bottom:1px solid var(--linha)}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;gap:14px;min-height:70px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.02em}
+.logo svg{width:38px;height:38px;filter:drop-shadow(0 6px 18px rgba(255,194,58,.35))}
+.logo b{color:var(--amarelo)}
+.menu{display:flex;gap:26px;font-weight:600;font-size:15px}
+.menu a{text-decoration:none;color:var(--suave)}
+.menu a:hover{color:var(--texto)}
+.nav .btn{padding:11px 18px;font-size:15px}
+
+/* Topo */
+.topo{padding:clamp(48px,7vw,96px) 0 clamp(40px,6vw,80px)}
+.topo-grade{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,5vw,70px);align-items:center}
+.topo h1{font-size:clamp(42px,6.6vw,84px);font-weight:800}
+.topo h1 span{display:block}
+.topo h1 .ouro{background:linear-gradient(100deg,#ffe08a,var(--amarelo) 40%,var(--amarelo-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.topo .lead{margin:24px 0 32px;font-size:clamp(17px,1.7vw,20px)}
+.acoes{display:flex;flex-wrap:wrap;gap:12px}
+.provas{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:30px;color:var(--suave);font-size:14.5px}
+.provas span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--amarelo);margin-right:9px;vertical-align:middle}
+
+/* Ecossistema no topo: três telas flutuando */
+.eco{position:relative;height:clamp(420px,46vw,560px)}
+.tela{position:absolute;border-radius:24px;background:rgba(13,24,70,.82);border:1px solid var(--linha);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 40px 80px -30px rgba(0,0,0,.7);overflow:hidden}
+.tela-site{left:6%;top:0;width:min(300px,62%);aspect-ratio:9/16;border-radius:34px;border:8px solid #1a2450;padding:0;animation:flutua 7s ease-in-out infinite}
+.tela-site img{width:100%;height:55%;object-fit:cover}
+.tela-site .corpo{padding:14px}
+.tela-site small{color:var(--amarelo);font-weight:700;font-size:11.5px}
+.tela-site b{display:block;font-family:var(--display);font-size:20px;line-height:1.1;margin:4px 0 8px}
+.tela-site .est{color:#ffcf5a;font-size:12px}
+.tela-site .zap{margin-top:12px;background:#1fa855;color:#fff;border-radius:999px;text-align:center;font-weight:800;font-size:13px;padding:10px}
+.tela-pdv{right:0;top:14%;width:min(250px,48%);padding:18px;animation:flutua 8s 1s ease-in-out infinite}
+.tela-agenda{right:10%;bottom:0;width:min(270px,52%);padding:18px;animation:flutua 9s .5s ease-in-out infinite}
+.tela h4{font-family:var(--display);font-size:14px;color:var(--suave);font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between}
+.tela h4 em{font-style:normal;color:var(--amarelo)}
+.linha-pdv{display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--linha)}
+.total{display:flex;justify-content:space-between;font-family:var(--display);font-weight:800;font-size:20px;margin-top:10px}
+.slot{display:flex;gap:10px;align-items:center;font-size:14px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.05);margin-top:6px}
+.slot b{font-family:var(--display);font-size:13px;color:var(--amarelo);min-width:44px}
+.slot.novo{background:rgba(255,194,58,.14);border:1px solid rgba(255,194,58,.35)}
+@keyframes flutua{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+
+section{padding:clamp(70px,9vw,120px) 0 0}
+.cabeca{display:grid;grid-template-columns:1fr 1fr;gap:18px 48px;align-items:end;margin-bottom:clamp(28px,4vw,48px)}
+
+/* Produtos */
+.produtos{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:14px}
+.prod{position:relative;display:flex;flex-direction:column;gap:12px;border-radius:var(--raio);padding:clamp(22px,2.6vw,32px);background:var(--vidro);border:1px solid var(--linha);text-decoration:none;overflow:hidden;isolation:isolate;transition:border-color .3s}
+.prod:hover{border-color:rgba(255,194,58,.5)}
+.prod.dest{background:linear-gradient(160deg,rgba(47,85,255,.35),rgba(13,24,70,.9));border-color:rgba(255,194,58,.4)}
+.prod .tag{align-self:flex-start;font-size:12.5px;font-weight:800;padding:6px 12px;border-radius:999px;background:var(--amarelo);color:#1a1300}
+.prod .tag.c{background:rgba(255,255,255,.1);color:var(--texto)}
+.prod h3{font-size:clamp(26px,2.6vw,34px);font-weight:800}
+.prod p{color:var(--suave);font-size:15.5px}
+.prod ul{list-style:none;display:grid;gap:6px;font-size:15px;margin-top:4px}
+.prod li::before{content:"✓";color:var(--amarelo);font-weight:800;margin-right:8px}
+.prod .preco{margin-top:auto;padding-top:14px;border-top:1px solid var(--linha);display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.prod .preco b{font-family:var(--display);font-size:22px}
+.prod .preco span{font-size:14.5px;font-weight:800;color:var(--amarelo)}
+.breve{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;color:var(--suave);font-size:14.5px;align-items:center}
+.breve span{padding:8px 14px;border-radius:999px;border:1px dashed var(--linha)}
+
+/* Portfólio */
+.pf{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pf a{position:relative;display:block;aspect-ratio:16/10;border-radius:var(--raio);overflow:hidden;text-decoration:none;isolation:isolate;border:1px solid var(--linha)}
+.pf img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1.1s cubic-bezier(.2,.7,.2,1)}
+.pf a::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 35%,rgba(7,13,43,.94))}
+.pf a:hover img{transform:scale(1.05)}
+.pf .t{position:absolute;left:22px;right:22px;bottom:20px}
+.pf small{color:var(--amarelo);font-weight:700;font-size:13px}
+.pf b{display:block;font-family:var(--display);font-size:clamp(22px,2.4vw,30px);line-height:1.1;margin-top:2px}
+.pf em{font-style:normal;color:var(--suave);font-size:14.5px}
+
+/* Como trabalhamos */
+.passos{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;counter-reset:p}
+.passo{border-radius:var(--raio);padding:26px;background:var(--vidro);border:1px solid var(--linha)}
+.passo b{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--amarelo);color:#1a1300;font-family:var(--display);font-weight:800;margin-bottom:16px}
+.passo h3{font-size:22px}
+.passo p{color:var(--suave);margin-top:6px;font-size:15.5px}
+
+/* Quem faz */
+.quem{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,4vw,48px);align-items:center;border-radius:var(--raio);padding:clamp(24px,4vw,48px);background:linear-gradient(120deg,rgba(255,194,58,.12),rgba(13,24,70,.6));border:1px solid rgba(255,194,58,.25)}
+.quem .ini{width:clamp(80px,10vw,120px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:clamp(28px,3.4vw,40px);background:linear-gradient(160deg,var(--amarelo),var(--amarelo-2));color:#1a1300}
+.quem h2{font-size:clamp(26px,3.2vw,40px);max-width:24ch}
+.quem p{color:var(--suave);margin-top:10px;max-width:60ch}
+
+.final{margin-top:clamp(70px,9vw,120px);text-align:center;padding:clamp(48px,7vw,90px) var(--g);border-radius:var(--raio);background:radial-gradient(70% 90% at 50% 0%,rgba(47,85,255,.45),rgba(13,24,70,.6));border:1px solid var(--linha)}
+.final h2{margin:0 auto;max-width:20ch}
+.final .lead{margin:16px auto 28px}
+.final .acoes{justify-content:center}
+
+footer{margin-top:clamp(60px,8vw,100px);border-top:1px solid var(--linha);padding:40px 0 30px;font-size:14.5px;color:var(--suave)}
+.rodape{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:28px}
+.rodape h4{font-family:var(--display);color:var(--texto);font-size:15px;margin-bottom:10px}
+.rodape ul{list-style:none;display:grid;gap:6px}
+.rodape a{text-decoration:none}
+.rodape a:hover{color:var(--texto)}
+.rodape .breve-r{font-size:12px;opacity:.7}
+.copy{margin-top:30px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:13.5px;opacity:.75}
+.zap-fixo{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:40;width:58px;height:58px;border-radius:50%;background:#1fa855;display:grid;place-items:center;box-shadow:0 14px 34px -10px rgba(31,168,85,.8)}
+.zap-fixo svg{width:28px;height:28px;fill:#fff}
+
+.surge{animation:surge .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes surge{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+
+@media (max-width:980px){
+  .topo-grade,.cabeca{grid-template-columns:1fr}
+  .produtos{grid-template-columns:1fr 1fr}.prod.dest{grid-column:1/-1}
+  .menu{display:none}
+  .rodape{grid-template-columns:1fr 1fr}
+}
+@media (max-width:640px){
+  body{font-size:16px}
+  .produtos,.pf,.passos,.quem{grid-template-columns:1fr}
+  .eco{height:470px}
+  .tela-site{left:0;width:58%}
+  .tela-pdv{width:56%;top:8%}
+  .tela-agenda{width:62%;right:0}
+  .nav .btn span{display:none}
+  .btn{white-space:normal;text-align:center}
+  .acoes .btn{flex:1 1 100%}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><linearGradient id="sbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc21a"/><stop offset=".5" stop-color="#f0a500"/><stop offset="1" stop-color="#e8730c"/></linearGradient></defs><symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol><symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol><symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></symbol><symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol><symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol><symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></symbol><symbol id="i-wifioff" viewBox="0 0 24 24"><path d="m2 2 20 20M8.5 16.5a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 5.2-2.6M19 12.9a10 10 0 0 0-2.3-1.7M2 8.8a15 15 0 0 1 4.2-2.6M10.7 5a15 15 0 0 1 11.3 3.8M12 20h.01"/></symbol><symbol id="i-barcode" viewBox="0 0 24 24"><path d="M3 5v14M7 5v14M10 5v14M14 5v14M17 5v14M21 5v14"/></symbol><symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM21 14v.01M14 21h.01M17 21h4v-4"/></symbol><symbol id="i-box" viewBox="0 0 24 24"><path d="m21 8-9-5-9 5v8l9 5 9-5z"/><path d="m3 8 9 5 9-5M12 13v8"/></symbol><symbol id="i-wallet" viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 0 1 0-4h12v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></symbol><symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></symbol><symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2.7-1.5L9.3 22l2.7-1.5 2.7 1.5 2.6-1.5L20 22V2l-2.7 1.5L14.7 2 12 3.5 9.3 2 6.7 3.5z"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol><symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10v6M9 13l3 3 3-3"/></symbol><symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.3-9.3M16 7l3 3M18.5 4.5l2 2"/></symbol><symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></symbol><symbol id="i-utensils" viewBox="0 0 24 24"><path d="M3 2v7a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6a2 2 0 0 0 2 2h3zm0 0v7"/></symbol><symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9 4.5 4h15L21 9"/><path d="M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0"/><path d="M5 12v9h14v-9M10 21v-5h4v5"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 9h8M8 13h5"/></symbol><symbol id="i-zap" viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></symbol><symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol><symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5z"/><path d="M6.5 17A2.5 2.5 0 0 0 4 19.5 2.5 2.5 0 0 0 6.5 22H20v-5M9 7h7M9 11h5"/></symbol><symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol><symbol id="i-instagram" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol><symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol><symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2M16 3.1a4 4 0 0 1 0 7.8M21 21v-2a4 4 0 0 0-3-3.9"/></symbol><symbol id="i-phone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></symbol><symbol id="i-shirt" viewBox="0 0 24 24"><path d="M20.4 3.5 16 2a4 4 0 0 1-8 0L3.6 3.5a2 2 0 0 0-1.3 2.2l.6 3.5a1 1 0 0 0 1 .8H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.1a1 1 0 0 0 1-.8l.6-3.5a2 2 0 0 0-1.3-2.2z"/></symbol><symbol id="i-pencil" viewBox="0 0 24 24"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/><path d="m15 5 4 4"/></symbol><symbol id="i-truck" viewBox="0 0 24 24"><path d="M1 4h14v12H1zM15 9h4l3 3v4h-7"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></symbol><symbol id="i-bowl" viewBox="0 0 24 24"><path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M12 11V7M9 7a3 3 0 0 1 6 0M7 21h10"/></symbol><symbol id="i-burger" viewBox="0 0 24 24"><path d="M4 11a8 6 0 0 1 16 0zM3 14.5h18M5 18h14a0 0 0 0 1 0 0 2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/></symbol><symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol><symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><path d="M7 7h.01"/></symbol><symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-sparkle" viewBox="0 0 24 24"><path d="m12 3 1.9 5.8L20 10.7l-5.8 1.9L12 18.4l-1.9-5.8L4.3 10.7l5.8-1.9z"/></symbol><symbol id="i-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.5-.6-.6-2.5z"/></symbol><symbol id="i-cash" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></symbol><symbol id="i-trend" viewBox="0 0 24 24"><path d="m22 7-8.5 8.5-5-5L2 17"/><path d="M16 7h6v6"/></symbol><symbol id="i-refresh" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></symbol><symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z"/></symbol><symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/></symbol><symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></symbol></svg><a class="skip" href="#conteudo">Pular para o conteúdo</a>
-<div class="bg-fx" aria-hidden="true"></div>
-<header class="header">
- <div class="wrap header__in">
-  <a class="logo" href="./" aria-label="Sitebooster, página inicial"><svg class="" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="url(#sbg)"/><path d="M18 45 32 31l14 14" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 32 32 18l14 14" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/></svg><span>site<span class="gold">booster</span></span></a>
-  <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav" aria-label="Abrir menu"><svg class="i" aria-hidden="true"><use href="#i-menu"/></svg></button>
-  <nav class="nav" id="nav" aria-label="Principal"><a href="#sistemas">Sistemas</a><a href="#diferenciais">Diferenciais</a><a href="#para-quem">Para quem é</a><a href="pdv/">BoosterPDV</a><a href="agenda/">BoosterAgenda</a><a class="btn btn--primary btn--sm" href="pdv/">Conhecer o PDV<svg class="i i--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a></nav>
- </div>
+<canvas id="fundo" aria-hidden="true"></canvas>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="Sitebooster, página inicial">
+      <svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffc23a"/><stop offset="1" stop-color="#f5a31c"/></linearGradient></defs><rect x="8" y="8" width="184" height="184" rx="50" fill="url(#gl)"/><path d="M62 108 L100 72 L138 108" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 140 L100 104 L138 140" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>site<b>booster</b></span>
+    </a>
+    <nav class="menu" aria-label="Seções"><a href="#produtos">Produtos</a><a href="#portfolio">Portfólio</a><a href="#como">Como funciona</a><a href="#quem">Quem faz</a></nav>
+    <a class="btn btn-amarelo" href="/sites/"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 6.9H22l-6 4.4 2.3 7L12 16l-6.3 4.3 2.3-7-6-4.4h7.6z"/></svg><span>Prévia grátis</span></a>
+  </div>
 </header>
-<main id="conteudo">
 
-<!-- ================= HERO ================= -->
-<section class="hero hero--center">
- <div class="wrap">
-  <div data-reveal><span class="pill"><b>Novo</b> BoosterAgenda com 30 dias grátis</span></div>
-  <h1 data-reveal style="--d:.08s">Sistemas simples que fazem o seu negócio <span class="text-grad">crescer de verdade.</span></h1>
-  <p class="lead" data-reveal style="--d:.16s">A Sitebooster cria ferramentas que rodam direto no navegador e são fáceis de usar. Sem instalação, sem contrato e sem complicação.</p>
-  <div class="hero__ctas" data-reveal style="--d:.24s">
-   <a class="btn btn--primary btn--lg" href="pdv/">Conhecer o BoosterPDV<svg class="i i--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-   <a class="btn btn--ghost btn--lg" href="#sistemas">Ver todos os sistemas</a>
-  </div>
-  <ul class="checks" data-reveal style="--d:.32s">
-   <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Pagamento único</li>
-   <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Funciona no navegador</li>
-   <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Suporte em português</li>
-  </ul>
- </div>
-</section>
-
-<!-- ================= NOSSOS SISTEMAS =================
-     Cada sistema é um bloco <article>. Para remover, apague o bloco inteiro.
-     Para lançar um "Em breve", troque a etiqueta e o link do botão. -->
-<section class="section" id="sistemas" aria-labelledby="t-sistemas">
- <div class="wrap">
-  <div class="sec-head center" data-reveal>
-   <span class="eyebrow">Ecossistema</span>
-   <h2 class="h-section" id="t-sistemas">Nossos sistemas</h2>
-   <p class="lead">Cada sistema resolve um problema do dia a dia do seu negócio. Comece pelo que você mais precisa hoje.</p>
-  </div>
-
-  <div class="products">
-
-   <!-- CARD: BoosterPDV (ativo) -->
-   <article class="card product product--featured" data-reveal>
-    <div>
-     <div class="product__top">
-      <svg class="product__mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="url(#sbg)"/><text x="32" y="45" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-weight="800" font-size="38" fill="#fff">B</text></svg>
-      <span class="tag tag--live">Disponível</span>
-     </div>
-     <h3>BoosterPDV</h3>
-     <p>O sistema de caixa que roda no navegador. Venda com leitor de código de barras, gere PIX com QR Code, controle o estoque e feche o caixa sem dor de cabeça.</p>
-     <div class="product__price"><strong>R$ <span data-price>49,90</span></strong> pagamento único</div>
-     <div class="product__ctas">
-      <a class="btn btn--primary" href="pdv/">Conhecer o BoosterPDV<svg class="i i--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-     </div>
+<main>
+  <section class="topo" style="padding-top:clamp(48px,7vw,96px)">
+    <div class="wrap topo-grade">
+      <div>
+        <h1 class="surge"><span>Seu negócio</span><span>encontrado no Google,</span><span class="ouro">vendendo pelo WhatsApp.</span></h1>
+        <p class="lead surge" style="animation-delay:.15s">A Sitebooster cria o site do seu negócio com pedido direto no WhatsApp e oferece sistemas simples de caixa e agenda. Tudo pensado para o pequeno negócio brasileiro.</p>
+        <div class="acoes surge" style="animation-delay:.25s">
+          <a class="btn btn-amarelo" href="/sites/">Quero uma prévia grátis do meu site</a>
+          <a class="btn btn-vidro" href="#produtos">Ver tudo o que fazemos</a>
+        </div>
+        <div class="provas surge" style="animation-delay:.35s"><span>Site no ar em 48 horas</span><span>Domínio no seu nome</span><span>Atendimento direto no WhatsApp</span></div>
+      </div>
+      <div class="eco" aria-hidden="true">
+        <div class="tela tela-site">
+          <img src="https://images.unsplash.com/photo-1727893119356-1702fe921cf9?w=600&q=60&auto=format&fit=crop" alt="">
+          <div class="corpo"><small>Seu site</small><b>Oficina do Bairro</b><span class="est">★★★★★ 4,9 no Google</span><div class="zap">Pedir orçamento no WhatsApp</div></div>
+        </div>
+        <div class="tela tela-pdv">
+          <h4>BoosterPDV <em>Caixa</em></h4>
+          <div class="linha-pdv"><span>2× Café</span><span>R$ 10,00</span></div>
+          <div class="linha-pdv"><span>1× Pão de queijo</span><span>R$ 6,50</span></div>
+          <div class="linha-pdv"><span>Pix</span><span>pago</span></div>
+          <div class="total"><span>Total</span><span>R$ 16,50</span></div>
+        </div>
+        <div class="tela tela-agenda">
+          <h4>BoosterAgenda <em>Hoje</em></h4>
+          <div class="slot"><b>09:00</b>Corte · Ana</div>
+          <div class="slot novo"><b>10:30</b>Novo agendamento · Bia</div>
+          <div class="slot"><b>14:00</b>Escova · Carla</div>
+        </div>
+      </div>
     </div>
-    <ul class="product__list">
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Funciona offline depois de ativado</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Qualquer leitor de código de barras, sem driver</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>PIX com QR Code no valor exato da venda</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Estoque com aviso de "Baixo" e "Esgotado"</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Abertura, fechamento, sangria e suprimento</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Relatórios, contas a pagar e a receber, venda a prazo</li>
-    </ul>
-   </article>
+  </section>
 
-   <!-- CARD: BoosterAgenda (ativo) -->
-   <article class="card product product--featured" data-reveal style="--d:.05s">
-    <div>
-     <div class="product__top">
-      <svg class="product__mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="url(#sbg)"/><svg x="16" y="16" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-calendar"/></svg></svg>
-      <span class="tag tag--live">Disponível</span>
-     </div>
-     <h3>BoosterAgenda</h3>
-     <p>Agenda online para salão, barbearia, manicure e prestadores de serviço. O cliente marca sozinho pelo seu link e você vê tudo no celular, com lembrete pelo WhatsApp, equipe e comissões.</p>
-     <div class="product__price"><strong>30 dias grátis</strong> depois, a partir de R$ 37,90 por mês</div>
-     <div class="product__ctas">
-      <a class="btn btn--primary" href="agenda/">Conhecer o BoosterAgenda<svg class="i i--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-     </div>
+  <section id="produtos">
+    <div class="wrap">
+      <div class="cabeca"><h2>Tudo o que o seu negócio precisa para vender mais.</h2><p class="lead">Comece pelo que mais faz falta hoje. Sem instalar nada, sem contrato complicado e com atendimento de gente de verdade.</p></div>
+      <div class="produtos">
+        <a class="prod dest" href="/sites/">
+          <span class="tag">Mais procurado</span>
+          <h3>Site Profissional</h3>
+          <p>O site do seu negócio com a sua nota do Google, seus serviços e pedido de orçamento direto no WhatsApp.</p>
+          <ul><li>Prévia grátis com o nome do seu negócio</li><li>Domínio no seu nome e hospedagem inclusa</li><li>Relatório mensal de visitas e contatos</li><li>Alterações sempre que precisar</li></ul>
+          <div class="preco"><b>12x R$ 89</b><span>Ver prévia grátis</span></div>
+        </a>
+        <a class="prod" href="/pdv/">
+          <span class="tag c">Sistema de caixa</span>
+          <h3>BoosterPDV</h3>
+          <p>Vendas, estoque, fiado e caixa direto no navegador, funcionando até sem internet.</p>
+          <ul><li>Sem instalar nada</li><li>Estoque e fiado organizados</li><li>Pagamento único</li></ul>
+          <div class="preco"><b>R$ 49,90</b><span>Conhecer</span></div>
+        </a>
+        <a class="prod" href="/agenda/">
+          <span class="tag c">Agenda online</span>
+          <h3>BoosterAgenda</h3>
+          <p>Seus clientes marcam horário sozinhos e você para de passar o dia no WhatsApp.</p>
+          <ul><li>Link de agendamento</li><li>Lembrete pelo WhatsApp com um toque</li><li>14 dias grátis, sem cartão</li></ul>
+          <div class="preco"><b>a partir de R$ 37,90/mês</b><span>Testar grátis</span></div>
+        </a>
+      </div>
+      <div class="breve">Em breve: <span>BoosterCardápio</span><span>BoosterVitrine</span></div>
     </div>
-    <ul class="product__list">
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Link de agendamento para os seus clientes</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Lembrete e confirmação pelo WhatsApp</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Equipe com acesso próprio</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Comissões calculadas</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Relatório do salão</li>
-     <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Celular e computador, sem cartão para testar</li>
-    </ul>
-   </article>
+  </section>
 
-   <!-- CARD: BoosterCardápio (em breve) -->
-   <article class="card product product--soon" data-reveal style="--d:.1s">
-    <div class="product__top"><svg class="product__mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="url(#sbg)"/><svg x="16" y="16" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-utensils"/></svg></svg><span class="tag">Em breve</span></div>
-    <h3>BoosterCardápio</h3>
-    <p>Cardápio digital para delivery e lanchonete, com o pedido chegando direto no seu WhatsApp. Fácil de atualizar quando o preço mudar.</p>
-    <a class="link-arrow" href="https://instagram.com/boosterpdv" data-instagram target="_blank" rel="noopener">Quero ser avisado<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-   </article>
+  <section id="portfolio">
+    <div class="wrap">
+      <div class="cabeca"><h2>Projetos que mostram do que somos capazes.</h2><p class="lead">Abra pelo celular e explore. O seu site é feito sob medida para o seu negócio.</p></div>
+      <div class="pf">
+        <a href="/portfolio/lumina/" target="_blank" rel="noopener"><img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=1100&q=65&auto=format&fit=crop" alt="Projeto Lumina Odonto" loading="lazy"><span class="t"><small>Odontologia · projeto conceito</small><b>Lumina Odonto</b><em>Dente em 3D e simulador de cor do sorriso</em></span></a>
+        <a href="/portfolio/alba/" target="_blank" rel="noopener"><img src="https://images.unsplash.com/photo-1771371282665-545256b20dca?w=1100&q=65&auto=format&fit=crop" alt="Projeto Alba Planejados" loading="lazy"><span class="t"><small>Móveis planejados · projeto conceito</small><b>Alba Planejados</b><em>Móvel em 3D que abre portas e gavetas</em></span></a>
+      </div>
+    </div>
+  </section>
 
-   <!-- CARD: BoosterVitrine (em breve) -->
-   <article class="card product product--soon" data-reveal style="--d:.15s">
-    <div class="product__top"><svg class="product__mark" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="url(#sbg)"/><svg x="16" y="16" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use href="#i-tag"/></svg></svg><span class="tag">Em breve</span></div>
-    <h3>BoosterVitrine</h3>
-    <p>Um catálogo online bonito com os seus produtos, pronto para mandar no Instagram e no WhatsApp e vender mais.</p>
-    <a class="link-arrow" href="https://instagram.com/boosterpdv" data-instagram target="_blank" rel="noopener">Quero ser avisado<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-   </article>
+  <section id="como">
+    <div class="wrap">
+      <div class="cabeca"><h2>Simples do começo ao fim.</h2><p class="lead">Você não precisa entender de internet. A gente cuida de tudo e você acompanha pelo WhatsApp.</p></div>
+      <div class="passos">
+        <div class="passo"><b>1</b><h3>Você vê antes</h3><p>Montamos uma prévia grátis com o nome do seu negócio. Você só decide depois de ver.</p></div>
+        <div class="passo"><b>2</b><h3>A gente coloca no ar</h3><p>Você manda logo e fotos, e em até 48 horas está tudo funcionando.</p></div>
+        <div class="passo"><b>3</b><h3>Você acompanha</h3><p>Todo mês você recebe quantas pessoas visitaram e quantas chamaram no WhatsApp.</p></div>
+      </div>
+    </div>
+  </section>
 
-  </div>
- </div>
-</section>
-
-<!-- ================= DIFERENCIAIS ================= -->
-<section class="section" id="diferenciais" aria-labelledby="t-dif">
- <div class="wrap">
-  <div class="sec-head" data-reveal>
-   <span class="eyebrow">Por que Sitebooster</span>
-   <h2 class="h-section" id="t-dif">Feito para quem toca o<br> negócio no dia a dia.</h2>
-   <p class="lead">Nada de sistema caro, contrato longo ou tela cheia de botões que ninguém usa. Aqui é o essencial, bem feito.</p>
-  </div>
-  <div class="grid grid--4">
-   <article class="card" data-reveal><div class="ico"><svg class="i" aria-hidden="true"><use href="#i-wallet"/></svg></div><h3>Preço justo, sem surpresa</h3><p>O BoosterPDV é pagamento único. O BoosterAgenda tem 30 dias grátis e plano mensal sem fidelidade.</p></article>
-   <article class="card" data-reveal style="--d:.06s"><div class="ico"><svg class="i" aria-hidden="true"><use href="#i-monitor"/></svg></div><h3>Funciona no navegador</h3><p>Abre no Chrome ou no Edge, sem instalar nada e sem chamar técnico. Ligou o computador, já está vendendo.</p></article>
-   <article class="card" data-reveal style="--d:.12s"><div class="ico"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg></div><h3>Feito para o Brasil</h3><p>Pensado para MEI, loja de bairro e delivery: PIX, venda a prazo, fiado e a rotina real do pequeno negócio.</p></article>
-   <article class="card" data-reveal style="--d:.18s"><div class="ico"><svg class="i" aria-hidden="true"><use href="#i-chat"/></svg></div><h3>Suporte em português</h3><p>Ficou com dúvida? Fale com a gente pelo Instagram, em português, sem robô e sem enrolação.</p></article>
-  </div>
- </div>
-</section>
-
-<!-- ================= PARA QUEM É ================= -->
-<section class="section section--tight" id="para-quem" aria-labelledby="t-quem">
- <div class="wrap center">
-  <div class="sec-head" data-reveal>
-   <span class="eyebrow">Para quem é</span>
-   <h2 class="h-section" id="t-quem">Se você tem um pequeno negócio,<br class="hide-sm"> é para você.</h2>
-   <p class="lead">Quem vende no balcão, no delivery ou presta serviço e quer parar de anotar tudo no papel.</p>
-  </div>
-  <ul class="chips" data-reveal>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-briefcase"/></svg>MEI</li>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-shirt"/></svg>Loja de roupa</li>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-bowl"/></svg>Açaiteria</li>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-burger"/></svg>Lanchonete</li>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-pencil"/></svg>Papelaria</li>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>Loja de celular</li>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-truck"/></svg>Delivery</li>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-store"/></svg>Loja de bairro</li>
-   <li class="chip"><svg class="i" aria-hidden="true"><use href="#i-tools"/></svg>Prestador de serviço</li>
-  </ul>
- </div>
-</section>
-
-<!-- ================= COMO FUNCIONA ================= -->
-<section class="section" aria-labelledby="t-como">
- <div class="wrap">
-  <div class="sec-head center" data-reveal>
-   <span class="eyebrow">Como funciona</span>
-   <h2 class="h-section" id="t-como">Simples do começo ao fim</h2>
-  </div>
-  <div class="grid grid--3 steps">
-   <article class="card step" data-reveal><span class="step__n">PASSO 01</span><h3>Escolha o sistema</h3><p>Veja o que cada um faz e escolha o que resolve o seu problema agora.</p></article>
-   <article class="card step" data-reveal style="--d:.08s"><span class="step__n">PASSO 02</span><h3>Comece sem risco</h3><p>Pagamento seguro pela Kiwify, com 7 dias de garantia. No BoosterAgenda, você ainda testa 30 dias grátis antes.</p></article>
-   <article class="card step" data-reveal style="--d:.16s"><span class="step__n">PASSO 03</span><h3>Use no navegador</h3><p>Abra no navegador e comece a usar no mesmo dia, sem instalação.</p></article>
-  </div>
- </div>
-</section>
-
-<!-- ================= CTA FINAL ================= -->
-<section class="section section--tight">
- <div class="wrap">
-  <div class="cta-box" data-reveal>
-   <h2>Comece pelo caixa. <span class="text-grad">Organize o resto depois.</span></h2>
-   <p class="lead">O BoosterPDV é o primeiro passo para tirar o seu negócio do caderninho. R$ <span data-price>49,90</span>, uma vez só.</p>
-   <div class="hero__ctas">
-    <a class="btn btn--primary btn--lg" href="pdv/">Conhecer o BoosterPDV<svg class="i i--arrow" aria-hidden="true"><use href="#i-arrow"/></svg></a>
-   </div>
-   <ul class="checks"><li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg><span data-guarantee>7</span> dias de garantia</li><li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Pagamento único</li></ul>
-  </div>
- </div>
-</section>
-
+  <section id="quem">
+    <div class="wrap">
+      <div class="quem">
+        <div class="ini" aria-hidden="true">AJ</div>
+        <div><h2>Você fala direto com quem faz.</h2><p>A Sitebooster é do Antolin Jr., de São Paulo. Sem atendente e sem robô de enrolação: você conversa comigo no WhatsApp do começo ao fim, e qualquer ajuste é resolvido no mesmo canal.</p></div>
+      </div>
+      <div class="final">
+        <h2>Veja o site do seu negócio antes de pagar qualquer coisa.</h2>
+        <p class="lead">A prévia é grátis e fica pronta com o seu nome, a sua nota do Google e o pedido pelo WhatsApp.</p>
+        <div class="acoes"><a class="btn btn-amarelo" href="/sites/">Quero minha prévia grátis</a><a class="btn btn-vidro" href="https://wa.me/5511937457836?text=Oi!%20Vim%20pelo%20site%20da%20Sitebooster.">Falar no WhatsApp</a></div>
+      </div>
+    </div>
+  </section>
 </main>
-<footer class="footer">
- <div class="wrap">
-  <div class="footer__grid">
-   <div class="footer__brand">
-    <a class="logo" href="./" aria-label="Sitebooster, página inicial"><svg class="" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="url(#sbg)"/><path d="M18 45 32 31l14 14" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 32 32 18l14 14" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" opacity=".6"/></svg><span>site<span class="gold">booster</span></span></a>
-    <p>Sistemas simples e com preço justo, feitos para o pequeno negócio brasileiro vender mais e se organizar.</p>
-   </div>
-   <div>
-    <h4>Sistemas</h4>
-    <ul>
-     <li><a href="pdv/">BoosterPDV</a></li>
-     <li><a href="agenda/">BoosterAgenda</a></li>
-     <li><a href="./#sistemas">BoosterCardápio <span class="footer__soon">em breve</span></a></li>
-     <li><a href="./#sistemas">BoosterVitrine <span class="footer__soon">em breve</span></a></li>
-    </ul>
-   </div>
-   <div>
-    <h4>Contato</h4>
-    <ul>
-     <li><a href="https://instagram.com/boosterpdv" data-instagram target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-instagram"/></svg><span data-instagram-handle>@boosterpdv</span></a></li>
-    </ul>
-   </div>
-   <div>
-    <h4>Legal</h4>
-    <ul>
-     <li><a href="termos/">Termos de uso</a></li>
-     <li><a href="privacidade/">Política de privacidade</a></li>
-    </ul>
-   </div>
+
+<footer>
+  <div class="wrap">
+    <div class="rodape">
+      <div><a class="logo" href="/" aria-label="Sitebooster"><svg viewBox="0 0 200 200" aria-hidden="true"><rect x="8" y="8" width="184" height="184" rx="50" fill="url(#gl)"/><path d="M62 108 L100 72 L138 108" fill="none" stroke="#fff" stroke-opacity=".8" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/><path d="M62 140 L100 104 L138 140" fill="none" stroke="#fff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/></svg><span>site<b>booster</b></span></a><p style="margin-top:12px;max-width:34ch">Sites e sistemas simples para o pequeno negócio brasileiro vender mais e se organizar.</p></div>
+      <div><h4>Produtos</h4><ul><li><a href="/sites/">Site Profissional</a></li><li><a href="/pdv/">BoosterPDV</a></li><li><a href="/agenda/">BoosterAgenda</a></li><li>BoosterCardápio <span class="breve-r">em breve</span></li></ul></div>
+      <div><h4>Contato</h4><ul><li><a href="https://wa.me/5511937457836">WhatsApp</a></li><li><a href="https://instagram.com/boosterpdv" target="_blank" rel="noopener">@boosterpdv</a></li></ul></div>
+      <div><h4>Legal</h4><ul><li><a href="/termos/">Termos de uso</a></li><li><a href="/privacidade/">Política de privacidade</a></li><li><a href="/sites/termo/">Termo do Site Profissional</a></li></ul></div>
+    </div>
+    <div class="copy"><span>© 2026 Sitebooster. Todos os direitos reservados.</span><span>sitebooster.com.br</span></div>
   </div>
-  <div class="footer__bottom">
-   <span>© <span data-year>2026</span> Sitebooster. Todos os direitos reservados.</span>
-   <span>sitebooster.com.br</span>
-  </div>
- </div>
 </footer>
-<script src="assets/js/config.js" defer></script>
-<script src="assets/js/main.js" defer></script>
+
+<a class="zap-fixo" href="https://wa.me/5511937457836?text=Oi!%20Vim%20pelo%20site%20da%20Sitebooster." aria-label="Falar no WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg></a>
+
+<script>
+(function(){
+  var reduz=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cv=document.getElementById('fundo'), g=cv.getContext('2d'), pts=[], W, H, dpr=Math.min(devicePixelRatio||1,1.5), mx=-999, my=-999, ativo=true;
+  function tam(){ W=innerWidth; H=innerHeight; cv.width=W*dpr; cv.height=H*dpr; g.setTransform(dpr,0,0,dpr,0,0);
+    var n=Math.round(Math.min(80, W*H/18000)); pts=[];
+    for(var i=0;i<n;i++) pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,a:Math.random()<.12}); }
+  tam(); addEventListener('resize',tam);
+  addEventListener('pointermove',function(e){mx=e.clientX;my=e.clientY});
+  document.addEventListener('visibilitychange',function(){ativo=!document.hidden});
+  function desenha(){
+    if(ativo){
+      g.clearRect(0,0,W,H);
+      for(var i=0;i<pts.length;i++){ var p=pts[i];
+        if(!reduz){p.x+=p.vx;p.y+=p.vy; if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;}
+        var dx=p.x-mx, dy=p.y-my, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120 && d>0 && !reduz){p.x+=dx/d*.8;p.y+=dy/d*.8;}
+        for(var j=i+1;j<pts.length;j++){ var q=pts[j], ex=p.x-q.x, ey=p.y-q.y, e2=ex*ex+ey*ey;
+          if(e2<15000){ g.strokeStyle='rgba(120,150,255,'+(0.16*(1-e2/15000))+')'; g.lineWidth=1; g.beginPath(); g.moveTo(p.x,p.y); g.lineTo(q.x,q.y); g.stroke(); } }
+        g.fillStyle=p.a?'rgba(255,194,58,.9)':'rgba(150,175,255,.55)';
+        g.beginPath(); g.arc(p.x,p.y,p.a?2:1.4,0,6.29); g.fill();
+      }
+    }
+    if(!reduz) requestAnimationFrame(desenha);
+  }
+  desenha();
+})();
+</script>
+<script src="assets/js/medicao.js" defer></script>
 </body>
 </html>
