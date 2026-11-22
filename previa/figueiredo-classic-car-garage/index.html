@@ -7,7 +7,7 @@
 <title>Figueiredo Classic Car Garage · Oficina mecânica</title>
 <meta name="description" content="Prévia do site da Figueiredo Classic Car Garage, criada pela Sitebooster.">
 <meta property="og:title" content="Figueiredo Classic Car Garage · prévia do site">
-<meta property="og:description" content="Veja como ficaria o site da Figueiredo Classic Car Garage, com a nota do Google e o botão do WhatsApp.">
+<meta property="og:description" content="Veja como ficaria o site da Figueiredo Classic Car Garage, com a nota do Google e pedido direto no WhatsApp.">
 <meta property="og:image" content="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=1200&q=75&auto=format&fit=crop">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#141518">
@@ -20,10 +20,9 @@
   --fundo:#141518; --fundo2:#1f2125; --tinta:#f2f2ef; --suave:#a3a49f; --acento:#f2c230; --escuro:#0a0a0b; --acento-claro:#f2c230;
   --display:"Bricolage Grotesque",system-ui,sans-serif;
   --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --g:clamp(18px,5vw,64px);
-  --r-grande:clamp(22px,3vw,36px); --r-medio:18px;
-  --zap:#1fa855;
+  --g:clamp(18px,5vw,64px); --r-grande:clamp(22px,3vw,36px); --r-medio:18px; --zap:#1fa855;
 }
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;overflow-x:clip;-webkit-text-size-adjust:100%}
 body{background:var(--fundo);color:var(--tinta);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased;padding-bottom:96px}
@@ -31,130 +30,45 @@ img,iframe{display:block;max-width:100%}
 a{color:inherit}
 :focus-visible{outline:2px solid var(--acento);outline-offset:3px;border-radius:8px}
 .wrap{width:100%;max-width:1280px;margin-inline:auto;padding-inline:var(--g)}
-h1,h2,h3{font-family:var(--display);font-weight:700;line-height:.98;letter-spacing:-.02em;text-wrap:balance}
-h2{font-size:clamp(34px,5.4vw,72px);font-variation-settings:"wdth" 85;max-width:16ch}
-.lead{color:var(--suave);font-size:clamp(16px,1.5vw,19px);max-width:44ch;text-wrap:pretty}
-
-/* Faixa da prévia */
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:clamp(34px,5vw,64px);max-width:17ch}
+.lead{color:var(--suave);font-size:clamp(16px,1.5vw,19px);max-width:46ch;text-wrap:pretty}
 .previa{position:relative;z-index:30;background:var(--escuro);color:#fff;font-size:12.5px;text-align:center;padding:8px var(--g);line-height:1.4}
 .previa b{font-weight:600}
-
-/* Navegação */
 .nav{position:fixed;top:42px;left:0;right:0;z-index:25;pointer-events:none;transition:top .3s}
 .nav .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.nav-nome{pointer-events:auto;font-family:var(--display);font-weight:700;font-size:16px;color:#fff;text-decoration:none;padding:9px 14px;border-radius:999px;background:rgba(10,12,14,.35);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rolou .nav{top:10px}
-
+.nav-nome{pointer-events:auto;font-family:var(--body);font-weight:600;font-size:15px;color:#fff;text-decoration:none;padding:9px 14px;border-radius:999px;background:rgba(10,12,14,.42);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .3s}
+.rolou .nav{top:10px}.rolou .nav-nome{opacity:1}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:600 16px/1 var(--body);padding:17px 24px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
 .btn:active{transform:scale(.97)}
 .btn svg{width:20px;height:20px;flex:none}
 .btn-zap{background:var(--zap);color:#fff;box-shadow:0 10px 30px -10px rgba(31,168,85,.7)}
 .btn-zap:hover{transform:translateY(-2px)}
+.btn-linha{background:transparent;color:inherit;border:1.5px solid currentColor}
 .btn-vidro{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .nav .btn{pointer-events:auto;padding:12px 16px;font-size:14px}
-
-/* Topo */
-.hero{position:relative;height:100svh;min-height:600px;max-height:1000px;color:#fff;isolation:isolate}
-.hero-midia{position:absolute;inset:0;z-index:-1;overflow:hidden;background:var(--escuro)}
-.hero-midia img{width:100%;height:100%;object-fit:cover;animation:revela 1.6s cubic-bezier(.2,.7,.2,1) both}
-.hero-midia::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,0) 28%,rgba(0,0,0,.15) 50%,rgba(0,0,0,.82) 100%)}
-@keyframes revela{from{filter:blur(18px) saturate(.6);transform:scale(1.12)}to{filter:none;transform:scale(1)}}
-.hero-txt{position:absolute;left:0;right:0;bottom:0;padding-bottom:calc(clamp(28px,5vw,64px) + 76px)}
-.selo{display:inline-flex;align-items:center;gap:10px;font-size:14.5px;padding:8px 14px 8px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin-bottom:18px;animation:sobe .9s .5s cubic-bezier(.2,.8,.2,1) both}
-.selo .g{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;font:700 13px var(--body);color:#4285f4}
-.estrelas{color:#ffcf5a;letter-spacing:1px}
-.nome{font-size:clamp(52px,12.5vw,176px);font-variation-settings:"wdth" 78,"opsz" 96;font-weight:800;line-height:.86;letter-spacing:-.035em;max-width:14ch;text-wrap:balance}
-.nome span{display:inline-block;animation:sobe 1s cubic-bezier(.2,.8,.2,1) both}
-.nome span:nth-child(2){animation-delay:.08s}.nome span:nth-child(3){animation-delay:.16s}.nome span:nth-child(4){animation-delay:.24s}.nome span:nth-child(5){animation-delay:.32s}.nome span:nth-child(n+6){animation-delay:.4s}
-@keyframes sobe{from{opacity:0;transform:translateY(40%)}to{opacity:1;transform:none}}
-.hero-sub{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:20px;margin-top:22px;animation:sobe .9s .55s cubic-bezier(.2,.8,.2,1) both}
-.hero-sub p{font-size:clamp(17px,1.7vw,21px);max-width:38ch;opacity:.92;line-height:1.45}
-.hero-sub .acoes{display:flex;gap:10px;flex-wrap:wrap}
-
-/* A foto do topo encolhe e vira cartão ao rolar (navegadores que suportam) */
-@supports (animation-timeline: scroll()){
-  .hero-midia{animation:encolhe linear both;animation-timeline:scroll(root);animation-range:0 90vh}
-  @keyframes encolhe{to{clip-path:inset(5% 4% 0 4% round 36px)}}
-}
-
-/* Diferenciais */
-.fatos{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:22px var(--g);margin-inline:auto;max-width:1280px;scrollbar-width:none}
-.fatos::-webkit-scrollbar{display:none}
-.fatos div{flex:1 0 200px;scroll-snap-align:start;background:var(--fundo2);border-radius:var(--r-medio);padding:18px 20px;color:var(--suave);font-size:14.5px;line-height:1.35}
-.fatos b{display:block;font-family:var(--display);font-variation-settings:"wdth" 85;font-size:22px;color:var(--tinta);margin-bottom:4px}
-
-section{padding:clamp(72px,10vw,140px) 0 0}
-.topo-secao{display:grid;grid-template-columns:1.1fr .9fr;gap:24px 48px;align-items:end;margin-bottom:clamp(28px,4vw,48px)}
-
-/* Serviços em carrossel */
-.trilho{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:0 var(--g) 8px;scroll-padding-inline:var(--g);scrollbar-width:none;max-width:1280px;margin-inline:auto}
-.trilho::-webkit-scrollbar{display:none}
-.card{position:relative;flex:0 0 min(78vw,400px);aspect-ratio:3/4;border-radius:var(--r-grande);overflow:hidden;scroll-snap-align:start;color:#fff;display:flex;flex-direction:column;justify-content:flex-end;padding:24px;isolation:isolate}
-.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1.2s cubic-bezier(.2,.7,.2,1)}
-.card:hover img{transform:scale(1.05)}
-.card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 45%,rgba(0,0,0,.78))}
-.card h3{font-size:clamp(28px,3vw,36px);font-variation-settings:"wdth" 82}
-.card p{font-size:15.5px;opacity:.88;margin-top:6px;max-width:30ch;line-height:1.45}
-.card.lista{background:var(--escuro);justify-content:space-between}
-.card.lista::after{display:none}
-.card.lista ul{list-style:none;display:grid;gap:0}
-.card.lista li{font-size:17px;padding:12px 0;border-top:1px solid rgba(255,255,255,.14)}
-.dica{font-size:13.5px;color:var(--suave);padding:12px var(--g) 0;max-width:1280px;margin-inline:auto}
-
-/* Nota do Google */
-.nota{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,5vw,80px);align-items:center;background:var(--fundo2);border-radius:var(--r-grande);padding:clamp(28px,5vw,64px)}
-.nota .num{font-family:var(--display);font-size:clamp(110px,18vw,240px);font-variation-settings:"wdth" 75,"opsz" 96;font-weight:800;line-height:.8;letter-spacing:-.05em;color:var(--acento)}
-.nota .est{font-size:clamp(22px,2.4vw,30px);letter-spacing:4px;color:#f2b53a;margin-bottom:10px}
-.nota p{font-size:clamp(18px,2vw,24px);font-family:var(--display);font-variation-settings:"wdth" 90;font-weight:600;line-height:1.2;max-width:22ch}
-.nota a{display:inline-block;margin-top:16px;font-weight:600;color:var(--acento);text-underline-offset:4px}
-
-/* Como funciona: linha que preenche ao rolar */
-.passos{position:relative;display:grid;gap:clamp(26px,4vw,44px);padding-left:44px;max-width:760px}
-.passos::before,.passos::after{content:"";position:absolute;left:13px;top:8px;bottom:8px;width:2px;border-radius:2px;background:color-mix(in srgb,var(--tinta) 14%,transparent)}
-.passos::after{background:var(--acento);transform-origin:top;transform:scaleY(1)}
-@supports (animation-timeline: view()){
-  .passos::after{animation:preenche linear both;animation-timeline:view();animation-range:entry 30% cover 70%}
-  @keyframes preenche{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-}
-.passo{position:relative}
-.passo b{position:absolute;left:-44px;top:0;width:28px;height:28px;border-radius:50%;background:var(--acento);color:var(--fundo);display:grid;place-items:center;font:700 13px var(--body)}
-.passo h3{font-size:clamp(24px,2.6vw,32px);font-variation-settings:"wdth" 85}
-.passo p{color:var(--suave);margin-top:4px;max-width:46ch}
-
-/* Onde estamos */
-.local{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
-.mapa{border-radius:var(--r-grande);overflow:hidden;min-height:380px;background:var(--fundo2)}
-.mapa iframe{width:100%;height:100%;min-height:380px;border:0}
-.contato{background:var(--escuro);color:#fff;border-radius:var(--r-grande);padding:clamp(26px,4vw,44px);display:flex;flex-direction:column;justify-content:space-between;gap:28px}
-.contato h3{font-size:clamp(30px,3.4vw,44px);font-variation-settings:"wdth" 82}
-.contato dl{display:grid;gap:16px}
-.contato dt{font-size:13.5px;color:var(--acento-claro)}
-.contato dd{font-size:17px;line-height:1.45}
-
-/* Chamada final */
-.final{position:relative;margin-top:clamp(72px,10vw,140px);border-radius:var(--r-grande);overflow:hidden;color:#fff;isolation:isolate;padding:clamp(40px,8vw,110px) clamp(24px,6vw,80px);min-height:440px;display:flex;flex-direction:column;justify-content:flex-end;gap:22px}
-.final img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
-.final::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.78),rgba(0,0,0,.25))}
-.final h2{color:#fff}
-
-footer{padding:40px 0 28px;font-size:14px;color:var(--suave)}
-footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
-
-/* Barra da prévia */
-.barra{position:fixed;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:40;max-width:680px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 18px;border-radius:22px;color:#fff;background:rgba(14,16,18,.72);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
-.barra span{font-size:13.5px;line-height:1.35}
-.barra b{display:block;font-size:15px}
-.barra .btn{background:#fff;color:#111;padding:13px 18px;font-size:14.5px}
-
-
-/* Troca de fotos no topo */
-.hero-midia img.b{position:absolute;inset:0;opacity:0;animation:troca 14s 4s ease-in-out infinite}
+.selo{display:inline-flex;align-items:center;gap:10px;font-size:14.5px;padding:8px 14px 8px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff}
+.selo.claro{background:var(--fundo2);border-color:color-mix(in srgb,var(--tinta) 10%,transparent);color:var(--tinta)}
+.selo .g{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;font:700 13px var(--body);color:#4285f4;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.estrelas{color:#f2b53a;letter-spacing:1px}
+.troca{position:relative;overflow:hidden}
+.troca img{width:100%;height:100%;object-fit:cover}
+.troca img.b{position:absolute;inset:0;opacity:0;animation:troca 14s 4s ease-in-out infinite}
 @keyframes troca{0%,40%{opacity:0;transform:scale(1.06)}50%,90%{opacity:1;transform:scale(1)}100%{opacity:0}}
-
+@keyframes sobe{from{opacity:0;transform:translateY(36%)}to{opacity:1;transform:none}}
+@keyframes surge{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.nome span{display:inline-block;animation:sobe 1s cubic-bezier(.2,.8,.2,1) both}
+.nome span:nth-child(2){animation-delay:.08s}.nome span:nth-child(3){animation-delay:.16s}.nome span:nth-child(4){animation-delay:.24s}.nome span:nth-child(n+5){animation-delay:.32s}
+section{padding:clamp(72px,10vw,136px) 0 0}
+.topo-secao{display:grid;grid-template-columns:1.1fr .9fr;gap:20px 48px;align-items:end;margin-bottom:clamp(28px,4vw,48px)}
+.fatos{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.fatos::-webkit-scrollbar{display:none}
+.fatos div{flex:1 0 190px;scroll-snap-align:start;background:var(--fundo2);border-radius:var(--r-medio);padding:16px 18px;color:var(--suave);font-size:14.5px;line-height:1.35}
+.fatos b{display:block;font-family:var(--display);font-size:21px;color:var(--tinta);margin-bottom:4px;line-height:1.1}
 /* Pedido pelo site */
 .pedido{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(20px,4vw,56px);align-items:start}
 .pedido-caixa{background:var(--fundo2);border-radius:var(--r-grande);padding:clamp(22px,3.4vw,40px);display:grid;gap:22px}
-.grupo h3{font-family:var(--body);font-size:15px;font-weight:600;color:var(--suave);letter-spacing:0;margin-bottom:10px}
+.grupo h3{font-family:var(--body);font-size:15px;font-weight:600;color:var(--suave);letter-spacing:0;margin-bottom:10px;line-height:1.3}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{font:500 15.5px var(--body);padding:11px 16px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--tinta) 18%,transparent);background:transparent;color:var(--tinta);cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .15s}
 .chip:active{transform:scale(.96)}
@@ -162,19 +76,36 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .campo{width:100%;font:inherit;font-size:16px;padding:14px 16px;border-radius:14px;border:1.5px solid color-mix(in srgb,var(--tinta) 18%,transparent);background:var(--fundo);color:var(--tinta)}
 .resumo{font-size:14.5px;color:var(--suave);min-height:1.6em}
 .resumo b{color:var(--tinta);font-weight:600}
-.pedido .btn-zap{width:100%}
-
-/* Simulação: o site trabalhando */
+.pedido-caixa .btn-zap{width:100%}
+/* Nota do Google */
+.nota{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,5vw,80px);align-items:center;background:var(--fundo2);border-radius:var(--r-grande);padding:clamp(28px,5vw,64px)}
+.nota .num{font-family:var(--display);font-size:clamp(104px,16vw,220px);font-weight:700;line-height:.8;letter-spacing:-.05em;color:var(--acento)}
+.nota .est{font-size:clamp(22px,2.4vw,30px);letter-spacing:4px;color:#f2b53a;margin-bottom:10px}
+.nota p{font-size:clamp(19px,2vw,25px);font-family:var(--display);font-weight:600;line-height:1.2;max-width:22ch}
+.nota a{display:inline-block;margin-top:16px;font-weight:600;color:var(--acento);text-underline-offset:4px}
+/* Passos */
+.passos{position:relative;display:grid;gap:clamp(26px,4vw,44px);padding-left:44px;max-width:760px}
+.passos::before,.passos::after{content:"";position:absolute;left:13px;top:8px;bottom:8px;width:2px;border-radius:2px;background:color-mix(in srgb,var(--tinta) 14%,transparent)}
+.passos::after{background:var(--acento);transform-origin:top}
+@supports (animation-timeline: view()){
+  .passos::after{animation:preenche linear both;animation-timeline:view();animation-range:entry 30% cover 70%}
+  @keyframes preenche{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+}
+.passo{position:relative}
+.passo b{position:absolute;left:-44px;top:0;width:28px;height:28px;border-radius:50%;background:var(--acento);color:var(--fundo);display:grid;place-items:center;font:700 13px var(--body)}
+.passo h3{font-size:clamp(24px,2.6vw,32px)}
+.passo p{color:var(--suave);margin-top:4px;max-width:46ch}
+/* Simulação */
 .sim{position:relative;background:var(--escuro);color:#fff;border-radius:var(--r-grande);padding:clamp(26px,5vw,64px);display:grid;grid-template-columns:1fr auto;gap:clamp(24px,5vw,72px);align-items:center;overflow:hidden;isolation:isolate}
 .sim::before{content:"";position:absolute;width:520px;height:520px;right:-120px;top:-160px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--acento-claro) 45%,transparent),transparent 65%);z-index:-1;filter:blur(10px)}
 .sim .etiqueta{display:inline-block;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);margin-bottom:18px;color:var(--acento-claro)}
 .sim h2{color:#fff}
 .sim .lead{color:rgba(255,255,255,.75);margin-top:16px}
-.cel{width:300px;height:600px;border-radius:44px;background:#0d0f12;border:9px solid #23262b;box-shadow:0 40px 80px -30px rgba(0,0,0,.8),inset 0 0 0 1px rgba(255,255,255,.06);position:relative;overflow:hidden;color:#202124;font-family:Arial,Helvetica,sans-serif}
+.cel{width:300px;height:600px;border-radius:44px;background:#0d0f12;border:9px solid #23262b;box-shadow:0 40px 80px -30px rgba(0,0,0,.8);position:relative;overflow:hidden;color:#202124;font-family:Arial,Helvetica,sans-serif}
 .cel .tela{position:absolute;inset:0;background:#fff;padding:46px 14px 14px}
 .cel .ilha{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:92px;height:26px;border-radius:20px;background:#0d0f12;z-index:3}
 .logo-g{font:700 26px Arial,sans-serif;text-align:center;letter-spacing:-1px;margin:6px 0 12px}
-.logo-g i{font-style:normal}.logo-g i:nth-child(1){color:#4285f4}.logo-g i:nth-child(2){color:#ea4335}.logo-g i:nth-child(3){color:#fbbc05}.logo-g i:nth-child(4){color:#4285f4}.logo-g i:nth-child(5){color:#34a853}.logo-g i:nth-child(6){color:#ea4335}
+.logo-g i{font-style:normal}.logo-g i:nth-child(1),.logo-g i:nth-child(4){color:#4285f4}.logo-g i:nth-child(2),.logo-g i:nth-child(6){color:#ea4335}.logo-g i:nth-child(3){color:#fbbc05}.logo-g i:nth-child(5){color:#34a853}
 .busca{border:1px solid #dfe1e5;border-radius:24px;padding:11px 14px;font-size:14px;min-height:44px;display:flex;align-items:center;gap:8px;box-shadow:0 1px 6px rgba(32,33,36,.18)}
 .busca .cursor{display:inline-block;width:1.5px;height:17px;background:#202124;animation:pisca 1s steps(1) infinite}
 @keyframes pisca{50%{opacity:0}}
@@ -186,100 +117,125 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 .resultado .bts{display:flex;gap:6px;margin-top:12px}
 .resultado .bts span{font-size:12.5px;padding:7px 11px;border-radius:999px;border:1px solid #dadce0;color:#1a73e8;font-weight:600}
 .resultado .bts span.z{background:#1fa855;border-color:#1fa855;color:#fff}
-.notif{position:absolute;left:10px;right:10px;background:rgba(245,245,247,.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-radius:18px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 10px 30px -10px rgba(0,0,0,.35);opacity:0;transform:translateY(-30px) scale(.96);transition:opacity .45s,transform .45s cubic-bezier(.2,.9,.3,1.2);z-index:2}
+.notif{position:absolute;left:10px;right:10px;background:rgba(245,245,247,.97);border-radius:18px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 10px 30px -10px rgba(0,0,0,.35);opacity:0;transform:translateY(-30px) scale(.96);transition:opacity .45s,transform .45s cubic-bezier(.2,.9,.3,1.2);z-index:2}
 .notif.on{opacity:1;transform:none}
 .notif .ic{width:30px;height:30px;border-radius:8px;background:#1fa855;flex:none;display:grid;place-items:center}
 .notif .ic svg{width:18px;height:18px;fill:#fff}
 .notif small{display:block;font-size:11.5px;color:#6b6f76}
 .notif p{font-size:13px;line-height:1.35;color:#111}
 .n1{top:350px}.n2{top:428px}.n3{top:506px}
-@media (max-width:380px){.n1{top:330px}.n2{top:402px}.n3{top:474px}}
-@media (max-width:900px){.pedido,.sim{grid-template-columns:1fr}.cel{margin-inline:auto}}
-@media (max-width:380px){.cel{width:270px;height:560px}}
+/* Onde estamos */
+.local{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+.local>*,.pedido>*,.sim>*,.topo-secao>*{min-width:0}
+.mapa{border-radius:var(--r-grande);overflow:hidden;min-height:380px;background:var(--fundo2)}
+.mapa iframe{width:100%;height:100%;min-height:380px;border:0}
+.contato{background:var(--escuro);color:#fff;border-radius:var(--r-grande);padding:clamp(26px,4vw,44px);display:flex;flex-direction:column;justify-content:space-between;gap:28px}
+.contato h3{font-size:clamp(28px,3.2vw,42px)}
+.contato dl{display:grid;gap:16px}
+.contato dt{font-size:13.5px;color:var(--acento-claro)}
+.contato dd{font-size:17px;line-height:1.45}
+.final{position:relative;margin-top:clamp(72px,10vw,136px);border-radius:var(--r-grande);overflow:hidden;color:#fff;isolation:isolate;padding:clamp(40px,8vw,110px) clamp(24px,6vw,80px);min-height:420px;display:flex;flex-direction:column;justify-content:flex-end;gap:22px}
+.final img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.final::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.8),rgba(0,0,0,.25))}
+.final h2{color:#fff}
+footer{padding:40px 0 28px;font-size:14px;color:var(--suave)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.barra{position:fixed;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:40;max-width:680px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 18px;border-radius:22px;color:#fff;background:rgba(14,16,18,.74);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
+.barra span{font-size:13.5px;line-height:1.35}
+.barra b{display:block;font-size:15px}
+.barra .btn{background:#fff;color:#111;padding:13px 18px;font-size:14.5px}
 @media (max-width:900px){
-  .topo-secao,.local,.nota{grid-template-columns:1fr}
-  .nota{gap:12px}
+  .topo-secao,.local,.nota,.pedido,.sim{grid-template-columns:1fr}
+  .nota{gap:12px}.cel{margin-inline:auto}
 }
 @media (max-width:560px){
   body{font-size:16px}
   .nav .btn span{display:none}
-  .hero-sub .acoes{width:100%}
-  .hero-sub .acoes .btn{flex:1 1 100%}
-  .barra span{font-size:12.5px}
-  .barra b{font-size:14px}
+  .btn{white-space:normal;text-align:center;line-height:1.25}
+  .barra span{font-size:12.5px}.barra b{font-size:14px}
 }
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-}
+@media (max-width:380px){.cel{width:270px;height:560px}.n1{top:330px}.n2{top:402px}.n3{top:474px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.ramo-oficina h1,.ramo-oficina h2,.ramo-oficina h3{font-variation-settings:"wdth" 78}
+.of-topo{position:relative;min-height:100svh;color:#fff;isolation:isolate;display:flex;align-items:flex-end;padding:120px 0 calc(40px + 76px)}
+.of-foto{position:absolute;inset:0;z-index:-1}
+.of-foto img:first-child{animation:revela 1.6s cubic-bezier(.2,.7,.2,1) both}
+@keyframes revela{from{filter:blur(16px) saturate(.5);transform:scale(1.1)}to{filter:none;transform:scale(1)}}
+.of-foto::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,11,.92) 0%,rgba(10,10,11,.65) 45%,rgba(10,10,11,.25) 100%),linear-gradient(0deg,rgba(10,10,11,.9),transparent 40%)}
+.of-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(24px,4vw,56px);align-items:end}
+.of-topo .selo{animation:surge .8s .4s both}
+.of-topo .nome{font-size:clamp(54px,9vw,132px);font-weight:800;line-height:.86;letter-spacing:-.035em;margin:18px 0 20px;max-width:12ch}
+.of-topo .sub{font-size:clamp(17px,1.6vw,20px);max-width:40ch;opacity:.88;animation:surge .8s .5s both}
+.faixa-amarela{height:6px;width:120px;background:var(--acento);margin-top:26px;border-radius:3px;animation:surge .8s .6s both}
+.of-diag{background:rgba(20,21,24,.72);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-grande);padding:clamp(20px,2.6vw,30px);animation:surge .9s .7s both}
+.of-diag>h2{font-size:clamp(26px,2.6vw,34px);color:#fff;margin-bottom:6px}
+.of-diag>p{color:#a3a49f;font-size:14.5px;margin-bottom:18px}
+.of-diag .pedido-caixa{background:transparent;padding:0;gap:18px}
+.of-diag .chip{color:#f2f2ef;border-color:rgba(255,255,255,.22);padding:10px 14px;font-size:14.5px}
+.of-diag .chip[aria-pressed="true"]{color:#141518}
+.of-diag .campo{background:rgba(255,255,255,.06);color:#fff;border-color:rgba(255,255,255,.2)}
+.of-diag .resumo{color:#a3a49f}.of-diag .resumo b{color:#fff}
+.of-servicos{display:grid;grid-template-columns:repeat(2,1fr);border-top:1px solid rgba(255,255,255,.12)}
+.of-servicos li{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 4px;border-bottom:1px solid rgba(255,255,255,.12);font-family:var(--display);font-size:clamp(22px,2.4vw,30px);font-weight:700;font-variation-settings:"wdth" 80}
+.of-servicos li:nth-child(odd){border-right:1px solid rgba(255,255,255,.12);padding-right:24px}
+.of-servicos li:nth-child(even){padding-left:24px}
+.of-servicos li::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--acento);flex:none}
+.of-fotos{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;margin-top:clamp(28px,4vw,48px)}
+.of-fotos figure{position:relative;border-radius:var(--r-medio);overflow:hidden;aspect-ratio:4/5}
+.of-fotos figure:first-child{aspect-ratio:auto}
+.of-fotos img{width:100%;height:100%;object-fit:cover}
+.of-fotos figcaption{position:absolute;left:12px;right:12px;bottom:12px;padding:12px 14px;border-radius:14px;background:rgba(10,10,11,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);font-size:14px;line-height:1.35}
+.of-fotos figcaption b{display:block;font-family:var(--display);font-size:20px;font-variation-settings:"wdth" 80}
+@media (max-width:900px){.of-grid{grid-template-columns:1fr}.of-topo{padding-top:150px}.of-fotos{grid-template-columns:1fr 1fr}.of-fotos figure:first-child{grid-column:1/-1;aspect-ratio:16/10}}
+@media (max-width:560px){.of-servicos{grid-template-columns:1fr}.of-servicos li:nth-child(odd){border-right:0;padding-right:4px}.of-servicos li:nth-child(even){padding-left:4px}.of-fotos{grid-template-columns:1fr}.of-fotos figure{aspect-ratio:16/11}}
 </style>
 </head>
-<body>
-<div class="previa">Prévia criada pela <b>Sitebooster</b> para <b>Figueiredo Classic Car Garage</b>. Não é o site oficial. Disponível até 05/12/2026.</div>
-
-<header class="nav">
-  <div class="wrap">
-    <a class="nav-nome" href="#topo">Figueiredo Classic Car Garage</a>
-    <a class="btn btn-zap" href="https://wa.me/5511961242726">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg>
-      <span>Agendar</span></a>
-  </div>
-</header>
-
+<body class="ramo-oficina">
+<div class="previa">Prévia criada pela <b>Sitebooster</b> para <b>Figueiredo Classic Car Garage</b>. Não é o site oficial. Disponível até 06/12/2026.</div>
+<header class="nav"><div class="wrap">
+  <a class="nav-nome" href="#topo">Figueiredo Classic Car Garage</a>
+  <a class="btn btn-zap" href="https://wa.me/5511961242726"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg><span>Agendar</span></a>
+</div></header>
 <main id="topo">
-  <div class="hero">
-    <div class="hero-midia"><img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=2000&q=75&auto=format&fit=crop" alt="Mecânico trabalhando no motor" fetchpriority="high"><img class="b" src="https://images.unsplash.com/photo-1727893119356-1702fe921cf9?w=1800&q=75&auto=format&fit=crop" alt="" loading="lazy"></div>
-    <div class="hero-txt">
-      <div class="wrap">
+
+  <div class="of-topo">
+    <div class="of-foto troca"><img src="https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=2000&q=75&auto=format&fit=crop" alt="Mecânico trabalhando no motor" fetchpriority="high"><img class="b" src="https://images.unsplash.com/photo-1727893119356-1702fe921cf9?w=1800&q=75&auto=format&fit=crop" alt="" loading="lazy"></div>
+    <div class="wrap of-grid">
+      <div>
         <span class="selo"><span class="g">G</span><span class="estrelas">★★★★★</span> 5,0 no Google, 31 avaliações</span>
         <h1 class="nome"><span>Figueiredo</span> <span>Classic</span> <span>Car</span> <span>Garage</span></h1>
-        <div class="hero-sub">
-          <p>Mecânica de confiança na Zona Norte. Revisão, freios, suspensão, motor e diagnóstico, com orçamento antes de qualquer serviço.</p>
-          <div class="acoes">
-            <a class="btn btn-zap" href="https://wa.me/5511961242726">Agendar pelo WhatsApp</a>
-            <a class="btn btn-vidro" href="#servicos">Ver serviços</a>
-          </div>
-        </div>
+        <p class="sub">Mecânica de confiança na Zona Norte. Revisão, freios, suspensão, motor e diagnóstico, com orçamento antes de qualquer serviço.</p>
+        <div class="faixa-amarela"></div>
       </div>
-    </div>
-  </div>
-
-  <div class="fatos">
-        <div><b>Orçamento</b>antes do serviço</div>
-        <div><b>Diagnóstico</b>com scanner</div>
-        <div><b>Peças</b>de qualidade</div>
-        <div><b>Garantia</b>no serviço feito</div>
-  </div>
-
-  <section id="servicos">
-    <div class="wrap topo-secao">
-      <h2>Seu carro em boas mãos.</h2>
-      <p class="lead">Explicamos o que o carro precisa e só fazemos o serviço depois da sua aprovação.</p>
-    </div>
-    <div class="trilho">
-      <article class="card"><img src="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?w=1200&q=75&auto=format&fit=crop" alt="Mecânico inspecionando o motor" loading="lazy"><h3>Mecânica geral</h3><p>Motor, câmbio, embreagem e manutenção completa.</p></article>
-      <article class="card"><img src="https://images.unsplash.com/photo-1771340012378-3c86cb649193?w=900&q=75&auto=format&fit=crop" alt="Mecânico trabalhando no motor do carro" loading="lazy"><h3>Revisão</h3><p>Troca de óleo, filtros e revisão preventiva.</p></article>
-      <article class="card"><img src="https://images.unsplash.com/photo-1792793176006-a7b35e29c7e1?w=900&q=75&auto=format&fit=crop" alt="Carros em manutenção na oficina" loading="lazy"><h3>Diagnóstico</h3><p>Identificamos o problema antes de trocar qualquer peça.</p></article>
-      <article class="card lista"><h3>Também fazemos</h3><ul><li>Freios</li><li>Suspensão</li><li>Injeção eletrônica</li><li>Ar-condicionado</li><li>Arrefecimento</li><li>Elétrica</li></ul></article>
-    </div>
-    <p class="dica">Arraste para o lado para ver mais.</p>
-  </section>
-
-
-  <section id="pedido">
-    <div class="wrap pedido">
-      <div>
+      <div class="of-diag" id="pedido">
         <h2>Conte o que o carro tem.</h2>
-        <p class="lead" style="margin-top:16px">Escolha as opções e o pedido chega pronto no nosso WhatsApp. Respondemos rapidinho.</p>
-      </div>
-      <form class="pedido-caixa" id="form-pedido" data-abertura="Olá! Vim pelo site e quero um orçamento." onsubmit="return false">
+        <p>Toque nas opções e mande pelo WhatsApp. Respondemos rapidinho.</p>
+        <form class="pedido-caixa" id="form-pedido" data-abertura="Olá! Vim pelo site e quero um orçamento." onsubmit="return false">
         <div class="grupo" data-rotulo="Problema"><h3>O que está acontecendo?</h3><div class="chips"><button type="button" class="chip" aria-pressed="false">Barulho estranho</button><button type="button" class="chip" aria-pressed="false">Freio</button><button type="button" class="chip" aria-pressed="false">Luz no painel</button><button type="button" class="chip" aria-pressed="false">Revisão</button><button type="button" class="chip" aria-pressed="false">Ar-condicionado</button><button type="button" class="chip" aria-pressed="false">Outro</button></div></div>
         <div class="grupo" data-rotulo="Quando"><h3>Para quando?</h3><div class="chips"><button type="button" class="chip" aria-pressed="false">Hoje</button><button type="button" class="chip" aria-pressed="false">Esta semana</button><button type="button" class="chip" aria-pressed="false">Só orçamento</button></div></div>
         <label class="grupo"><h3>Modelo e ano do carro</h3><input class="campo" id="campo-extra" data-rotulo="Carro" placeholder="Ex.: Onix 2019" autocomplete="off"></label>
         <p class="resumo" id="resumo" aria-live="polite">Toque nas opções acima.</p>
         <a class="btn btn-zap" id="enviar-pedido" href="https://wa.me/5511961242726">Enviar pedido no WhatsApp</a>
       </form>
+      </div>
+    </div>
+  </div>
+  <section id="servicos">
+    <div class="wrap topo-secao">
+      <h2>Seu carro em boas mãos.</h2>
+      <p class="lead">Explicamos o que o carro precisa e só fazemos o serviço depois da sua aprovação.</p>
+    </div>
+    <div class="wrap">
+      <ul class="of-servicos"><li>Freios</li><li>Suspensão</li><li>Injeção eletrônica</li><li>Ar-condicionado</li><li>Arrefecimento</li><li>Elétrica</li></ul>
+      <div class="of-fotos">
+        <figure><img src="https://images.unsplash.com/photo-1625047509248-ec889cbff17f?w=1200&q=75&auto=format&fit=crop" alt="Mecânico inspecionando o motor" loading="lazy"><figcaption><b>Mecânica geral</b>Motor, câmbio, embreagem e manutenção completa.</figcaption></figure>
+        <figure><img src="https://images.unsplash.com/photo-1771340012378-3c86cb649193?w=900&q=75&auto=format&fit=crop" alt="Mecânico trabalhando no motor do carro" loading="lazy"><figcaption><b>Revisão</b>Troca de óleo, filtros e revisão preventiva.</figcaption></figure>
+        <figure><img src="https://images.unsplash.com/photo-1792793176006-a7b35e29c7e1?w=900&q=75&auto=format&fit=crop" alt="Carros em manutenção na oficina" loading="lazy"><figcaption><b>Diagnóstico</b>Identificamos o problema antes de trocar qualquer peça.</figcaption></figure>
+      </div>
     </div>
   </section>
+
   <section>
     <div class="wrap">
       <div class="nota">
@@ -295,19 +251,16 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
   <section>
     <div class="wrap topo-secao">
-      <h2>Do primeiro contato ao resultado.</h2>
+      <h2>Do contato à entrega do carro.</h2>
       <p class="lead">Tudo combinado pelo WhatsApp, sem surpresa no caminho.</p>
     </div>
-    <div class="wrap">
-      <div class="passos">
+    <div class="wrap"><div class="passos">
         <div class="passo"><b>1</b><h3>Contato</h3><p>Você conta o problema pelo WhatsApp.</p></div>
         <div class="passo"><b>2</b><h3>Avaliação</h3><p>Avaliamos o carro na oficina.</p></div>
         <div class="passo"><b>3</b><h3>Orçamento</h3><p>Você aprova antes de começarmos.</p></div>
         <div class="passo"><b>4</b><h3>Entrega</h3><p>Carro pronto, com garantia do serviço.</p></div>
-      </div>
-    </div>
+    </div></div>
   </section>
-
 
   <section aria-label="Simulação do site funcionando">
     <div class="wrap">
@@ -328,19 +281,18 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
               <div class="n">Zona Norte de São Paulo</div>
               <div class="bts"><span>Site</span><span>Rotas</span><span class="z">WhatsApp</span></div>
             </div>
-            <div class="notif n1"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Novo pedido pelo site: freio, Onix 2019, para hoje.</p></div></div>
-            <div class="notif n2"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Oi! Vi vocês no Google, fazem revisão de câmbio automático?</p></div></div>
-            <div class="notif n3"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Novo pedido pelo site: luz no painel, HB20 2021.</p></div></div>
+            <div class="notif n1"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Novo pedido pelo site: freio, Onix 2019, para hoje.</p></div></div><div class="notif n2"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Oi! Vi vocês no Google, fazem revisão de câmbio automático?</p></div></div><div class="notif n3"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Novo pedido pelo site: luz no painel, HB20 2021.</p></div></div>
           </div>
         </div>
       </div>
     </div>
   </section>
+
   <section id="contato">
     <div class="wrap local">
       <div class="mapa"><iframe src="https://maps.google.com/maps?hl=pt-BR&output=embed&q=Figueiredo%20Classic%20Car%20Garage%2C%20R.%20Carolina%20Soares%2C%20734A%2C%20Vila%20Diva%2C%20S%C3%A3o%20Paulo" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa com a localização da Figueiredo Classic Car Garage"></iframe></div>
       <div class="contato">
-        <h3>Venha nos visitar ou chame no WhatsApp.</h3>
+        <h3>Traga o carro ou chame no WhatsApp.</h3>
         <dl>
           <div><dt>Endereço</dt><dd>R. Carolina Soares, 734A · Vila Diva, São Paulo</dd></div>
           <div><dt>Atendimento</dt><dd>Zona Norte de São Paulo</dd></div>
@@ -357,17 +309,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
     </div>
   </section>
 </main>
-
 <footer><div class="wrap"><span>Figueiredo Classic Car Garage, Zona Norte de São Paulo</span><span>Site feito pela Sitebooster</span></div></footer>
-
 <div class="barra" role="region" aria-label="Sobre esta prévia">
   <span><b>Gostou? Este site pode ser seu.</b>O site oficial fica pronto em até 48 horas.</span>
   <a class="btn" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20Figueiredo%20Classic%20Car%20Garage%20e%20quero%20o%20site.">Quero este site</a>
 </div>
-
 <script>
 (function(){
-  /* Pedido pelo site */
   var form=document.getElementById('form-pedido'); if(!form) return;
   var link=document.getElementById('enviar-pedido'), resumo=document.getElementById('resumo'), campo=document.getElementById('campo-extra');
   var base=link.getAttribute('href');
@@ -392,11 +340,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
   campo.addEventListener('input', monta); monta();
 })();
 (function(){
-  /* Simulação: busca no Google e pedidos chegando */
   var sim=document.getElementById('sim'); if(!sim) return;
   var alvo=document.getElementById('digitado'), res=document.getElementById('resultado'), ns=sim.querySelectorAll('.notif');
-  var texto="oficina mecânica na Zona Norte", rodando=false;
-  var calmo=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var texto="oficina mecânica na Zona Norte", rodando=false, calmo=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
   async function ciclo(){
     if(rodando) return; rodando=true;
@@ -409,15 +355,9 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
       await espera(4200);
     }
   }
-  if('IntersectionObserver' in window){
-    new IntersectionObserver(function(es,o){ if(es[0].isIntersecting){ ciclo(); o.disconnect(); } },{threshold:.35}).observe(sim);
-  } else ciclo();
+  if('IntersectionObserver' in window){ new IntersectionObserver(function(es,o){ if(es[0].isIntersecting){ ciclo(); o.disconnect(); } },{threshold:.35}).observe(sim); } else ciclo();
 })();
-(function(){
-  var b=document.body;
-  function f(){ b.classList.toggle('rolou', window.scrollY>30); }
-  addEventListener('scroll', f, {passive:true}); f();
-})();
+(function(){ var b=document.body; function f(){ b.classList.toggle('rolou', window.scrollY>60); } addEventListener('scroll', f, {passive:true}); f(); })();
 </script>
 </body>
 </html>
