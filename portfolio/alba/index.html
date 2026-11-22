@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Alba Planejados · Projeto conceito Sitebooster</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400;62..125,600;100..125,800;125,900&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Mundo único claro: "showroom de pedra e madeira" — pedra fria, carvão, latão e sálvia */
+  --pedra:#e8eae6;
+  --pedra-2:#dfe2dc;
+  --papel:#f6f7f4;
+  --carvao:#15181a;
+  --cinza:#5a605c;
+  --latao:#a8844a;
+  --salvia:#6f8068;
+  --linha:rgba(21,24,26,.12);
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --gutter:clamp(20px,5vw,56px);
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:clip}
+body{background:var(--pedra);color:var(--carvao);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+@supports not (overflow:clip){html,body{overflow-x:hidden}}
+img,canvas,svg{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);line-height:.95;letter-spacing:-.01em;text-wrap:balance}
+:focus-visible{outline:2px solid var(--latao);outline-offset:3px;border-radius:6px}
+
+/* Margens: toda a página usa o mesmo contêiner com respiro lateral */
+.wrap{width:100%;max-width:1320px;margin-inline:auto;padding-inline:var(--gutter)}
+
+.faixa-demo{background:var(--carvao);color:var(--papel);font-size:13px;text-align:center;padding:8px var(--gutter)}
+
+/* Navegação */
+.nav{position:sticky;top:0;z-index:30;background:rgba(232,234,230,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--linha)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:68px}
+.marca{font-family:var(--display);font-weight:900;font-stretch:125%;font-size:20px;letter-spacing:.02em;text-decoration:none;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.marca i{width:12px;height:22px;background:var(--latao);border-radius:2px}
+.nav ul{display:flex;gap:28px;list-style:none;font-size:15px;color:var(--cinza)}
+.nav ul a{text-decoration:none}
+.nav ul a:hover{color:var(--carvao)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:600 15px var(--body);padding:15px 24px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .25s,background .25s}
+.btn:hover{transform:translateY(-2px)}
+.btn-escuro{background:var(--carvao);color:var(--papel)}
+.btn-escuro:hover{background:#000}
+.btn-linha{border:1.5px solid var(--carvao);color:var(--carvao);background:transparent}
+.seta{width:18px;height:18px}
+
+/* Hero */
+.hero{padding:clamp(48px,9vw,120px) 0 clamp(40px,6vw,72px)}
+.hero-topo{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--cinza);margin-bottom:clamp(24px,4vw,40px)}
+.hero-topo span{display:inline-flex;align-items:center;gap:8px}
+.hero-topo b{width:8px;height:8px;border-radius:50%;background:var(--salvia);display:inline-block}
+.hero h1{font-size:clamp(46px,10.5vw,168px);font-weight:900;font-stretch:125%;text-transform:uppercase;letter-spacing:-.025em;line-height:.88}
+.hero h1 .fina{display:inline-block;padding:.04em 0 .1em;font-weight:400;font-stretch:62%;text-transform:none;letter-spacing:-.01em;color:var(--latao)}
+.hero h1 .l{display:block;animation:subir 1s cubic-bezier(.2,.8,.2,1) both}
+.hero h1 .l:nth-child(2){animation-delay:.08s}
+.hero h1 .l:nth-child(3){animation-delay:.16s}
+@keyframes subir{from{transform:translateY(30%);opacity:.0001}to{transform:none;opacity:1}}
+.hero-base{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(24px,5vw,80px);align-items:end;margin-top:clamp(28px,4vw,48px)}
+.hero-base p{font-size:clamp(17px,1.6vw,20px);color:var(--cinza);max-width:48ch}
+.acoes{display:flex;flex-wrap:wrap;gap:12px}
+.numeros{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:clamp(36px,5vw,64px);padding-top:24px;border-top:1px solid var(--linha)}
+.numeros strong{font-family:var(--display);font-size:clamp(30px,4vw,52px);font-weight:800;display:block;line-height:1;font-variant-numeric:tabular-nums}
+.numeros span{font-size:14px;color:var(--cinza)}
+
+/* Palco 3D com rolagem */
+.palco{position:relative;height:340svh}
+.palco-fixo{position:sticky;top:68px;height:calc(100svh - 68px);overflow:hidden}
+@media (max-width:600px){.palco-fixo{top:60px;height:calc(100svh - 60px)}}
+.palco-moldura{position:absolute;inset:clamp(12px,2vw,24px) var(--gutter);border-radius:clamp(20px,3vw,36px);background:radial-gradient(120% 90% at 50% 30%,var(--papel),var(--pedra-2));overflow:hidden;border:1px solid var(--linha)}
+#cena{position:absolute;inset:0;width:100%;height:100%}
+.legenda{position:absolute;left:clamp(16px,3vw,40px);bottom:clamp(16px,3vw,40px);right:clamp(16px,3vw,40px);max-width:460px;background:rgba(246,247,244,.88);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--linha);border-radius:22px;padding:22px 24px}
+.legenda .passo{font-size:13px;font-weight:600;color:var(--latao);letter-spacing:.12em;text-transform:uppercase}
+.legenda h3{font-size:clamp(24px,2.6vw,34px);font-weight:800;margin:8px 0}
+.legenda p{color:var(--cinza);font-size:15px}
+.trilha{display:flex;gap:6px;margin-top:16px}
+.trilha i{height:4px;flex:1;border-radius:4px;background:var(--linha);overflow:hidden;position:relative}
+.trilha i b{position:absolute;inset:0;background:var(--carvao);transform-origin:left;transform:scaleX(0)}
+.etiqueta-palco{position:absolute;top:clamp(16px,3vw,36px);left:clamp(16px,3vw,40px);font-size:13px;color:var(--cinza);display:flex;gap:8px;align-items:center}
+.etiqueta-palco b{color:var(--carvao)}
+.acabamento-atual{position:absolute;top:clamp(16px,3vw,36px);right:clamp(16px,3vw,40px);font-size:13px;background:var(--papel);border:1px solid var(--linha);padding:8px 14px;border-radius:999px}
+
+/* Seções */
+section.bloco{padding:clamp(80px,11vw,150px) 0}
+.rotulo{display:block;font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--latao);margin-bottom:16px}
+.titulo{font-size:clamp(36px,6vw,84px);font-weight:800;font-stretch:110%;max-width:15ch}
+.intro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,80px);align-items:end}
+.intro p{color:var(--cinza);max-width:46ch}
+
+/* Seletor de acabamento */
+.acabamentos{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:clamp(36px,5vw,56px)}
+.amostra{border:1.5px solid var(--linha);background:var(--papel);border-radius:20px;padding:10px 10px 14px;cursor:pointer;text-align:left;font:inherit;color:inherit;transition:border-color .2s,transform .2s}
+.amostra:hover{transform:translateY(-3px)}
+.amostra[aria-pressed="true"]{border-color:var(--carvao)}
+.amostra .chapa{aspect-ratio:1;border-radius:12px;margin-bottom:12px;background-size:cover}
+.amostra strong{display:block;font-size:15px}
+.amostra span{font-size:13px;color:var(--cinza)}
+
+/* Ambientes (bento) */
+.ambientes{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:clamp(36px,5vw,56px)}
+.amb{position:relative;border-radius:26px;overflow:hidden;min-height:300px;padding:26px;display:flex;flex-direction:column;justify-content:flex-end;color:var(--papel);isolation:isolate}
+.amb::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--fundo)}
+.amb::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 35%,rgba(10,12,13,.72))}
+.amb h3{font-size:clamp(26px,2.8vw,38px);font-weight:800}
+.amb p{font-size:15px;opacity:.85;max-width:34ch;margin-top:6px}
+.amb .tag{position:absolute;top:20px;left:20px;font-size:12px;font-weight:600;background:rgba(246,247,244,.9);color:var(--carvao);padding:6px 12px;border-radius:999px}
+.a1{grid-column:span 7;min-height:440px}
+.a2{grid-column:span 5}
+.a3{grid-column:span 4}
+.a4{grid-column:span 4}
+.a5{grid-column:span 4}
+
+/* Processo */
+.processo{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:clamp(36px,5vw,56px);counter-reset:p}
+.etapa{background:var(--papel);border:1px solid var(--linha);border-radius:24px;padding:26px;display:flex;flex-direction:column;gap:10px;min-height:260px}
+.etapa .n{font-family:var(--display);font-weight:800;font-size:44px;color:var(--latao);line-height:1;font-variant-numeric:tabular-nums}
+.etapa h3{font-size:22px;font-weight:700;font-stretch:100%}
+.etapa p{color:var(--cinza);font-size:15px}
+.etapa .prazo{margin-top:auto;font-size:13px;font-weight:600}
+
+/* Depoimentos */
+.depos{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:clamp(36px,5vw,56px)}
+.depo{border-top:2px solid var(--carvao);padding-top:20px}
+.depo p{font-size:18px;margin-bottom:14px}
+.depo small{color:var(--cinza)}
+.aviso{font-size:13px;color:var(--cinza);margin-top:18px}
+
+/* Dúvidas */
+.faq{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(24px,5vw,80px)}
+details{border-bottom:1px solid var(--linha);padding:22px 0}
+summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;font-size:clamp(18px,1.8vw,22px);font-weight:600}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:26px;line-height:1;color:var(--latao);transition:transform .3s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--cinza);margin-top:12px;max-width:60ch}
+
+/* Final */
+.final{margin:0 var(--gutter) clamp(20px,3vw,32px);border-radius:clamp(24px,3vw,40px);background:var(--carvao);color:var(--papel);padding:clamp(56px,9vw,130px) 0}
+.final h2{font-size:clamp(44px,9vw,140px);font-weight:900;font-stretch:125%;text-transform:uppercase;line-height:.88;max-width:11ch}
+.final p{color:#b9beb9;max-width:44ch;margin:24px 0 32px}
+.final .btn-claro{background:var(--papel);color:var(--carvao)}
+.final .btn-linha{border-color:var(--papel);color:var(--papel)}
+
+footer{padding:36px 0 120px;color:var(--cinza);font-size:14px}
+footer .wrap{display:grid;grid-template-columns:2fr 1fr 1fr;gap:24px}
+footer strong{display:block;color:var(--carvao);margin-bottom:6px}
+
+.zap{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:40;display:flex;align-items:center;gap:10px;background:#25d366;color:#05230f;font-weight:700;padding:14px 20px 14px 16px;border-radius:999px;text-decoration:none;box-shadow:0 12px 32px -10px rgba(10,80,40,.55)}
+.zap svg{width:24px;height:24px}
+
+/* Tablet */
+@media (max-width:980px){
+  .nav ul{display:none}
+  .hero-base,.intro,.faq{grid-template-columns:1fr}
+  .acabamentos{grid-template-columns:repeat(3,1fr)}
+  .a1,.a2{grid-column:span 12}
+  .a3,.a4,.a5{grid-column:span 6}
+  .a5{grid-column:span 12}
+  .processo{grid-template-columns:repeat(2,1fr)}
+  .depos{grid-template-columns:1fr}
+  footer .wrap{grid-template-columns:1fr 1fr}
+}
+/* Celular */
+@media (max-width:600px){
+  body{font-size:16px}
+  .nav .wrap{min-height:60px}
+  .marca{font-size:17px}
+  .nav .btn{padding:11px 16px;font-size:14px}
+  .acoes .btn{flex:1 1 100%}
+  .numeros{grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .numeros span{font-size:12px;line-height:1.35;display:block;margin-top:6px}
+  .palco{height:300svh}
+  .legenda{padding:18px 18px}
+  .legenda p{font-size:14px}
+  .acabamentos{grid-template-columns:repeat(2,1fr);gap:10px}
+  .a3,.a4,.a5{grid-column:span 12}
+  .amb{min-height:240px}
+  .a1{min-height:320px}
+  .processo{grid-template-columns:1fr}
+  .etapa{min-height:0}
+  footer .wrap{grid-template-columns:1fr}
+  .zap span{display:none}
+  .zap{padding:15px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="faixa-demo">Projeto conceito · Sitebooster</div>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="marca" href="#topo"><i></i>Alba</a>
+    <nav aria-label="Principal">
+      <ul>
+        <li><a href="#projeto">O projeto em 3D</a></li>
+        <li><a href="#acabamentos">Acabamentos</a></li>
+        <li><a href="#ambientes">Ambientes</a></li>
+        <li><a href="#processo">Como funciona</a></li>
+      </ul>
+    </nav>
+    <a class="btn btn-escuro" href="#orcamento">Pedir orçamento</a>
+  </div>
+</header>
+
+<main id="topo">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-topo">
+        <span><b></b>Agenda aberta para medição em dezembro</span>
+        <span>Móveis planejados · São Paulo e Grande SP</span>
+      </div>
+      <h1>
+        <span class="l">Móveis</span>
+        <span class="l"><span class="fina">feitos ao</span></span>
+        <span class="l">milímetro</span>
+      </h1>
+      <div class="hero-base">
+        <p>Cozinhas, closets e home offices projetados em 3D para a sua planta. Você abre as gavetas no computador antes de a gente cortar a primeira chapa.</p>
+        <div class="acoes">
+          <a class="btn btn-escuro" href="#orcamento">Agendar medição grátis
+            <svg class="seta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn-linha" href="#projeto">Ver o projeto em 3D</a>
+        </div>
+      </div>
+      <div class="numeros">
+        <div><strong>1.400+</strong><span>ambientes entregues (exemplo)</span></div>
+        <div><strong>45 dias</strong><span>do projeto à montagem</span></div>
+        <div><strong>5 anos</strong><span>de garantia por escrito</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Palco 3D: a rolagem abre o móvel -->
+  <section class="palco" id="projeto" aria-label="Móvel em 3D que se abre conforme você rola a página">
+    <div class="palco-fixo">
+      <div class="palco-moldura">
+        <canvas id="cena" aria-hidden="true"></canvas>
+        <div class="etiqueta-palco">Role para <b>abrir o móvel</b></div>
+        <div class="acabamento-atual" id="acab-atual">Freijó</div>
+        <div class="legenda" aria-live="polite">
+          <span class="passo" id="leg-passo">Passo 1 de 3</span>
+          <h3 id="leg-titulo">Portas com amortecimento</h3>
+          <p id="leg-texto">Dobradiças com fechamento suave: a porta encosta sozinha, sem batida.</p>
+          <div class="trilha" aria-hidden="true"><i><b></b></i><i><b></b></i><i><b></b></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco" id="acabamentos">
+    <div class="wrap">
+      <div class="intro">
+        <div>
+          <span class="rotulo">Acabamentos</span>
+          <h2 class="titulo">Troque o MDF e veja na hora.</h2>
+        </div>
+        <p>Toque numa chapa: o móvel em 3D aqui em cima muda de acabamento. Na visita de medição, levamos as amostras reais para você sentir a textura.</p>
+      </div>
+      <div class="acabamentos" id="acabamentos-lista" role="group" aria-label="Escolha o acabamento"></div>
+    </div>
+  </section>
+
+  <section class="bloco" id="ambientes" style="padding-top:0">
+    <div class="wrap">
+      <span class="rotulo">Ambientes</span>
+      <h2 class="titulo">Cada canto da casa, aproveitado.</h2>
+      <div class="ambientes">
+        <article class="amb a1" style="--fundo:linear-gradient(135deg,#8a6a4a,#3f342b 70%)"><span class="tag">Mais pedido</span><h3>Cozinhas</h3><p>Torre quente, gavetões para panelas e nicho para micro-ondas na altura certa.</p></article>
+        <article class="amb a2" style="--fundo:linear-gradient(160deg,#6f8068,#2c3530)"><span class="tag">Iluminação em LED</span><h3>Closets</h3><p>Cabideiros, sapateiras e gavetas com divisórias para relógios e joias.</p></article>
+        <article class="amb a3" style="--fundo:linear-gradient(160deg,#5b5f63,#1d2023)"><h3>Home office</h3><p>Passa-fios e prateleiras sob medida para o seu equipamento.</p></article>
+        <article class="amb a4" style="--fundo:linear-gradient(160deg,#a8844a,#4a3a22)"><h3>Banheiros</h3><p>MDF resistente à umidade e gavetas que não incham.</p></article>
+        <article class="amb a5" style="--fundo:linear-gradient(160deg,#7d7a74,#2f2e2b)"><h3>Salas e painéis de TV</h3><p>Painel ripado com fiação escondida e rack suspenso.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco" id="processo" style="background:var(--pedra-2)">
+    <div class="wrap">
+      <span class="rotulo">Como funciona</span>
+      <h2 class="titulo">Do primeiro metro à última dobradiça.</h2>
+      <div class="processo">
+        <article class="etapa"><span class="n">01</span><h3>Medição a laser</h3><p>Vamos até você e medimos cada parede, tomada e cano.</p><span class="prazo">Grátis · em até 3 dias</span></article>
+        <article class="etapa"><span class="n">02</span><h3>Projeto em 3D</h3><p>Você vê o ambiente pronto, muda o que quiser e só aprova quando gostar.</p><span class="prazo">Em até 7 dias</span></article>
+        <article class="etapa"><span class="n">03</span><h3>Corte em CNC</h3><p>Chapas cortadas por máquina, com fita de borda colada a quente.</p><span class="prazo">Produção em 25 dias</span></article>
+        <article class="etapa"><span class="n">04</span><h3>Montagem limpa</h3><p>Equipe própria, proteção no piso e limpeza no fim.</p><span class="prazo">1 a 3 dias por ambiente</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="bloco">
+    <div class="wrap">
+      <span class="rotulo">Clientes</span>
+      <h2 class="titulo">Quem abriu a gaveta, aprovou.</h2>
+      <div class="depos">
+        <div class="depo"><p>“Vi a cozinha inteira em 3D antes de fechar. Ficou idêntica.”</p><small>Cliente de exemplo · Tatuapé</small></div>
+        <div class="depo"><p>“A montagem foi em dois dias e deixaram tudo limpo.”</p><small>Cliente de exemplo · Santana</small></div>
+        <div class="depo"><p>“O closet ganhou espaço que eu nem sabia que tinha.”</p><small>Cliente de exemplo · Moema</small></div>
+      </div>
+      <p class="aviso">Depoimentos de exemplo. No site real, entram as avaliações verdadeiras do Google da empresa.</p>
+    </div>
+  </section>
+
+  <section class="bloco" style="padding-top:0">
+    <div class="wrap faq">
+      <div><span class="rotulo">Dúvidas</span><h2 class="titulo">Antes de você perguntar.</h2></div>
+      <div>
+        <details open><summary>A medição tem custo?</summary><p>Não. A medição e o projeto em 3D são gratuitos. Você só paga se aprovar o projeto.</p></details>
+        <details><summary>Qual MDF vocês usam?</summary><p>MDF de 18 mm nas caixas e frentes, e MDF resistente à umidade em cozinhas e banheiros.</p></details>
+        <details><summary>Como funciona o pagamento?</summary><p>Entrada na aprovação do projeto e o restante em até 12 vezes no cartão, ou desconto à vista no Pix.</p></details>
+        <details><summary>Atendem apartamento alugado?</summary><p>Sim. Projetamos móveis que podem ser desmontados e levados na mudança.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final" id="orcamento">
+    <div class="wrap">
+      <span class="rotulo">Orçamento</span>
+      <h2>Sua planta. Nosso milímetro.</h2>
+      <p>Mande a planta ou fotos do ambiente pelo WhatsApp. Agendamos a medição grátis e você recebe o projeto em 3D.</p>
+      <div class="acoes">
+        <a class="btn btn-claro" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20o%20projeto%20conceito%20no%20portf%C3%B3lio%20e%20quero%20um%20site%20assim.">Chamar no WhatsApp</a>
+        <a class="btn btn-linha" href="#projeto">Ver o 3D de novo</a>
+      </div>
+      
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><strong>Alba Planejados</strong>Projeto conceito criado pela Sitebooster.</div>
+    <div><strong>Horário</strong>Seg a sex, 9h às 18h<br>Sábado, 9h às 13h</div>
+    <div><strong>Site</strong>Feito pela Sitebooster</div>
+  </div>
+</footer>
+
+<a class="zap" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20o%20projeto%20conceito%20no%20portf%C3%B3lio%20e%20quero%20um%20site%20assim." aria-label="Falar com a Sitebooster no WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg>
+  <span>Orçamento</span>
+</a>
+
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { EXRLoader } from 'three/addons/loaders/EXRLoader.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RectAreaLightUniformsLib } from 'three/addons/lights/RectAreaLightUniformsLib.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { GTAOPass } from 'three/addons/postprocessing/GTAOPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* ---------- Acabamentos (MDF) ---------- */
+const ACAB = [
+  {n:'Freijó', d:'Madeira clara e quente', tex:'freijo'},
+  {n:'Carvalho', d:'Veio marcado, tom médio', tex:'carvalho'},
+  {n:'Nogueira', d:'Escuro e elegante', tex:'nogueira'},
+  {n:'Branco TX', d:'Fosco, leve textura', cor:'#ecebe6'},
+  {n:'Grafite', d:'Fosco, cinza profundo', cor:'#3b3f42'},
+  {n:'Verde Sálvia', d:'Tendência, fosco', cor:'#7d8b74'}
+];
+const lista=document.getElementById('acabamentos-lista');
+const rotuloAtual=document.getElementById('acab-atual');
+ACAB.forEach((a,i)=>{
+  const b=document.createElement('button');
+  b.type='button'; b.className='amostra'; b.id='acab-'+i;
+  b.setAttribute('aria-pressed', i===0?'true':'false');
+  const ch=document.createElement('div'); ch.className='chapa';
+  if(a.tex) ch.style.backgroundImage='url(assets/'+a.tex+'_cor.webp)';
+  else ch.style.background='linear-gradient(160deg,rgba(255,255,255,.18),rgba(0,0,0,.08)),'+a.cor;
+  const s=document.createElement('strong'); s.textContent=a.n;
+  const sp=document.createElement('span'); sp.textContent=a.d;
+  b.append(ch,s,sp);
+  b.addEventListener('click',()=>{
+    lista.querySelectorAll('.amostra').forEach(x=>x.setAttribute('aria-pressed','false'));
+    b.setAttribute('aria-pressed','true');
+    rotuloAtual.textContent=a.n;
+    aplicaAcabamento(i);
+  });
+  lista.append(b);
+});
+let aplicaAcabamento=()=>{};
+
+/* ---------- Renderizador ---------- */
+const reduz=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const celular=innerWidth<760;
+const canvas=document.getElementById('cena');
+const renderer=new THREE.WebGLRenderer({canvas, antialias:true, alpha:false, powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio, celular?1.5:2));
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=0.95;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+RectAreaLightUniformsLib.init();
+
+const scene=new THREE.Scene();
+scene.background=new THREE.Color('#d9d6cf');
+scene.fog=new THREE.Fog('#d9d6cf', 9, 22);
+const camera=new THREE.PerspectiveCamera(30,1,.05,60);
+
+/* Luz do ambiente: HDRI real de apartamento (Poly Haven, CC0) */
+const pmrem=new THREE.PMREMGenerator(renderer);
+import('./assets/hdri-apartamento.js').then(({default:b64})=>{
+  const bin=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));
+  const d=new EXRLoader().setDataType(THREE.HalfFloatType).parse(bin.buffer);
+  const tex=new THREE.DataTexture(d.data,d.width,d.height,d.format,d.type);
+  tex.colorSpace=THREE.LinearSRGBColorSpace; tex.minFilter=tex.magFilter=THREE.LinearFilter;
+  tex.flipY=false; tex.generateMipmaps=false; tex.needsUpdate=true;
+  tex.mapping=THREE.EquirectangularReflectionMapping;
+  scene.environment=pmrem.fromEquirectangular(tex).texture;
+}).catch(()=>{});
+
+/* Texturas */
+const tl=new THREE.TextureLoader();
+function tx(nome, cor=false, rep=[1,1]){
+  const t=tl.load('assets/'+nome+'.webp');
+  t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(rep[0],rep[1]);
+  t.anisotropy=renderer.capabilities.getMaxAnisotropy();
+  if(cor) t.colorSpace=THREE.SRGBColorSpace;
+  return t;
+}
+const madeiras={};
+for(const n of ['freijo','carvalho','nogueira']) madeiras[n]={cor:tx(n+'_cor',true), normal:tx(n+'_normal'), rug:tx(n+'_rug')};
+const lisoNormal=tx('liso_normal',false,[2,2]);
+
+/* Materiais */
+const matFrente=new THREE.MeshPhysicalMaterial({
+  map:madeiras.freijo.cor, normalMap:madeiras.freijo.normal, roughnessMap:madeiras.freijo.rug,
+  roughness:1, normalScale:new THREE.Vector2(.55,.55), clearcoat:.25, clearcoatRoughness:.45
+});
+aplicaAcabamento=(i)=>{
+  const a=ACAB[i];
+  if(a.tex){
+    const m=madeiras[a.tex];
+    matFrente.map=m.cor; matFrente.normalMap=m.normal; matFrente.roughnessMap=m.rug;
+    matFrente.color.set('#ffffff'); matFrente.roughness=1; matFrente.clearcoat=.25;
+  } else {
+    matFrente.map=null; matFrente.roughnessMap=null; matFrente.normalMap=lisoNormal;
+    matFrente.color.set(a.cor); matFrente.roughness=.62; matFrente.clearcoat=.05;
+  }
+  matFrente.needsUpdate=true;
+};
+const matCaixa=new THREE.MeshPhysicalMaterial({color:'#f2f0eb', roughness:.5, normalMap:lisoNormal, normalScale:new THREE.Vector2(.3,.3)});
+const matLatao=new THREE.MeshPhysicalMaterial({color:'#c9a467', metalness:1, roughness:.22, clearcoat:.3});
+const matPedra=new THREE.MeshPhysicalMaterial({map:tx('pedra_cor',true,[2,1]), normalMap:tx('pedra_normal',false,[2,1]), normalScale:new THREE.Vector2(.35,.35), roughness:.16, clearcoat:.7, clearcoatRoughness:.08});
+const matLed=new THREE.MeshStandardMaterial({color:'#fff1d0', emissive:'#ffd79a', emissiveIntensity:3});
+
+/* ---------- Ambiente: piso de tábuas e parede de reboco ---------- */
+const piso=new THREE.Mesh(new THREE.PlaneGeometry(14,14),
+  new THREE.MeshPhysicalMaterial({map:tx('piso_cor',true,[10,10]), normalMap:tx('piso_normal',false,[10,10]), roughness:.42, clearcoat:.35, clearcoatRoughness:.3}));
+piso.rotation.x=-Math.PI/2; piso.receiveShadow=true; scene.add(piso);
+const parede=new THREE.Mesh(new THREE.PlaneGeometry(14,7),
+  new THREE.MeshStandardMaterial({color:'#e7e4dd', roughness:.95, normalMap:tx('parede_normal',false,[5,2.5]), normalScale:new THREE.Vector2(.5,.5)}));
+parede.position.set(0,3.5,-.33); parede.receiveShadow=true; scene.add(parede);
+const rodaParede=new THREE.Mesh(new RoundedBoxGeometry(14,.09,.015,2,.004), matCaixa);
+rodaParede.position.set(0,.045,-.32); scene.add(rodaParede);
+
+/* Sombra de contato suave sob o móvel */
+function sombraContato(w,d){
+  const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d');
+  const gr=g.createRadialGradient(128,128,10,128,128,128);
+  gr.addColorStop(0,'rgba(0,0,0,.55)'); gr.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=gr; g.fillRect(0,0,256,256);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(c), transparent:true, depthWrite:false}));
+  m.rotation.x=-Math.PI/2; m.position.y=.002; return m;
+}
+
+/* Sol entrando pela janela (luz quente com sombra macia) */
+const sol=new THREE.DirectionalLight('#ffe9cf', 2.6);
+sol.position.set(-4.5,5.5,4.5); sol.castShadow=true;
+sol.shadow.mapSize.set(celular?1024:2048, celular?1024:2048);
+Object.assign(sol.shadow.camera,{left:-3,right:3,top:3,bottom:-1,near:1,far:20});
+sol.shadow.radius=8; sol.shadow.bias=-.0004; sol.shadow.normalBias=.02;
+scene.add(sol);
+scene.add(new THREE.HemisphereLight('#fffaf2','#b9a690',.35));
+
+/* ---------- Móvel ---------- */
+function bloco(w,h,d,mat,x,y,z,r=.004){
+  const raio=Math.min(r, Math.min(w,h,d)/2-.0005);
+  const m=new THREE.Mesh(new RoundedBoxGeometry(w,h,d,3,raio),mat);
+  m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true; return m;
+}
+const movel=new THREE.Group(); scene.add(movel);
+const L=2.4, A=.82, P=.58, e=.018, rodape=.1, Z0=-.32+P/2;
+movel.position.z=Z0;
+const pecas=[];
+function peca(m,dir){ m.userData.base=m.position.clone(); m.userData.dir=dir; movel.add(m); pecas.push(m); return m; }
+
+peca(bloco(e,A,P,matCaixa,-L/2+e/2,rodape+A/2,0), new THREE.Vector3(-1,0,.2));
+peca(bloco(e,A,P,matCaixa, L/2-e/2,rodape+A/2,0), new THREE.Vector3(1,0,.2));
+peca(bloco(L,e,P,matCaixa,0,rodape+e/2,0), new THREE.Vector3(0,-.3,.5));
+peca(bloco(e,A-2*e,P-.02,matCaixa,0,rodape+A/2,0), new THREE.Vector3(0,0,.6));
+peca(bloco(L/2-e*1.5,e,P-.04,matCaixa,-L/4,rodape+A*.52,-.01), new THREE.Vector3(-.3,.2,.7));
+peca(bloco(L-.03,rodape-.004,e,matPedra,0,(rodape-.004)/2,P/2-.05), new THREE.Vector3(0,-.4,.6));
+const tampo=peca(bloco(L+.04,.03,P+.03,matPedra,0,rodape+A+.015,.015,.006), new THREE.Vector3(0,1,.15));
+
+/* Porta (esquerda) com dobradiça na lateral */
+const porta=new THREE.Group(); porta.position.set(-L/2+.002, rodape+A/2, P/2+.011); movel.add(porta);
+const wp=L/2-.006;
+porta.add(bloco(wp,A-.006,e,matFrente,wp/2,0,0,.003));
+porta.add(bloco(.012,.3,.022,matLatao,wp-.05,.12,.02,.005));
+
+/* Gavetas (direita) */
+const gavetas=[]; const gw=L/2-.008, gh=(A-.012)/3;
+for(let i=0;i<3;i++){
+  const g=new THREE.Group(); g.position.set(L/4, rodape+.006+gh/2+i*gh, 0);
+  g.add(bloco(gw,gh-.006,e,matFrente,0,0,P/2+.011,.003));
+  g.add(bloco(gw-.07,gh*.62,.012,matCaixa,0,-gh*.1,-P/2+.07));
+  g.add(bloco(.012,gh*.62,P-.12,matCaixa,-gw/2+.045,-gh*.1,0));
+  g.add(bloco(.012,gh*.62,P-.12,matCaixa, gw/2-.045,-gh*.1,0));
+  g.add(bloco(gw-.07,.012,P-.12,matCaixa,0,-gh*.4,0));
+  g.add(bloco(.36,.014,.024,matLatao,0,gh*.3,P/2+.032,.006));
+  movel.add(g); gavetas.push(g);
+}
+
+/* Aéreo com LED embutido iluminando a pedra */
+const aereo=new THREE.Group(); aereo.position.set(0, rodape+A+.62, -P/2+.17); movel.add(aereo);
+aereo.add(bloco(L,.56,.34,matCaixa,0,.28,0));
+aereo.add(bloco(L/2-.006,.55,e,matFrente,-L/4,.28,.18,.003));
+aereo.add(bloco(L/2-.006,.55,e,matFrente, L/4,.28,.18,.003));
+aereo.add(bloco(L-.06,.006,.012,matLed,0,-.004,.1,.002));
+const ledArea=new THREE.RectAreaLight('#ffd9a0', 6, L-.1, .05);
+ledArea.position.set(0,-.01,.1); ledArea.rotation.x=-Math.PI/2; aereo.add(ledArea);
+
+/* Objetos de cena: vaso de cerâmica e tábua de madeira */
+const perfil=[]; for(let i=0;i<=24;i++){ const t=i/24; perfil.push(new THREE.Vector2(.035+.055*Math.sin(Math.PI*(t*.85+.05))+.012*t, t*.22)); }
+const vaso=new THREE.Mesh(new THREE.LatheGeometry(perfil,64), new THREE.MeshPhysicalMaterial({color:'#d8d2c6', roughness:.35, clearcoat:.4, sheen:.3}));
+vaso.position.set(.65, rodape+A+.03, -.08); vaso.castShadow=true; vaso.receiveShadow=true; movel.add(vaso);
+const ramo=new THREE.Mesh(new THREE.CylinderGeometry(.003,.004,.35,6), new THREE.MeshStandardMaterial({color:'#5d6a45',roughness:.8}));
+ramo.position.set(.66, rodape+A+.36, -.08); ramo.rotation.z=.12; ramo.castShadow=true; movel.add(ramo);
+for(let k=0;k<7;k++){
+  const f=new THREE.Mesh(new THREE.SphereGeometry(.03,12,8), new THREE.MeshStandardMaterial({color:'#6e7d52',roughness:.7}));
+  f.scale.set(1,.35,.55); f.position.set(.66+Math.sin(k)*.05, rodape+A+.26+k*.035, -.08+Math.cos(k*1.7)*.04); f.rotation.set(k,k*.7,.4); f.castShadow=true; movel.add(f);
+}
+const tabua=bloco(.42,.022,.26,new THREE.MeshPhysicalMaterial({map:madeiras.carvalho.cor, normalMap:madeiras.carvalho.normal, roughness:.6}), -.55, rodape+A+.041, -.04, .01);
+tabua.rotation.y=.18; movel.add(tabua);
+
+scene.add(Object.assign(sombraContato(L+.5,P+.5),{}), );
+scene.children[scene.children.length-1].position.set(0,.002,Z0);
+
+/* ---------- Pós-processamento: oclusão de ambiente (cantos mais escuros) ---------- */
+let composer=null;
+function montaComposer(w,h){
+  if(celular) return null;
+  try{
+    const rt=new THREE.WebGLRenderTarget(w,h,{type:THREE.HalfFloatType, samples:4});
+    const c=new EffectComposer(renderer, rt);
+    c.addPass(new RenderPass(scene,camera));
+    const ao=new GTAOPass(scene,camera,w,h);
+    ao.updateGtaoMaterial({radius:.35, distanceExponent:1.4, thickness:1, scale:1.1, samples:16});
+    ao.blendIntensity=.9;
+    c.addPass(ao);
+    c.addPass(new OutputPass());
+    return c;
+  }catch(err){ return null; }
+}
+
+/* ---------- Rolagem ---------- */
+const palco=document.getElementById('projeto');
+const passos=[
+  ['Portas com amortecimento','Dobradiças com fechamento suave: a porta encosta sozinha, sem batida.'],
+  ['Gavetas com corrediça telescópica','Abrem por inteiro e aguentam até 35 kg cada, com fechamento silencioso.'],
+  ['Cada peça, no seu lugar','MDF de 18 mm, fita de borda colada a quente e tampo em pedra. Tudo projetado em 3D.']
+];
+const legP=document.getElementById('leg-passo'), legT=document.getElementById('leg-titulo'), legX=document.getElementById('leg-texto');
+const trilhas=[...document.querySelectorAll('.trilha b')];
+let passoAtual=0;
+function progresso(){ const r=palco.getBoundingClientRect(); return Math.min(1,Math.max(0,-r.top/Math.max(1,r.height-innerHeight))); }
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const faixa=(p,a,b)=>Math.min(1,Math.max(0,(p-a)/(b-a)));
+
+function tamanho(){
+  const r=canvas.getBoundingClientRect();
+  renderer.setSize(r.width,r.height,false);
+  camera.aspect=r.width/r.height; camera.updateProjectionMatrix();
+  const pr=renderer.getPixelRatio();
+  composer=montaComposer(Math.floor(r.width*pr), Math.floor(r.height*pr));
+  if(composer) composer.setSize(r.width,r.height);
+}
+let tm; new ResizeObserver(()=>{clearTimeout(tm); tm=setTimeout(tamanho,120)}).observe(canvas); tamanho();
+
+let pSuave=0, mx=0;
+addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5});
+const relogio=new THREE.Clock();
+function quadro(){
+  const t=relogio.getElapsedTime();
+  pSuave+=(progresso()-pSuave)*(reduz?1:.1);
+  const p=pSuave;
+  const fP=ease(faixa(p,.05,.33)), fG=faixa(p,.33,.66), fE=ease(faixa(p,.7,.96));
+
+  porta.rotation.y=-fP*1.7;
+  gavetas.forEach((g,i)=>{ g.position.z=ease(faixa(fG,i*.22,i*.22+.5))*.4; });
+  pecas.forEach(m=>m.position.copy(m.userData.base).addScaledVector(m.userData.dir, fE*.22));
+  aereo.position.y=rodape+A+.62+fE*.18;
+
+  /* Câmera de "fotógrafo": altura do olhar, leve órbita */
+  const retrato=camera.aspect<1;
+  const ang=-.42+p*.62+(reduz?0:mx*.08)+(reduz?0:Math.sin(t*.25)*.015);
+  const ajuste=1.3/(Math.tan(THREE.MathUtils.degToRad(15))*camera.aspect);
+  const dist=(retrato? Math.max(5,ajuste) : 5.3)+fE*.6;
+  const alvo=new THREE.Vector3(retrato?0:-.35, retrato?.78:.85, Z0);
+  /* No computador o móvel fica à direita, livre da legenda */
+  const dir=new THREE.Vector3(Math.sin(ang),0,Math.cos(ang));
+  const dirDir=new THREE.Vector3(Math.cos(ang),0,-Math.sin(ang));
+  alvo.addScaledVector(dirDir, retrato?0:-.15);
+  camera.position.copy(alvo).addScaledVector(dir,dist); camera.position.y=(retrato?1.35:1.25)+fE*.35;
+  camera.lookAt(alvo);
+
+  const passo=p<.34?0:(p<.67?1:2);
+  if(passo!==passoAtual){ passoAtual=passo; legP.textContent='Passo '+(passo+1)+' de 3'; legT.textContent=passos[passo][0]; legX.textContent=passos[passo][1]; }
+  trilhas[0].style.transform='scaleX('+faixa(p,0,.34)+')';
+  trilhas[1].style.transform='scaleX('+faixa(p,.34,.67)+')';
+  trilhas[2].style.transform='scaleX('+faixa(p,.67,1)+')';
+
+  if(composer) composer.render(); else renderer.render(scene,camera);
+  requestAnimationFrame(quadro);
+}
+quadro();
+</script>
+
+</body>
+</html>
