@@ -369,6 +369,33 @@ footer a:hover{color:var(--amarelo)}
   </section>
 
   <!-- Planos -->
+  <section class="bloco" id="portfolio" style="padding-top:0">
+    <style>
+    .pf-grade{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:28px}
+    .pf-card{position:relative;display:block;aspect-ratio:4/5;border-radius:22px;overflow:hidden;color:#fff;text-decoration:none;isolation:isolate;border:1px solid rgba(255,255,255,.1)}
+    .pf-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform 1s cubic-bezier(.2,.7,.2,1)}
+    .pf-card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 40%,rgba(7,13,43,.92))}
+    .pf-card:hover img{transform:scale(1.05)}
+    .pf-txt{position:absolute;left:18px;right:18px;bottom:18px;display:grid;gap:2px}
+    .pf-txt small{color:#ffc23a;font-size:13px}
+    .pf-txt b{font-size:21px;line-height:1.2}
+    .pf-txt em{font-style:normal;font-size:14px;opacity:.8;margin-top:6px}
+    .pf-nota{font-size:13.5px;opacity:.65;margin-top:12px}
+    .pf-proprios{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+    .pf-proprios a{color:#fff;text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:12px 18px;font-size:15px}
+    .pf-proprios a b{color:#ffc23a}
+    @media (max-width:860px){.pf-grade{grid-template-columns:1fr 1fr}}
+    @media (max-width:520px){.pf-grade{grid-template-columns:1fr}.pf-card{aspect-ratio:16/11}}
+    </style>
+    <div class="wrap">
+      <div class="cabeca"><div><span class="rotulo">Portfólio</span><h2 class="titulo">Veja como fica no seu ramo.</h2></div>
+      <p>Abra um modelo pelo celular e teste: escolha as opções do pedido e veja a mensagem que chegaria no WhatsApp do dono.</p></div>
+      <div class="pf-grade"><a class="pf-card" href="/modelos/oficina-torque-certo/" target="_blank" rel="noopener"><img src="https://images.unsplash.com/photo-1727893119356-1702fe921cf9?w=800&q=65&auto=format&fit=crop" alt="Modelo de site para oficina mecânica" loading="lazy"><span class="pf-txt"><small>Oficina mecânica</small><b>Oficina Torque Certo</b><em>Abrir modelo</em></span></a><a class="pf-card" href="/modelos/cristal-fino-vidros/" target="_blank" rel="noopener"><img src="https://images.unsplash.com/photo-1771929662486-f793e08f0f16?w=800&q=65&auto=format&fit=crop" alt="Modelo de site para vidraçaria" loading="lazy"><span class="pf-txt"><small>Vidraçaria</small><b>Cristal Fino Vidros</b><em>Abrir modelo</em></span></a><a class="pf-card" href="/modelos/marcenaria-veio-nobre/" target="_blank" rel="noopener"><img src="https://images.unsplash.com/photo-1771371282665-545256b20dca?w=800&q=65&auto=format&fit=crop" alt="Modelo de site para marcenaria" loading="lazy"><span class="pf-txt"><small>Marcenaria</small><b>Marcenaria Veio Nobre</b><em>Abrir modelo</em></span></a><a class="pf-card" href="/modelos/clinica-sorriso-pleno/" target="_blank" rel="noopener"><img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=800&q=65&auto=format&fit=crop" alt="Modelo de site para odontologia" loading="lazy"><span class="pf-txt"><small>Odontologia</small><b>Clínica Sorriso Pleno</b><em>Abrir modelo</em></span></a><a class="pf-card" href="/modelos/pele-viva-estetica/" target="_blank" rel="noopener"><img src="https://images.unsplash.com/photo-1552693673-1bf958298935?w=800&q=65&auto=format&fit=crop" alt="Modelo de site para estética" loading="lazy"><span class="pf-txt"><small>Estética</small><b>Pele Viva Estética</b><em>Abrir modelo</em></span></a><a class="pf-card" href="/modelos/moura-e-lins-advocacia/" target="_blank" rel="noopener"><img src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800&q=65&auto=format&fit=crop" alt="Modelo de site para advocacia" loading="lazy"><span class="pf-txt"><small>Advocacia</small><b>Moura e Lins Advocacia</b><em>Abrir modelo</em></span></a></div>
+      <p class="pf-nota">Modelos de demonstração com negócios fictícios. O seu site é montado com o seu nome, a sua nota do Google e as suas fotos.</p>
+      <div class="pf-proprios"><a href="/" target="_blank" rel="noopener"><b>Sitebooster</b> · site da empresa</a><a href="/pdv/" target="_blank" rel="noopener"><b>BoosterPDV</b> · sistema de vendas</a><a href="/agenda/" target="_blank" rel="noopener"><b>BoosterAgenda</b> · agendamento online</a></div>
+    </div>
+  </section>
+
   <section class="bloco" id="quem" style="padding-top:0">
     <div class="wrap">
       <div class="cabeca"><div><span class="rotulo">Quem faz</span><h2 class="titulo">Você fala direto com quem faz o seu site.</h2></div>
