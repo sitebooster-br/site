@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Advocacia Oliveira Lima · Advocacia</title>
+<meta name="description" content="Prévia do site da Advocacia Oliveira Lima, criada pela Sitebooster.">
+<meta property="og:title" content="Advocacia Oliveira Lima · prévia do site">
+<meta property="og:description" content="Veja como ficaria o site da Advocacia Oliveira Lima, com a nota do Google e pedido direto no WhatsApp.">
+<meta property="og:image" content="https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=1200&q=75&auto=format&fit=crop">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#141a28">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400..700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fundo:#141a28; --fundo2:#1e2536; --tinta:#eef0f4; --suave:#a5acbb; --acento:#c9a45c; --escuro:#0b0f19; --acento-claro:#dcc391;
+  --display:"Fraunces",Georgia,serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --g:clamp(18px,5vw,64px); --r-grande:clamp(22px,3vw,36px); --r-medio:18px; --zap:#1fa855;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:clip;-webkit-text-size-adjust:100%}
+body{background:var(--fundo);color:var(--tinta);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased;padding-bottom:96px}
+img,iframe{display:block;max-width:100%}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--acento);outline-offset:3px;border-radius:8px}
+.wrap{width:100%;max-width:1280px;margin-inline:auto;padding-inline:var(--g)}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:clamp(34px,5vw,64px);max-width:17ch}
+.lead{color:var(--suave);font-size:clamp(16px,1.5vw,19px);max-width:46ch;text-wrap:pretty}
+.previa{position:relative;z-index:30;background:var(--escuro);color:#fff;font-size:12.5px;text-align:center;padding:8px var(--g);line-height:1.4}
+.previa b{font-weight:600}
+.nav{position:fixed;top:calc(var(--topo,34px) + 8px);left:0;right:0;z-index:25;pointer-events:none;transition:top .3s}
+.nav .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.nav-nome{pointer-events:auto;font-family:var(--body);font-weight:600;font-size:15px;color:#fff;text-decoration:none;padding:9px 14px;border-radius:999px;background:rgba(10,12,14,.42);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);max-width:60vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .3s}
+.rolou .nav{top:10px}.rolou .nav-nome{opacity:1}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:600 16px/1 var(--body);padding:17px 24px;border-radius:999px;text-decoration:none;border:0;cursor:pointer;white-space:nowrap;transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.btn:active{transform:scale(.97)}
+.btn svg{width:20px;height:20px;flex:none}
+.btn-zap{background:var(--zap);color:#fff;box-shadow:0 10px 30px -10px rgba(31,168,85,.7)}
+.btn-zap:hover{transform:translateY(-2px)}
+.btn-linha{background:transparent;color:inherit;border:1.5px solid currentColor}
+.btn-vidro{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.nav .btn{pointer-events:auto;padding:12px 16px;font-size:14px}
+.selo{display:inline-flex;align-items:center;gap:10px;font-size:14.5px;padding:8px 14px 8px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:#fff}
+.selo.claro{background:var(--fundo2);border-color:color-mix(in srgb,var(--tinta) 10%,transparent);color:var(--tinta)}
+.selo .g{width:22px;height:22px;border-radius:50%;background:#fff;display:grid;place-items:center;font:700 13px var(--body);color:#4285f4;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
+.estrelas{color:#f2b53a;letter-spacing:1px}
+.troca{position:relative;overflow:hidden}
+.troca img{width:100%;height:100%;object-fit:cover}
+.troca::before{content:"Foto ilustrativa";position:absolute;right:12px;top:12px;z-index:2;font:500 11.5px var(--body);color:#fff;background:rgba(0,0,0,.45);padding:5px 10px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.of-foto.troca::before,.vd-foto.troca::before{top:auto;bottom:100px}
+.troca img.b{position:absolute;inset:0;opacity:0;animation:troca 14s 4s ease-in-out infinite}
+@keyframes troca{0%,40%{opacity:0;transform:scale(1.06)}50%,90%{opacity:1;transform:scale(1)}100%{opacity:0}}
+@keyframes sobe{from{opacity:0;transform:translateY(36%)}to{opacity:1;transform:none}}
+@keyframes surge{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.nome span{display:inline-block;animation:sobe 1s cubic-bezier(.2,.8,.2,1) both}
+.nome span:nth-child(2){animation-delay:.08s}.nome span:nth-child(3){animation-delay:.16s}.nome span:nth-child(4){animation-delay:.24s}.nome span:nth-child(n+5){animation-delay:.32s}
+section{padding:clamp(72px,10vw,136px) 0 0}
+.topo-secao{display:grid;grid-template-columns:1.1fr .9fr;gap:20px 48px;align-items:end;margin-bottom:clamp(28px,4vw,48px)}
+.fatos{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.fatos::-webkit-scrollbar{display:none}
+.fatos div{flex:1 0 190px;scroll-snap-align:start;background:var(--fundo2);border-radius:var(--r-medio);padding:16px 18px;color:var(--suave);font-size:14.5px;line-height:1.35}
+.fatos b{display:block;font-family:var(--display);font-size:21px;color:var(--tinta);margin-bottom:4px;line-height:1.1}
+/* Pedido pelo site */
+.pedido{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(20px,4vw,56px);align-items:start}
+.pedido-caixa{background:var(--fundo2);border-radius:var(--r-grande);padding:clamp(22px,3.4vw,40px);display:grid;gap:22px}
+.grupo h3{font-family:var(--body);font-size:15px;font-weight:600;color:var(--suave);letter-spacing:0;margin-bottom:10px;line-height:1.3}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 15.5px var(--body);padding:11px 16px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--tinta) 18%,transparent);background:transparent;color:var(--tinta);cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .15s}
+.chip:active{transform:scale(.96)}
+.chip[aria-pressed="true"]{background:var(--acento);border-color:var(--acento);color:var(--fundo)}
+.campo{width:100%;font:inherit;font-size:16px;padding:14px 16px;border-radius:14px;border:1.5px solid color-mix(in srgb,var(--tinta) 18%,transparent);background:var(--fundo);color:var(--tinta)}
+.resumo{font-size:14.5px;color:var(--suave);min-height:1.6em}
+.resumo b{color:var(--tinta);font-weight:600}
+.pedido-caixa .btn-zap{width:100%}
+/* Nota do Google */
+.nota{display:grid;grid-template-columns:auto 1fr;gap:clamp(20px,5vw,80px);align-items:center;background:var(--fundo2);border-radius:var(--r-grande);padding:clamp(28px,5vw,64px)}
+.nota .num{font-family:var(--display);font-size:clamp(104px,16vw,220px);font-weight:700;line-height:.8;letter-spacing:-.05em;color:var(--acento)}
+.nota .est{font-size:clamp(22px,2.4vw,30px);letter-spacing:4px;color:#f2b53a;margin-bottom:10px}
+.nota p{font-size:clamp(19px,2vw,25px);font-family:var(--display);font-weight:600;line-height:1.2;max-width:22ch}
+.nota a{display:inline-block;margin-top:16px;font-weight:600;color:var(--acento);text-underline-offset:4px}
+/* Passos */
+.passos{position:relative;display:grid;gap:clamp(26px,4vw,44px);padding-left:44px;max-width:760px}
+.passos::before,.passos::after{content:"";position:absolute;left:13px;top:8px;bottom:8px;width:2px;border-radius:2px;background:color-mix(in srgb,var(--tinta) 14%,transparent)}
+.passos::after{background:var(--acento);transform-origin:top}
+@supports (animation-timeline: view()){
+  .passos::after{animation:preenche linear both;animation-timeline:view();animation-range:entry 30% cover 70%}
+  @keyframes preenche{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+}
+.passo{position:relative}
+.passo b{position:absolute;left:-44px;top:0;width:28px;height:28px;border-radius:50%;background:var(--acento);color:var(--fundo);display:grid;place-items:center;font:700 13px var(--body)}
+.passo h3{font-size:clamp(24px,2.6vw,32px)}
+.passo p{color:var(--suave);margin-top:4px;max-width:46ch}
+/* Simulação */
+.sim{position:relative;background:var(--escuro);color:#fff;border-radius:var(--r-grande);padding:clamp(26px,5vw,64px);display:grid;grid-template-columns:1fr auto;gap:clamp(24px,5vw,72px);align-items:center;overflow:hidden;isolation:isolate}
+.sim::before{content:"";position:absolute;width:520px;height:520px;right:-120px;top:-160px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--acento-claro) 45%,transparent),transparent 65%);z-index:-1;filter:blur(10px)}
+.sim .etiqueta{display:inline-block;font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);margin-bottom:18px;color:var(--acento-claro)}
+.sim h2{color:#fff}
+.sim .lead{color:rgba(255,255,255,.75);margin-top:16px}
+.cel{width:300px;height:600px;border-radius:44px;background:#0d0f12;border:9px solid #23262b;box-shadow:0 40px 80px -30px rgba(0,0,0,.8);position:relative;overflow:hidden;color:#202124;font-family:Arial,Helvetica,sans-serif}
+.cel .tela{position:absolute;inset:0;background:#fff;padding:46px 14px 14px}
+.cel .ilha{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:92px;height:26px;border-radius:20px;background:#0d0f12;z-index:3}
+.logo-g{font:700 26px Arial,sans-serif;text-align:center;letter-spacing:-1px;margin:6px 0 12px}
+.logo-g i{font-style:normal}.logo-g i:nth-child(1),.logo-g i:nth-child(4){color:#4285f4}.logo-g i:nth-child(2),.logo-g i:nth-child(6){color:#ea4335}.logo-g i:nth-child(3){color:#fbbc05}.logo-g i:nth-child(5){color:#34a853}
+.busca{border:1px solid #dfe1e5;border-radius:24px;padding:11px 14px;font-size:14px;min-height:44px;display:flex;align-items:center;gap:8px;box-shadow:0 1px 6px rgba(32,33,36,.18)}
+.busca .cursor{display:inline-block;width:1.5px;height:17px;background:#202124;animation:pisca 1s steps(1) infinite}
+@keyframes pisca{50%{opacity:0}}
+.resultado{margin-top:16px;border:1px solid #e8eaed;border-radius:14px;padding:14px;opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s}
+.resultado.on{opacity:1;transform:none}
+.resultado .t{font-size:17px;color:#1a0dab;font-weight:600;line-height:1.25}
+.resultado .n{font-size:13px;color:#4d5156;margin-top:4px}
+.resultado .n b{color:#e7711b}
+.resultado .bts{display:flex;gap:6px;margin-top:12px}
+.resultado .bts span{font-size:12.5px;padding:7px 11px;border-radius:999px;border:1px solid #dadce0;color:#1a73e8;font-weight:600}
+.resultado .bts span.z{background:#1fa855;border-color:#1fa855;color:#fff}
+.notif{position:absolute;left:10px;right:10px;background:rgba(245,245,247,.97);border-radius:18px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;box-shadow:0 10px 30px -10px rgba(0,0,0,.35);opacity:0;transform:translateY(-30px) scale(.96);transition:opacity .45s,transform .45s cubic-bezier(.2,.9,.3,1.2);z-index:2}
+.notif.on{opacity:1;transform:none}
+.notif .ic{width:30px;height:30px;border-radius:8px;background:#1fa855;flex:none;display:grid;place-items:center}
+.notif .ic svg{width:18px;height:18px;fill:#fff}
+.notif small{display:block;font-size:11.5px;color:#6b6f76}
+.notif p{font-size:13px;line-height:1.35;color:#111}
+.n1{top:350px}.n2{top:428px}.n3{top:506px}
+/* Onde estamos */
+.local{display:grid;grid-template-columns:1.3fr 1fr;gap:14px}
+.local>*,.pedido>*,.sim>*,.topo-secao>*{min-width:0}
+.mapa{border-radius:var(--r-grande);overflow:hidden;min-height:380px;background:var(--fundo2)}
+.mapa iframe{width:100%;height:100%;min-height:380px;border:0}
+.contato{background:var(--escuro);color:#fff;border-radius:var(--r-grande);padding:clamp(26px,4vw,44px);display:flex;flex-direction:column;justify-content:space-between;gap:28px}
+.contato h3{font-size:clamp(28px,3.2vw,42px)}
+.contato dl{display:grid;gap:16px}
+.contato dt{font-size:13.5px;color:var(--acento-claro)}
+.contato dd{font-size:17px;line-height:1.45}
+.final{position:relative;margin-top:clamp(72px,10vw,136px);border-radius:var(--r-grande);overflow:hidden;color:#fff;isolation:isolate;padding:clamp(40px,8vw,110px) clamp(24px,6vw,80px);min-height:420px;display:flex;flex-direction:column;justify-content:flex-end;gap:22px}
+.final img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2}
+.final::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(0,0,0,.8),rgba(0,0,0,.25))}
+.final h2{color:#fff}
+footer{padding:40px 0 28px;font-size:14px;color:var(--suave)}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.barra{position:fixed;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));z-index:40;max-width:680px;margin-inline:auto;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 18px;border-radius:22px;color:#fff;background:rgba(14,16,18,.74);backdrop-filter:blur(18px) saturate(1.5);-webkit-backdrop-filter:blur(18px) saturate(1.5);border:1px solid rgba(255,255,255,.14);box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
+.barra span{font-size:13.5px;line-height:1.35}
+.barra b{display:block;font-size:15px}
+.barra .btn{background:#fff;color:#111;padding:13px 18px;font-size:14.5px}
+
+/* Planos e preços dentro da prévia */
+.planos-dlg{border:0;padding:0;margin:auto;width:min(720px,94vw);max-height:92svh;border-radius:28px;background:#fff;color:#16181b;font-family:var(--body);box-shadow:0 40px 100px -30px rgba(0,0,0,.6)}
+.planos-dlg::backdrop{background:rgba(8,10,12,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.planos-dlg .in{padding:clamp(22px,4vw,40px);display:grid;gap:22px}
+.planos-dlg h2{font-family:var(--body);font-weight:700;letter-spacing:-.02em;font-size:clamp(26px,4vw,36px);line-height:1.1;color:#16181b;max-width:none}
+.planos-dlg .fechar{position:sticky;top:12px;margin-left:auto;display:block;width:40px;height:40px;border-radius:50%;border:0;background:#f0f1f3;color:#16181b;font-size:22px;cursor:pointer;z-index:2;margin-bottom:-40px;margin-right:12px}
+.pl-grade{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pl{border:1.5px solid #e4e6ea;border-radius:20px;padding:20px;display:grid;gap:10px;align-content:start}
+.pl.dest{border-color:#1fa855;background:#f3fbf6}
+.pl small{font-size:13px;color:#5b6068}
+.pl .v{font-size:30px;font-weight:700;letter-spacing:-.02em;line-height:1.1}
+.pl .v span{font-size:15px;font-weight:500;color:#5b6068}
+.pl .btn{width:100%;padding:14px 16px;font-size:15px}
+.pl .btn-pix{background:#16181b;color:#fff}
+.pl-inclui{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;list-style:none;font-size:15px}
+.pl-inclui li::before{content:"✓ ";color:#1fa855;font-weight:700}
+.pl-passos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;counter-reset:p}
+.pl-passos div{background:#f5f6f8;border-radius:16px;padding:14px;font-size:14.5px;line-height:1.4}
+.pl-passos b{display:block;font-size:15px;margin-bottom:2px}
+.pl-faq details{border-top:1px solid #eceef1;padding:12px 0}
+.pl-faq summary{cursor:pointer;font-weight:600;font-size:15.5px}
+.pl-faq p{font-size:15px;color:#4a4f57;margin-top:6px}
+.pl-rodape{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;font-size:14px;color:#5b6068}
+.pl-rodape a{color:#16181b}
+@media (max-width:620px){.pl-grade,.pl-inclui,.pl-passos{grid-template-columns:1fr}}
+@media (max-width:900px){
+  .topo-secao,.local,.nota,.pedido,.sim{grid-template-columns:1fr}
+  .nota{gap:12px}.cel{margin-inline:auto}
+}
+@media (max-width:560px){
+  body{font-size:16px}
+  .nav .btn span{display:none}
+  .btn{white-space:normal;text-align:center;line-height:1.25}
+  .barra span{font-size:12.5px}.barra b{font-size:14px}
+}
+@media (max-width:380px){.cel{width:270px;height:560px}.n1{top:330px}.n2{top:402px}.n3{top:474px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+.ramo-advocacia h1,.ramo-advocacia h2,.ramo-advocacia h3{font-weight:500;letter-spacing:-.015em}
+.ad-topo{padding:130px 0 0}
+.ad-topo .selo{animation:surge .8s .3s both}
+.ad-topo .nome{font-size:clamp(48px,8vw,118px);line-height:.98;margin:22px 0 22px;max-width:14ch}
+.ad-cabeca{display:grid;grid-template-columns:1.2fr .8fr;gap:24px 48px;align-items:end}
+.ad-topo .sub{color:var(--suave);font-size:clamp(17px,1.6vw,20px);max-width:40ch;animation:surge .8s .5s both}
+.ad-topo .acoes{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;animation:surge .8s .6s both}
+.ad-moldura{position:relative;margin-top:clamp(36px,5vw,64px);animation:surge 1s .4s both}
+.ad-moldura::before{content:"";position:absolute;inset:14px -14px -14px 14px;border:1.5px solid var(--acento);border-radius:var(--r-grande);z-index:0}
+.ad-moldura .troca{position:relative;z-index:1;border-radius:var(--r-grande);aspect-ratio:21/9}
+.ad-areas{display:grid;grid-template-columns:.8fr 1.2fr;gap:24px 64px;align-items:start}
+.ad-areas ul{list-style:none;border-top:1px solid rgba(255,255,255,.14)}
+.ad-areas li{display:flex;justify-content:space-between;align-items:center;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.14);font-family:var(--display);font-size:clamp(24px,2.6vw,34px)}
+.ad-areas li::after{content:"";width:28px;height:1.5px;background:var(--acento)}
+.ad-como{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:clamp(36px,5vw,64px)}
+.ad-como div{background:var(--fundo2);border-radius:var(--r-grande);padding:26px}
+.ad-como h3{font-size:28px;color:var(--acento-claro)}
+.ad-como p{color:var(--suave);margin-top:8px}
+@media (max-width:900px){.ad-cabeca,.ad-areas,.ad-como{grid-template-columns:1fr}.ad-moldura .troca{aspect-ratio:4/3}}
+</style>
+</head>
+<body class="ramo-advocacia">
+<div class="previa">Prévia criada pela <b>Sitebooster</b> para <b>Advocacia Oliveira Lima</b>. Fotos ilustrativas. Disponível até 07/12/2026.</div>
+<header class="nav"><div class="wrap">
+  <a class="nav-nome" href="#topo">Advocacia Oliveira Lima</a>
+  <a class="btn btn-zap" href="https://wa.me/5511942488160"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.7 1.2 1.6 2 1.1 1 2 1.3 2.3 1.4.3.1.5.1.6-.1l.9-1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.8-.1 1.4z"/></svg><span>Contato</span></a>
+</div></header>
+<main id="topo">
+
+  <div class="ad-topo">
+    <div class="wrap">
+      <span class="selo"><span class="g">G</span><span class="estrelas">★★★★★</span> 4,9 no Google, 180 avaliações</span>
+      <div class="ad-cabeca">
+        <h1 class="nome"><span>Advocacia</span> <span>Oliveira</span> <span>Lima</span></h1>
+        <div><p class="sub">Advocacia com atendimento próximo em Guarulhos. Orientação jurídica clara, com acompanhamento de perto em cada etapa do seu caso.</p><div class="acoes"><a class="btn btn-zap" href="#pedido">Conte o seu caso</a></div></div>
+      </div>
+      <div class="ad-moldura"><div class="troca"><img src="https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=2000&q=75&auto=format&fit=crop" alt="Estante de livros jurídicos em escritório" fetchpriority="high"><img class="b" src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1800&q=75&auto=format&fit=crop" alt="" loading="lazy"></div></div>
+    </div>
+  </div>
+  <section id="servicos">
+    <div class="wrap ad-areas">
+      <div><h2>Seus direitos, bem defendidos.</h2><p class="lead" style="margin-top:16px">Explicamos o caminho do seu caso com clareza, sem juridiquês.</p></div>
+      <ul><li>Trabalhista</li><li>Previdenciário</li><li>Família</li><li>Cível</li><li>Consumidor</li><li>Contratos</li></ul>
+    </div>
+    <div class="wrap ad-como">
+      <div><h3>Contratos</h3><p>Elaboração e revisão de contratos com segurança.</p></div>
+      <div><h3>Consultoria</h3><p>Análise do seu caso e orientação sobre o melhor caminho.</p></div>
+      <div><h3>Estrutura</h3><p>Atendimento presencial e online.</p></div>
+    </div>
+  </section>
+
+  <section id="pedido">
+    <div class="wrap pedido">
+      <div>
+        <h2>Conte o seu caso.</h2>
+        <p class="lead" style="margin-top:16px">Escolha as opções e o pedido chega pronto no nosso WhatsApp. Respondemos rapidinho.</p>
+      </div>
+      <form class="pedido-caixa" id="form-pedido" data-abertura="Olá! Vim pelo site e quero falar sobre o meu caso." onsubmit="return false">
+        <div class="grupo" data-rotulo="Área"><h3>Qual a área?</h3><div class="chips"><button type="button" class="chip" aria-pressed="false">Trabalhista</button><button type="button" class="chip" aria-pressed="false">Previdenciário</button><button type="button" class="chip" aria-pressed="false">Família</button><button type="button" class="chip" aria-pressed="false">Cível</button><button type="button" class="chip" aria-pressed="false">Consumidor</button><button type="button" class="chip" aria-pressed="false">Outro</button></div></div>
+        <div class="grupo" data-rotulo="Atendimento"><h3>Como prefere ser atendido?</h3><div class="chips"><button type="button" class="chip" aria-pressed="false">Presencial</button><button type="button" class="chip" aria-pressed="false">Online</button></div></div>
+        <label class="grupo"><h3>Resumo em uma frase</h3><input class="campo" id="campo-extra" data-rotulo="Resumo" placeholder="Ex.: fui demitido e não recebi as verbas" autocomplete="off"></label>
+        <p class="resumo" id="resumo" aria-live="polite">Toque nas opções acima.</p>
+        <a class="btn btn-zap" id="enviar-pedido" href="https://wa.me/5511942488160">Enviar pedido no WhatsApp</a>
+      </form>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap topo-secao">
+      <h2>Do primeiro contato à solução.</h2>
+      <p class="lead">Tudo combinado pelo WhatsApp, sem surpresa no caminho.</p>
+    </div>
+    <div class="wrap"><div class="passos">
+        <div class="passo"><b>1</b><h3>Contato</h3><p>Você conta o seu caso pelo WhatsApp.</p></div>
+        <div class="passo"><b>2</b><h3>Análise</h3><p>Avaliamos a situação com cuidado.</p></div>
+        <div class="passo"><b>3</b><h3>Proposta</h3><p>Você recebe a orientação e os honorários.</p></div>
+        <div class="passo"><b>4</b><h3>Acompanhamento</h3><p>Seguimos juntos até o fim.</p></div>
+    </div></div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="nota">
+        <div class="num">4,9</div>
+        <div>
+          <div class="est" aria-hidden="true">★★★★★</div>
+          <p>180 clientes avaliaram a Advocacia Oliveira Lima no Google.</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=Advocacia+Oliveira+Lima+R.+Jos%C3%A9+Maur%C3%ADcio%2C+241%2C+4%C2%BA+andar" target="_blank" rel="noopener">Ler as avaliações no Google</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-label="Simulação do site funcionando">
+    <div class="wrap">
+      <div class="sim" id="sim">
+        <div>
+          <span class="etiqueta">Simulação, só nesta prévia</span>
+          <h2>É assim que o site trabalha por vocês.</h2>
+          <p class="lead">Alguém procura no Google, encontra a Advocacia Oliveira Lima com a nota 4,9 e manda o pedido direto no WhatsApp. Todo dia, sem vocês precisarem fazer nada.</p>
+        </div>
+        <div class="cel" aria-hidden="true">
+          <div class="ilha"></div>
+          <div class="tela">
+            <div class="logo-g"><i>G</i><i>o</i><i>o</i><i>g</i><i>l</i><i>e</i></div>
+            <div class="busca"><span id="digitado"></span><span class="cursor"></span></div>
+            <div class="resultado" id="resultado">
+              <div class="t">Advocacia Oliveira Lima</div>
+              <div class="n"><b>4,9 ★★★★★</b> (180) · Advocacia</div>
+              <div class="n">Guarulhos e região</div>
+              <div class="bts"><span>Site</span><span>Rotas</span><span class="z">WhatsApp</span></div>
+            </div>
+            <div class="notif n1"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Novo pedido pelo site: trabalhista, atendimento online.</p></div></div><div class="notif n2"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Olá! Encontrei o escritório no Google, atendem previdenciário?</p></div></div><div class="notif n3"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2z"/></svg></div><div><small>WhatsApp · agora</small><p>Novo pedido pelo site: família, presencial.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contato">
+    <div class="wrap local">
+      <div class="mapa"><iframe src="https://maps.google.com/maps?hl=pt-BR&output=embed&q=Advocacia%20Oliveira%20Lima%2C%20R.%20Jos%C3%A9%20Maur%C3%ADcio%2C%20241%2C%204%C2%BA%20andar%2C%20Centro%2C%20Guarulhos" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Mapa com a localização da Advocacia Oliveira Lima"></iframe></div>
+      <div class="contato">
+        <h3>Atendimento presencial e online.</h3>
+        <dl>
+          <div><dt>Endereço</dt><dd>R. José Maurício, 241, 4º andar · Centro, Guarulhos</dd></div>
+          <div><dt>Atendimento</dt><dd>Guarulhos e região</dd></div>
+        </dl>
+        <a class="btn btn-zap" href="https://wa.me/5511942488160">Falar com o escritório no WhatsApp</a>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="final">
+        <img src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1800&q=75&auto=format&fit=crop" alt="" loading="lazy">
+        <h2>Conte o seu caso. A gente orienta o caminho.</h2>
+        <div><a class="btn btn-zap" href="https://wa.me/5511942488160">Falar com o escritório no WhatsApp</a></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>Advocacia Oliveira Lima, Guarulhos e região</span><span>Site feito pela Sitebooster</span></div></footer>
+<div class="barra" role="region" aria-label="Sobre esta prévia">
+  <span><b>Gostou? Este site pode ser seu.</b>Pronto em até 48 horas, com as suas fotos.</span>
+  <a class="btn" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20Advocacia%20Oliveira%20Lima%20e%20quero%20o%20site." id="abrir-planos">Ver preços</a>
+</div>
+<dialog class="planos-dlg" id="planos" aria-labelledby="planos-tit">
+  <button class="fechar" type="button" aria-label="Fechar" id="fechar-planos">×</button>
+  <div class="in">
+    <div><h2 id="planos-tit">Este site pode ser da Advocacia Oliveira Lima.</h2><p style="color:#5b6068;margin-top:8px">Escolha como prefere pagar. Os dois planos têm tudo incluso.</p></div>
+    <div class="pl-grade">
+      <div class="pl dest"><small>Sem entrada</small><div class="v">12x R$ 89 <span>no cartão</span></div><small>ou R$ 89 por mês no Pix, podendo cancelar nos primeiros 30 dias sem multa</small>
+        <a class="btn btn-zap" href="https://pay.kiwify.com.br/ou41szk" target="_blank" rel="noopener">Assinar no cartão</a>
+        <a class="btn btn-pix" href="https://pay.kiwify.com.br/IrPcdUO" target="_blank" rel="noopener">Assinar no Pix</a></div>
+      <div class="pl"><small>Com entrada</small><div class="v">R$ 497 <span>+ R$ 49/mês</span></div><small>Menor mensalidade, que pode ser cancelada quando quiser</small>
+        <a class="btn btn-pix" href="https://pay.kiwify.com.br/S7d85EE" target="_blank" rel="noopener">Assinar com entrada</a></div>
+    </div>
+    <ul class="pl-inclui"><li>Site no ar em até 48 horas</li><li>Domínio no seu nome</li><li>Hospedagem inclusa</li><li>Pedido direto no WhatsApp</li><li>Perfil do Google revisado</li><li>Relatório mensal de visitas</li><li>Alterações sempre que precisar</li><li>Suas fotos e seu logo</li></ul>
+    <div><b style="font-size:16px">Depois de pagar</b>
+      <div class="pl-passos" style="margin-top:10px"><div><b>Te chamamos</b>no WhatsApp no mesmo dia.</div><div><b>Você manda</b>logo, fotos e o que quiser mudar.</div><div><b>Site no ar</b>em até 48 horas, no seu endereço.</div></div></div>
+    <div class="pl-faq">
+      <details><summary>Tem fidelidade?</summary><p>No cartão são 12 parcelas, com 7 dias para desistir e receber o dinheiro de volta. No Pix, o contrato é de 12 meses, mas nos primeiros 30 dias você cancela sem multa. No plano com entrada, a mensalidade pode ser cancelada quando quiser, com aviso de 30 dias.</p></details>
+      <details><summary>O domínio fica no meu nome?</summary><p>Sim. O endereço do site é registrado no seu CPF ou CNPJ. Nós cuidamos da hospedagem e da manutenção.</p></details>
+      <details><summary>Posso mudar o site depois?</summary><p>Sim. Telefone, horário, serviços, preços e fotos: é só pedir no WhatsApp. Está incluso.</p></details>
+      <details><summary>Como sei se está dando resultado?</summary><p>Todo mês você recebe no WhatsApp quantas pessoas visitaram o site e quantas clicaram para falar com você.</p></details>
+    </div>
+    <div class="pl-rodape"><a href="https://www.sitebooster.com.br/sites/termo/" target="_blank" rel="noopener">Ler o termo de adesão</a><a class="btn btn-linha" href="https://wa.me/5511937457836?text=Oi%2C%20Antolin%21%20Vi%20a%20pr%C3%A9via%20da%20Advocacia%20Oliveira%20Lima%20e%20quero%20o%20site." style="padding:12px 18px;font-size:14.5px">Tirar dúvidas no WhatsApp</a></div>
+  </div>
+</dialog>
+<script>
+(function(){
+  var form=document.getElementById('form-pedido'); if(!form) return;
+  var link=document.getElementById('enviar-pedido'), resumo=document.getElementById('resumo'), campo=document.getElementById('campo-extra');
+  var base=link.getAttribute('href');
+  function monta(){
+    var partes=[];
+    form.querySelectorAll('.grupo[data-rotulo]').forEach(function(g){
+      var sel=g.querySelector('.chip[aria-pressed="true"]');
+      if(sel) partes.push(g.dataset.rotulo+': '+sel.textContent);
+    });
+    if(campo.value.trim()) partes.push(campo.dataset.rotulo+': '+campo.value.trim());
+    resumo.innerHTML=partes.length? '<b>Seu pedido:</b> '+partes.join(' · ').replace(/</g,'&lt;') : 'Toque nas opções acima.';
+    var msg=form.dataset.abertura+(partes.length? '\n'+partes.join('\n') : '');
+    link.setAttribute('href', base+'?text='+encodeURIComponent(msg));
+  }
+  form.querySelectorAll('.chips').forEach(function(c){
+    c.addEventListener('click',function(e){
+      var b=e.target.closest('.chip'); if(!b) return;
+      c.querySelectorAll('.chip').forEach(function(x){ x.setAttribute('aria-pressed', x===b && b.getAttribute('aria-pressed')!=='true' ? 'true':'false'); });
+      monta();
+    });
+  });
+  campo.addEventListener('input', monta); monta();
+})();
+(function(){
+  var sim=document.getElementById('sim'); if(!sim) return;
+  var alvo=document.getElementById('digitado'), res=document.getElementById('resultado'), ns=sim.querySelectorAll('.notif');
+  var texto="advogado em Guarulhos", rodando=false, calmo=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function espera(ms){return new Promise(function(r){setTimeout(r,ms)})}
+  async function ciclo(){
+    if(rodando) return; rodando=true;
+    while(true){
+      alvo.textContent=''; res.classList.remove('on'); ns.forEach(function(n){n.classList.remove('on')});
+      await espera(700);
+      for(var i=1;i<=texto.length;i++){ alvo.textContent=texto.slice(0,i); await espera(calmo?0:70); }
+      await espera(500); res.classList.add('on');
+      for(var k=0;k<ns.length;k++){ await espera(1300); ns[k].classList.add('on'); }
+      await espera(4200);
+    }
+  }
+  if('IntersectionObserver' in window){ new IntersectionObserver(function(es,o){ if(es[0].isIntersecting){ ciclo(); o.disconnect(); } },{threshold:.35}).observe(sim); } else ciclo();
+})();
+(function(){
+  var d=document.getElementById('planos'), a=document.getElementById('abrir-planos'), f=document.getElementById('fechar-planos');
+  if(!d||!a||typeof d.showModal!=='function') return;
+  a.addEventListener('click',function(e){ e.preventDefault(); d.showModal(); });
+  f.addEventListener('click',function(){ d.close(); });
+  d.addEventListener('click',function(e){ if(e.target===d) d.close(); });
+})();
+(function(){ var p=document.querySelector('.previa'); function t(){ if(p) document.documentElement.style.setProperty('--topo', p.offsetHeight+'px'); } t(); addEventListener('resize', t); })();
+(function(){ var b=document.body; function f(){ b.classList.toggle('rolou', window.scrollY>60); } addEventListener('scroll', f, {passive:true}); f(); })();
+</script>
+</body>
+</html>
